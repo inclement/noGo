@@ -23,7 +23,7 @@ Gomill
 
 Gomill is licensed under the MIT licence, see gomill/licence.rst for full text.
 
-Homepage: http://mjw.woodcraft.me.uk/gomill/doc/0.7.4/intro.html for Gomill homepage
+Homepage: http://mjw.woodcraft.me.uk/gomill/doc/0.7.4/intro.html
 
 kivy
 ----
