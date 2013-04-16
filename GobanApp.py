@@ -4,7 +4,7 @@ from kivy.graphics import Color, Rectangle, Ellipse
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty
+from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
 
@@ -29,9 +29,22 @@ def colourname_to_colour(colourname):
         return 'white'
     else:
         return None
-    
 
-        
+trianglecodes = ['triangle','TR']
+squarecodes = ['square','SQ']
+circlecodes = ['circle','CR']
+crosscodes = ['cross','MA']
+def markercode_to_marker(markercode):
+    if markercode in trianglecodes:
+        return 'triangle'
+    elif markercode in squarecodes:
+        return 'square'
+    elif markercode in circlecodes:
+        return 'circle'
+    elif markercode in crosscodes:
+        return 'cross'
+    return None
+
 class StarPoint(Widget):
     pass
 
@@ -40,8 +53,21 @@ class PlayMarker(Widget):
     pass
 
 class KoMarker(Widget):
+    markercolour = ListProperty([0,0,0])
     pass
+
+class TriangleMarker(Widget):
+    markercolour = ListProperty([0,0,0])
+    pass
+
+class SquareMarker(Widget):
+    markercolour = ListProperty([0,0,0])
     
+class CircleMarker(Widget):
+    markercolour = ListProperty([0,0,0])
+
+class CrossMarker(Widget):
+    markercolour = ListProperty([0,0,0])
 
 class Stone(Widget):
     colour = ListProperty([1,1,1])
@@ -62,7 +88,11 @@ class GuiBoard(Widget):
     mode = StringProperty('fullscreen') # How to scale the board
     abstractboard = ObjectProperty(None,allownone=True) # Object to query for where to play moves
 
+    variations_exist = BooleanProperty(False)
+
+    # Transient widgets
     playmarker = ObjectProperty(None,allownone=True) # Circle marking last played move
+    boardmarkers = DictProperty({})
 
     stones = DictProperty({})
     starpoints = DictProperty()
@@ -76,14 +106,70 @@ class GuiBoard(Widget):
 
     gobanpos = ListProperty((100,100))
 
+    def clear_transient_widgets(self):
+        self.remove_playmarker()
+        # self.remove_komarker()
+        self.clear_markers()
+
+    ## Board markers
+    def add_marker(self,coord,mtype):
+        print 'adding marker:', coord, mtype
+        if self.boardmarkers.has_key(coord):
+            existingmarker = self.boardmarkers.pop(coord)
+            self.remove_widget(existingmarker)
+            
+        if mtype == 'triangle':
+            newmarker = TriangleMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
+        elif mtype == 'square':
+            newmarker = SquareMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
+        elif mtype == 'circle':
+            newmarker = CircleMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
+        elif mtype == 'cross':
+            newmarker = CrossMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
+        else:
+            return None
+            
+        self.colour_marker_for_contrast(coord,newmarker)
+        self.add_widget(newmarker)
+        self.boardmarkers[coord] = newmarker
+
+    def remove_marker(self,coord):
+        if self.boardmarkers.has_key(coord):
+            marker = self.boardmarkers.pop(coord)
+            self.remove_widget(marker)            
+
+    def clear_markers(self):
+        for coord in self.boardmarkers.keys():
+            marker = self.boardmarkers.pop(coord)
+            self.remove_widget(marker)
+
+    def update_markers(self):
+        for coord in self.boardmarkers.keys():
+            marker = self.boardmarkers[coord]
+            marker.size = self.stonesize
+            marker.pos = self.coord_to_pos(coord)
+            self.remove_widget(marker)
+            self.add_widget(marker)
+            
+            
+
+    def marker_colour(self, coord):
+        if self.stones.has_key(coord):
+            stone_colour = self.stones[coord].colour
+            return [1-stone_colour[0],1-stone_colour[1],1-stone_colour[2]]
+        else:
+            return [0,0,0]
+
+    def colour_marker_for_contrast(self, coord, marker):
+        markercolour = self.marker_colour(coord)
+        marker.markercolour = markercolour
+                
+
+    ## Playmarker
     def set_playmarker(self,coord):
         self.remove_widget(self.playmarker)
         marker = PlayMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
-        if self.stones.has_key(coord):
-            stone_colour = self.stones[coord].colour
-            marker.markercolour = [1-stone_colour[0],1-stone_colour[1],1-stone_colour[2]]
-        else:
-            marker.markercolour = [0,0,0]
+        self.colour_marker_for_contrast(coord,marker)
         marker.coord = coord
         self.add_widget(marker)
         self.playmarker = marker
@@ -114,6 +200,7 @@ class GuiBoard(Widget):
         self.update_starpoints()
         self.update_stones()
         self.update_playmarker()
+        self.update_markers()
 
     def on_pos(self,*args,**kwargs):
         self.on_size()
@@ -177,27 +264,40 @@ class GuiBoard(Widget):
     # Stone methods
     def follow_instructions(self,instructions,*args,**kwargs):
         print 'instructions are', instructions
-        if 'add' in instructions:
-            add_stones = instructions['add']
-            for stone in add_stones:
-                self.add_stone(coord=stone[0],colour=colourname_to_colour(stone[1]))
+
+        self.clear_transient_widgets()
+        
         if 'remove' in instructions:
             remove_stones = instructions['remove']
             for stone in remove_stones:
                 self.remove_stone(coord=stone[0],colour=colourname_to_colour(stone[1]))
+        if 'add' in instructions:
+            add_stones = instructions['add']
+            for stone in add_stones:
+                self.add_stone(coord=stone[0],colour=colourname_to_colour(stone[1]))
         if 'empty' in instructions:
             empty_stones = instructions['empty']
             for stone in empty_stones:
                 self.empty_stone(coord=stone[0])
+
         if 'playmarker' in instructions:
             pm = instructions['playmarker']
             print 'Asked to draw pm at', pm
             if pm is not None:
                 self.set_playmarker(pm)
-            else:
-                self.remove_playmarker()
-        else:
-            self.remove_playmarker()
+        if 'markers' in instructions:
+            markers = instructions['markers']
+            print 'received markers:', markers
+            for marker in markers:
+                if marker[1] == 'TR':
+                    self.add_marker(marker[0],'triangle')
+                elif marker[1] == 'SQ':
+                    self.add_marker(marker[0],'square')
+                elif marker[1] == 'CR':
+                    self.add_marker(marker[0],'circle')
+                elif marker[1] == 'MA':
+                    self.add_marker(marker[0],'cross')
+            
 
     def advance_one_move(self,*args,**kwargs):
         instructions = self.abstractboard.advance_position()
@@ -253,17 +353,8 @@ class GuiBoard(Widget):
         for coord in self.stones.keys():
             stone = self.stones.pop(coord)
             self.remove_widget(stone)
+
             
-
-    def add_random_stone(self,*args,**kwargs):
-        self.add_stone((choice(range(19)),choice(range(19))),choice(['black','white']))
-
-    def remove_random_stone(self,*args,**kwargs):
-        coords = self.stones.keys()
-        if len(coords) > 0:
-            self.remove_stone(choice(coords))
-        else:
-            'Can\'t remove random stone, no coords'
 
     # Star point methods
     def draw_starpoints(self):
@@ -306,6 +397,11 @@ class GuiBoard(Widget):
             self.add_widget(sp)
         self.redraw_stones()
 
+    # Variation handling
+    def next_variation(self,*args,**kwargs):
+        instructions = self.abstractboard.increment_variation()
+        self.follow_instructions(instructions)
+
 class BoardContainer(Widget):
     board = ObjectProperty(None)
 
@@ -317,8 +413,8 @@ class BoardContainer(Widget):
 
     def _keyboard_closed(self):
         print 'My keyboard has been closed!'
-        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
-        self._keyboard = None
+        # self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        # self._keyboard = None
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         # print 'The key', keycode, 'have been pressed'
@@ -372,24 +468,29 @@ class GobanApp(App):
         boardcontainer = BoardContainer(size_hint=(1.,0.9))
 
         abstractboard = AbstractBoard()
-        abstractboard.load_sgf_from_file('/home/asandy/37tengent1.sgf')
+        abstractboard.load_sgf_from_file('/home/asandy/noGo/testsgf.sgf')
         boardcontainer.board.abstractboard = abstractboard
 
         btn_start = Button(text='Start')
         btn_end = Button(text='End')
+        btn_nextvar = Button(text='Next var')
         btn_nextmove = Button(text='Next')
         btn_prevmove = Button(text='Prev')
 
+        btn_nextvar.background_color = (1,0,0,1)
+        
         # btn_nextmove.bind(on_press=partial(boardcontainer.board.add_random_stone))
         # btn_prevmove.bind(on_press=partial(boardcontainer.board.remove_random_stone))
         btn_start.bind(on_press=partial(boardcontainer.board.jump_to_start))
         btn_end.bind(on_press=partial(boardcontainer.board.jump_to_end))
+        btn_nextvar.bind(on_press=partial(boardcontainer.board.next_variation))
         btn_nextmove.bind(on_press=partial(boardcontainer.board.advance_one_move))
         btn_prevmove.bind(on_press=partial(boardcontainer.board.retreat_one_move))
 
         navigation_layout = BoxLayout(orientation='horizontal',size_hint=(1.,0.1))
         navigation_layout.add_widget(btn_start)
         navigation_layout.add_widget(btn_end)
+        navigation_layout.add_widget(btn_nextvar)
         navigation_layout.add_widget(btn_prevmove)
         navigation_layout.add_widget(btn_nextmove)
 

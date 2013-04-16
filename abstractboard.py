@@ -7,6 +7,34 @@ game tree.
 
 from gomill import sgf, boards
 
+def get_markers_from_node(node):
+    properties = node.properties()
+    instructions = {'marker':[]}
+    markers = []
+    if 'TR' in properties:
+        node_markers = node.find_property('TR')
+        for marker in node_markers:
+            markers.append((marker,'TR'))
+    if 'SQ' in properties:
+        node_markers = node.find_property('SQ')
+        for marker in node_markers:
+            markers.append((marker,'SQ'))
+    if 'CR' in properties:
+        node_markers = node.find_property('CR')
+        for marker in node_markers:
+            markers.append((marker,'CR'))
+    if 'MA' in properties:
+        node_markers = node.find_property('MA')
+        for marker in node_markers:
+            markers.append((marker,'MA'))
+        
+
+    if len(markers) > 0:
+        return {'markers': markers}
+    else:
+        return {}
+        
+
 def apply_node_to_board(board, node):
     board = board.copy()
     add_stones = []
@@ -16,7 +44,7 @@ def apply_node_to_board(board, node):
 
     # First, find and deal with setup stones
     if node.has_setup_stones():
-        setup_stones = newnode.get_setup_stones()
+        setup_stones = node.get_setup_stones()
         # Add setup stones to board!
 
     # Now deal with the actual new move, if any
@@ -51,7 +79,16 @@ def apply_node_to_board(board, node):
     if add_playmarker is not None:
         instructions['playmarker'] = add_playmarker
 
+    node_markers = get_markers_from_node(node)
+    instructions.update(node_markers)
+
     return (board, instructions)
+
+def get_setupstones_from_node(node):
+    pass
+
+def get_marks_from_node(node):
+    instructions = {}
 
 
 def compare_boards(old, new):
@@ -151,13 +188,32 @@ class AbstractBoard(object):
         if newmove[1] is not None:
             instructions['playmarker'] = newmove[1]
 
+        markers = get_markers_from_node(newnode)
+        if len(markers) > 0:
+            instructions.update(markers)
+
         return instructions
+
+    def increment_variation(self):
+        if self.curnode.parent is not None:
+            parentnode = self.curnode.parent
+            newnode = parentnode[(parentnode.index(self.curnode)+1) % len(parentnode)]
+            return self.jump_to_node(newnode)
+        else:
+            return {}
+            
+            
 
     def jump_to_node(self,node):
         oldboard = self.boards[self.curnode]
         self.curnode = node
         newboard = self.get_or_build_board(node)
-        return compare_boards(oldboard,newboard)
+        instructions = compare_boards(oldboard,newboard)
+        newmove = node.get_move()
+        if newmove[1] is not None:
+            instructions['playmarker'] = newmove[1]
+        return instructions
+            
 
     def get_or_build_board(self, node):
         if not self.boards.has_key(node):
@@ -182,5 +238,5 @@ class AbstractBoard(object):
         board, instructions = apply_node_to_board(board, node)
         self.boards[node] = board
 
-    def stones_at_node(self,node):
-        return map(lambda j: j.get_move(),self.game.get_sequence_above(node))
+
+        

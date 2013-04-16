@@ -25,7 +25,47 @@
     canvas:
         Color:
             rgb: (0,0,0)
+
+<TriangleMarker>:
+    canvas:
+        Color:
+            rgb: self.markercolour
+        Line:
+            points: [self.pos[0] + 0.2*self.size[0], self.pos[1] + 0.3*self.size[1], self.pos[0] + 0.8*self.size[0], self.pos[1]+0.3*self.size[1], self.pos[0]+0.5*self.size[0],self.pos[1]+0.85*self.size[1]]
+            close: True
+            width: 0.04*self.size[0]
+            joint: 'miter'
+
+<SquareMarker>:
+    canvas:
+        Color:
+            rgb: self.markercolour
+        Line:
+            points: [self.pos[0] + 0.2*self.width, self.pos[1]+0.2*self.height, self.pos[0]+0.8*self.width, self.pos[1]+0.2*self.height, self.pos[0]+0.8*self.width,self.pos[1]+0.8*self.height, self.pos[0]+0.2*self.width, self.pos[1]+0.8*self.height]
+            close: True
+            width: 0.04*self.size[0]
+            joint: 'miter'
+
+<CircleMarker>:
+    canvas:
+        Color:
+            rgb: self.markercolour
+        Line:
+            points: [self.pos[0],self.pos[1],self.pos[0]+self.width,self.pos[0]+self.height]
+            close: True
+            width: 0.04*self.size[0]
+            circle: (self.pos[0] + 0.5*self.width, self.pos[1]+0.5*self.height, 0.3*self.width, 0, 360, 40)
         
+<CrossMarker>:
+    canvas:
+        Color:
+            rgb: self.markercolour
+        Line:
+            points: [self.pos[0]+0.2*self.width,self.pos[1]+0.2*self.height,self.pos[0]+0.8*self.width,self.pos[1]+0.8*self.height]
+            width: 0.04*self.size[0]
+        Line:
+            points: [self.pos[0]+0.2*self.width,self.pos[1]+0.8*self.height,self.pos[0]+0.8*self.width,self.pos[1]+0.2*self.height]
+            width: 0.04*self.size[0]
 
 <Stone>:
     canvas:
