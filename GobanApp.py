@@ -84,12 +84,18 @@ class GuiBoard(Widget):
             marker.markercolour = [1-stone_colour[0],1-stone_colour[1],1-stone_colour[2]]
         else:
             marker.markercolour = [0,0,0]
+        marker.coord = coord
         self.add_widget(marker)
         self.playmarker = marker
 
     def remove_playmarker(self):
         self.remove_widget(self.playmarker)
         self.playmarker = None
+
+    def update_playmarker(self):
+        if self.playmarker is not None:
+            self.set_playmarker(self.playmarker.coord)
+        self.set_playmarker
 
     def on_gridsize(self):
         self.draw_starpoints()
@@ -107,6 +113,7 @@ class GuiBoard(Widget):
 
         self.update_starpoints()
         self.update_stones()
+        self.update_playmarker()
 
     def on_pos(self,*args,**kwargs):
         self.on_size()
