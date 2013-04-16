@@ -11,20 +11,20 @@
 <PlayMarker>:
     canvas:
         Color:
-            rgb: self.markercolour
+            rgba: self.markercolour[0],self.markercolour[1],self.markercolour[2],0.6
         Ellipse:
-            pos: self.pos[0] + 0.2*self.width, self.pos[1] + 0.2*self.height
-            size: self.size[0]*0.6, self.size[1]*0.6
-        Color:
-            rgb: 1. - self.markercolour[0], 1. - self.markercolour[1], 1. - self.markercolour[2]
-        Ellipse:
-            pos: self.pos[0] + 0.25*self.width, self.pos[1] + 0.25*self.height
-            size: self.size[0]*0.5, self.size[1]*0.5
+            pos: self.pos[0] + 0.35*self.width,self.pos[1] + 0.35*self.height
+            size: 0.3*self.width, 0.3*self.width
 
 <KoMarker>:
     canvas:
         Color:
             rgb: (0,0,0)
+        Line:
+            points: [self.pos[0] + 0.2*self.width, self.pos[1]+0.2*self.height, self.pos[0]+0.8*self.width, self.pos[1]+0.2*self.height, self.pos[0]+0.8*self.width,self.pos[1]+0.8*self.height, self.pos[0]+0.2*self.width, self.pos[1]+0.8*self.height]
+            close: True
+            width: 0.02*self.size[0]
+            joint: 'miter'
 
 <TriangleMarker>:
     canvas:
@@ -66,6 +66,23 @@
         Line:
             points: [self.pos[0]+0.2*self.width,self.pos[1]+0.8*self.height,self.pos[0]+0.8*self.width,self.pos[1]+0.2*self.height]
             width: 0.04*self.size[0]
+
+<TextMarker>:
+    canvas:
+        Color:
+            rgb: self.markercolour
+    Label:
+        color: self.parent.markercolour
+        pos: self.parent.pos
+        size: self.parent.size
+        text: self.parent.text
+        halign: 'center'
+        valign: 'middle'
+        font_size: (0.7*self.height,'px')
+
+        
+
+            
 
 <Stone>:
     canvas:

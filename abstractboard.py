@@ -27,6 +27,10 @@ def get_markers_from_node(node):
         node_markers = node.find_property('MA')
         for marker in node_markers:
             markers.append((marker,'MA'))
+    if 'LB' in properties:
+        node_markers = node.find_property('LB')
+        for marker in node_markers:
+            markers.append((marker[0],'LB',marker[1]))
         
 
     if len(markers) > 0:

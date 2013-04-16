@@ -4,7 +4,7 @@ from kivy.graphics import Color, Rectangle, Ellipse
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty
+from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
 
@@ -34,6 +34,7 @@ trianglecodes = ['triangle','TR']
 squarecodes = ['square','SQ']
 circlecodes = ['circle','CR']
 crosscodes = ['cross','MA']
+textcodes = ['text','LB']
 def markercode_to_marker(markercode):
     if markercode in trianglecodes:
         return 'triangle'
@@ -43,6 +44,8 @@ def markercode_to_marker(markercode):
         return 'circle'
     elif markercode in crosscodes:
         return 'cross'
+    elif markercode in textcodes:
+        return 'text'
     return None
 
 class StarPoint(Widget):
@@ -68,6 +71,18 @@ class CircleMarker(Widget):
 
 class CrossMarker(Widget):
     markercolour = ListProperty([0,0,0])
+
+class TextMarker(Widget):
+    markercolour = ListProperty([0,0,0])
+    text = StringProperty('')
+    def printinfo(self):
+        print '##############'
+        print self.markercolour
+        print self.text
+        print self.pos
+        print self.size
+        return 0.7
+        
 
 class Stone(Widget):
     colour = ListProperty([1,1,1])
@@ -112,7 +127,7 @@ class GuiBoard(Widget):
         self.clear_markers()
 
     ## Board markers
-    def add_marker(self,coord,mtype):
+    def add_marker(self,coord,mtype,other=[]):
         print 'adding marker:', coord, mtype
         if self.boardmarkers.has_key(coord):
             existingmarker = self.boardmarkers.pop(coord)
@@ -126,6 +141,9 @@ class GuiBoard(Widget):
             newmarker = CircleMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
         elif mtype == 'cross':
             newmarker = CrossMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
+        elif mtype == 'text':
+            newmarker = TextMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
+            newmarker.text = other[0]
         else:
             return None
             
@@ -297,6 +315,8 @@ class GuiBoard(Widget):
                     self.add_marker(marker[0],'circle')
                 elif marker[1] == 'MA':
                     self.add_marker(marker[0],'cross')
+                elif marker[1] == 'LB':
+                    self.add_marker(marker[0],'text',marker[2:])
             
 
     def advance_one_move(self,*args,**kwargs):
