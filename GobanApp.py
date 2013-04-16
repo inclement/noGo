@@ -38,6 +38,9 @@ class StarPoint(Widget):
 class PlayMarker(Widget):
     markercolour = ListProperty([0,0,0])
     pass
+
+class KoMarker(Widget):
+    pass
     
 
 class Stone(Widget):
@@ -76,6 +79,11 @@ class GuiBoard(Widget):
     def set_playmarker(self,coord):
         self.remove_widget(self.playmarker)
         marker = PlayMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
+        if self.stones.has_key(coord):
+            stone_colour = self.stones[coord].colour
+            marker.markercolour = [1-stone_colour[0],1-stone_colour[1],1-stone_colour[2]]
+        else:
+            marker.markercolour = [0,0,0]
         self.add_widget(marker)
         self.playmarker = marker
 
@@ -161,6 +169,7 @@ class GuiBoard(Widget):
         
     # Stone methods
     def follow_instructions(self,instructions,*args,**kwargs):
+        print 'instructions are', instructions
         if 'add' in instructions:
             add_stones = instructions['add']
             for stone in add_stones:
@@ -173,6 +182,15 @@ class GuiBoard(Widget):
             empty_stones = instructions['empty']
             for stone in empty_stones:
                 self.empty_stone(coord=stone[0])
+        if 'playmarker' in instructions:
+            pm = instructions['playmarker']
+            print 'Asked to draw pm at', pm
+            if pm is not None:
+                self.set_playmarker(pm)
+            else:
+                self.remove_playmarker()
+        else:
+            self.remove_playmarker()
 
     def advance_one_move(self,*args,**kwargs):
         instructions = self.abstractboard.advance_position()

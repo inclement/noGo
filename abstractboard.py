@@ -12,6 +12,7 @@ def apply_node_to_board(board, node):
     add_stones = []
     remove_stones = []
     empty_stones = []
+    add_playmarker = None
 
     # First, find and deal with setup stones
     if node.has_setup_stones():
@@ -37,6 +38,7 @@ def apply_node_to_board(board, node):
             for point in current_occupied_points:
                 if point not in new_occupied_points:
                     remove_stones.append((point[1],point[0]))
+        add_playmarker = new_move_point
 
 
     instructions = {}
@@ -46,6 +48,8 @@ def apply_node_to_board(board, node):
         instructions['remove'] = remove_stones
     if len(empty_stones) > 0:
         instructions['empty'] = empty_stones
+    if add_playmarker is not None:
+        instructions['playmarker'] = add_playmarker
 
     return (board, instructions)
 
@@ -93,6 +97,14 @@ class AbstractBoard(object):
         self.game = sgf.Sgf_game.from_string(sgfdata)
         self.reset_position()
 
+    def load_sgf_from_text(self, sgftext):
+        self.game = sgf.Sgf_game.from_string(sgftext)
+        self.reset_posiiton()
+
+    def set_sgf(self,sgf):
+        self.game = sgf
+        self.reset_position()
+
     def reset_position(self):
         self.curnode = self.game.get_root()
         self.boards = {}
@@ -134,6 +146,10 @@ class AbstractBoard(object):
         self.boards[newnode] = newboard
 
         instructions = compare_boards(curboard, newboard)
+
+        newmove = newnode.get_move()
+        if newmove[1] is not None:
+            instructions['playmarker'] = newmove[1]
 
         return instructions
 
