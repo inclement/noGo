@@ -1,0 +1,64 @@
+#:kivy 1.6.0
+
+<StarPoint>:
+    canvas:
+        Color:
+            rgb: 0,0,0
+        Ellipse:
+            size: 0.2*self.width, 0.2*self.height
+            pos: self.pos[0] + 0.4*self.width, self.pos[1] + 0.4*self.height
+
+<PlayMarker>:
+    canvas:
+        Color:
+            rgb: self.markercolour
+        Ellipse:
+            pos: self.pos[0] + 0.2*self.width, self.pos[1] + 0.2*self.height
+            size: self.size[0]*0.6, self.size[1]*0.6
+        Color:
+            rgb: 1. - self.markercolour[0], 1. - self.markercolour[1], 1. - self.markercolour[2]
+        Ellipse:
+            pos: self.pos[0] + 0.25*self.width, self.pos[1] + 0.25*self.height
+            size: self.size[0]*0.5, self.size[1]*0.5
+
+<Stone>:
+    canvas:
+        Color:
+            rgb: 0,0,0
+        Ellipse:
+            size: self.size
+            pos: self.pos
+
+        Color:
+            rgb: self.colour
+        Ellipse:
+            size: (0.9*self.size[0],0.9*self.size[1])
+            pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
+
+<GuiBoard>:
+    canvas:
+        Color:
+            rgb: (0.980, 0.766, 0.402)
+        Rectangle:
+            pos: self.gobanpos
+            size: self.gobansize
+
+        Color:
+            hsv: (0,0,0)
+        Line:
+            points: [self.pos[0] + self.boardindent[0], self.pos[1] + self.boardindent[1], self.pos[0] + self.width - self.boardindent[0], self.pos[1] + self.boardindent[1], self.pos[0] + self.width - self.boardindent[0], self.pos[1] + self.height - self.boardindent[1], self.pos[0] + self.boardindent[0], self.pos[1] + self.height - self.boardindent[1]]
+            width: 1.0
+            close: True
+
+        Line:
+            points: self.gridlines
+            width: 1.0
+
+<BoardContainer>:
+    board: theboard
+
+    GuiBoard:
+        id: theboard
+        size: self.parent.boardsize
+        pos: self.parent.boardpos
+
