@@ -16,6 +16,8 @@ from functools import partial
 from gomill import sgf, boards
 from abstractboard import AbstractBoard
 
+import sys
+
 # from kivy.config import Config
 # Config.set('graphics', 'width', '400')
 # Config.set('graphics', 'height', '600')
@@ -485,10 +487,20 @@ class BoardContainer(Widget):
 class GobanApp(App):
 
     def build(self):
+
+        
         boardcontainer = BoardContainer(size_hint=(1.,0.9))
 
         abstractboard = AbstractBoard()
-        abstractboard.load_sgf_from_file('/home/asandy/noGo/testsgf.sgf')
+
+        sgfn = sys.argv[-1]
+        if sgfn[-3:] == 'sgf':
+            abstractboard.load_sgf_from_file(sgfn)
+        else:
+            abstractboard.load_sgf_from_file('/home/asandy/noGo/testsgf.sgf')
+
+
+        
         boardcontainer.board.abstractboard = abstractboard
 
         btn_start = Button(text='Start')
