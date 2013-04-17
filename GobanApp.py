@@ -25,6 +25,8 @@ import sys
 # Keybindings
 advancekeys = ['right','j','l']
 retreatkeys = ['left','k','h']
+nextvariationkeys = ['up']
+prevvariationkeys = ['down']
 
 blacknames = ['black','b','B','Black']
 whitenames = ['white','w','W','White']
@@ -428,14 +430,24 @@ class GuiBoard(Widget):
         instructions = self.abstractboard.increment_variation()
         self.follow_instructions(instructions)
 
+    def prev_variation(self,*args,**kwargs):
+        instructions = self.abstractboard.decrement_variation()
+        self.follow_instructions(instructions)
+
 class BoardContainer(Widget):
     board = ObjectProperty(None)
+    boardsize = ListProperty([10,10])
+    boardpos = ListProperty([10,10])
 
     def __init__(self, **kwargs):
         super(BoardContainer, self).__init__(**kwargs)
         self._keyboard = Window.request_keyboard(
             self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
+
+    def on_size(self,*args,**kwargs):
+        self.set_boardsize()
+        self.set_boardpos()
 
     def _keyboard_closed(self):
         print 'My keyboard has been closed!'
@@ -455,13 +467,17 @@ class BoardContainer(Widget):
             self.board.advance_one_move()
         elif keycode[1] in retreatkeys:
             self.board.retreat_one_move()
+        elif keycode[1] in nextvariationkeys:
+            self.board.next_variation()
+        elif keycode[1] in prevvariationkeys:
+            self.board.prev_variation()
         
 
         # Return True to accept the key. Otherwise, it will be used by
         # the system.
         return True
 
-    def get_boardsize(self):
+    def set_boardsize(self):
         mysize = self.size
         if mysize[1] < mysize[0]:
             boardsize = mysize[1]
@@ -472,20 +488,14 @@ class BoardContainer(Widget):
         print 'window size', Window.size
         print 'parent', self.parent
 
-        return (boardsize-20, boardsize-20)
+        self.boardsize = [boardsize-2, boardsize-2]
 
-    def set_boardsize(self,value):
-        self.boardsize = self.get_boardsize()
+    def set_boardpos(self):
+        boardsize = self.boardsize
+        sparewidth = self.size[0] - boardsize[0]
+        spareheight = self.size[1] - boardsize[1]
+        self.boardpos = [self.pos[0] + 1 + 0.5*sparewidth,self.pos[1] + 1 + 0.5*spareheight]
 
-    def get_boardpos(self):
-        size = self.get_boardsize()
-        return (self.pos[0] + 10,self.pos[1] + 10)
-
-    def set_boardpos(self, value):
-        self.boardpos = self.get_boardpos()
-
-    boardsize = AliasProperty(get_boardsize, set_boardsize, bind=('boardsize','size'))
-    boardpos = AliasProperty(get_boardpos, set_boardpos, bind=('boardpos','pos'))
 
 
 class GobanApp(App):
@@ -493,7 +503,7 @@ class GobanApp(App):
     def build(self):
 
         
-        boardcontainer = BoardContainer(size_hint=(1.,0.9))
+        boardcontainer = BoardContainer(size_hint=(1.,0.93))
 
         abstractboard = AbstractBoard()
 
@@ -523,7 +533,7 @@ class GobanApp(App):
         btn_nextmove.bind(on_press=partial(boardcontainer.board.advance_one_move))
         btn_prevmove.bind(on_press=partial(boardcontainer.board.retreat_one_move))
 
-        navigation_layout = BoxLayout(orientation='horizontal',size_hint=(1.,0.1))
+        navigation_layout = BoxLayout(orientation='horizontal',size_hint=(1.,0.07))
         navigation_layout.add_widget(btn_start)
         navigation_layout.add_widget(btn_end)
         navigation_layout.add_widget(btn_nextvar)

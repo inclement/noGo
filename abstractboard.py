@@ -39,6 +39,7 @@ def get_markers_from_node(node):
         return {}
 
 def get_setupstones_from_node(node):
+    print 'Getting setupstones!'
     black, white, empty = node.get_setup_stones()
     stones = []
     for stone in black:
@@ -47,6 +48,7 @@ def get_setupstones_from_node(node):
         stones.append((stone,'w'))
     for stone in empty:
         stones.append((stone,'e'))
+    print 'setup stones returned:', stones
     return stones
         
 
@@ -61,14 +63,15 @@ def apply_node_to_board(board, node):
 
     # First, find and deal with setup stones
     if node.has_setup_stones():
+        print '### Node has setup stones!'
         setup_stones = get_setupstones_from_node(node)
         if len(setup_stones) > 0:
             for stone in setup_stones:
                 coords,col = stone
                 if col in ['b','w']:
-                    board[coords[0]][coords[1]] = col
+                    board.board[coords[0]][coords[1]] = col
                 elif col == 'e':
-                    board[coords[0]][coords[1]] = None
+                    board.board[coords[0]][coords[1]] = None
             
 
     # Now deal with the actual new move, if any
@@ -109,11 +112,6 @@ def apply_node_to_board(board, node):
 
     return (board, instructions)
 
-def get_setupstones_from_node(node):
-    pass
-
-def get_marks_from_node(node):
-    instructions = {}
 
 
 def compare_boards(old, new):
@@ -223,6 +221,14 @@ class AbstractBoard(object):
         if self.curnode.parent is not None:
             parentnode = self.curnode.parent
             newnode = parentnode[(parentnode.index(self.curnode)+1) % len(parentnode)]
+            return self.jump_to_node(newnode)
+        else:
+            return {}
+
+    def decrement_variation(self):
+        if self.curnode.parent is not None:
+            parentnode = self.curnode.parent
+            newnode = parentnode[(parentnode.index(self.curnode)-1) % len(parentnode)]
             return self.jump_to_node(newnode)
         else:
             return {}
