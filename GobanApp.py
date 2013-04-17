@@ -22,6 +22,10 @@ import sys
 # Config.set('graphics', 'width', '400')
 # Config.set('graphics', 'height', '600')
 
+# Keybindings
+advancekeys = ['right','j','l']
+retreatkeys = ['left','k','h']
+
 blacknames = ['black','b','B','Black']
 whitenames = ['white','w','W','White']
 def colourname_to_colour(colourname):
@@ -447,9 +451,9 @@ class BoardContainer(Widget):
         # If we hit escape, release the keyboard
         if keycode[1] == 'escape':
             keyboard.release()
-        elif keycode[1] == 'right':
+        elif keycode[1] in advancekeys:
             self.board.advance_one_move()
-        elif keycode[1] == 'left':
+        elif keycode[1] in retreatkeys:
             self.board.retreat_one_move()
         
 
