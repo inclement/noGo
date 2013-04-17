@@ -37,6 +37,17 @@ def get_markers_from_node(node):
         return {'markers': markers}
     else:
         return {}
+
+def get_setupstones_from_node(node):
+    black, white, empty = node.get_setup_stones()
+    stones = []
+    for stone in black:
+        stones.append((stone,'b'))
+    for stone in white:
+        stones.append((stone,'w'))
+    for stone in empty:
+        stones.append((stone,'e'))
+    return stones
         
 
 def apply_node_to_board(board, node):
@@ -46,31 +57,39 @@ def apply_node_to_board(board, node):
     empty_stones = []
     add_playmarker = None
 
+    current_occupied_points = board.list_occupied_points()
+
     # First, find and deal with setup stones
     if node.has_setup_stones():
-        setup_stones = node.get_setup_stones()
-        # Add setup stones to board!
+        setup_stones = get_setupstones_from_node(node)
+        if len(setup_stones) > 0:
+            for stone in setup_stones:
+                coords,col = stone
+                if col in ['b','w']:
+                    board[coords[0]][coords[1]] = col
+                elif col == 'e':
+                    board[coords[0]][coords[1]] = None
+            
 
     # Now deal with the actual new move, if any
 
     new_move_colour, new_move_point = node.get_move()
-    current_occupied_points = board.list_occupied_points()
     if new_move_point is not None:
         try:
             board.play(new_move_point[0],new_move_point[1],new_move_colour)
+            add_playmarker = new_move_point
         except ValueError:
             print 'SGF played existing point'
-        new_occupied_points = board.list_occupied_points()
-        if len(new_occupied_points) == len(current_occupied_points) + 1:
-            add_stones.append((new_move_point, new_move_colour))
-        else:
-            for point in new_occupied_points:
-                if point not in current_occupied_points:
-                    add_stones.append((point[1],point[0]))
-            for point in current_occupied_points:
-                if point not in new_occupied_points:
-                    remove_stones.append((point[1],point[0]))
-        add_playmarker = new_move_point
+    new_occupied_points = board.list_occupied_points()
+    if len(new_occupied_points) == len(current_occupied_points) + 1:
+        add_stones.append((new_move_point, new_move_colour))
+    else:
+        for point in new_occupied_points:
+            if point not in current_occupied_points:
+                add_stones.append((point[1],point[0]))
+        for point in current_occupied_points:
+            if point not in new_occupied_points:
+                remove_stones.append((point[1],point[0]))
 
 
     instructions = {}
@@ -85,6 +104,8 @@ def apply_node_to_board(board, node):
 
     node_markers = get_markers_from_node(node)
     instructions.update(node_markers)
+
+    #instructions.update(setup_stones)
 
     return (board, instructions)
 
@@ -140,7 +161,7 @@ class AbstractBoard(object):
 
     def load_sgf_from_text(self, sgftext):
         self.game = sgf.Sgf_game.from_string(sgftext)
-        self.reset_posiiton()
+        self.reset_position()
 
     def set_sgf(self,sgf):
         self.game = sgf

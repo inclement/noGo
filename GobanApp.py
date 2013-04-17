@@ -501,7 +501,7 @@ class GobanApp(App):
         if sgfn[-3:] == 'sgf':
             abstractboard.load_sgf_from_file(sgfn)
         else:
-            abstractboard.load_sgf_from_file('/home/asandy/noGo/testsgf.sgf')
+            abstractboard.load_sgf_from_file('./testsgf.sgf')
 
 
         
