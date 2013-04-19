@@ -139,7 +139,7 @@
         Widget:
             canvas:
                 Color:
-                    rgba: (1,1,1,0.5)
+                    rgba: (1,1,1,0.2)
                 Ellipse:
                     pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
                     size: (0.9*self.height,0.9*self.height)
@@ -166,7 +166,7 @@
             size: self.parent.height, self.parent.height
             canvas:
                 Color:
-                    rgba: (1,1,1,0.5)
+                    rgba: (1,1,1,0.8)
                 Ellipse:
                     pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
                     size: (0.9*self.height,0.9*self.height)
@@ -191,7 +191,8 @@
 <CommentBox>:
     textbox: thetb
     do_scroll_x: False
-    scroll_distance: 10
+    scroll_distance: 5
+    scroll_timeout: 250
 
     GridLayout:
         cols: 1
