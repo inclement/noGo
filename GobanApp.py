@@ -6,9 +6,12 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
-from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty
+from kivy.uix.spinner import Spinner
+from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
+
+from kivy.input.postproc import doubletap
 
 from random import random as r
 from random import choice
@@ -23,6 +26,10 @@ import sys
 # from kivy.config import Config
 # Config.set('graphics', 'width', '400')
 # Config.set('graphics', 'height', '600')
+
+navigate_text = '[b]Navigation mode[/b] selected. Tap on the right side of the board to advance the game, or the left to move back.'
+edit_text = '[b]Edit mode[/b] selected.'
+score_text = '[b]Score mode[/b] selected. Tap on groups to toggle them as dead/alive.'
 
 # Keybindings
 advancekeys = ['right','l']
@@ -78,6 +85,7 @@ class PlayerDetails(BoxLayout):
         print 'marker sizes:',self.wtoplaycolour,self.btoplaycolour
 
 class CommentBox(ScrollView):
+    pre_text = StringProperty('')
     text = StringProperty('')
     pass
 
@@ -133,11 +141,17 @@ starposs = {19:[(3,3),(3,9),(3,15),(9,3),(9,9),(9,15),(15,3),(15,9),(15,15)]}
             
 class GuiBoard(Widget):
     gridsize = NumericProperty(19) # Board size
-    mode = StringProperty('fullscreen') # How to scale the board
+    navmode = StringProperty('Navigate') # How to scale the board
     abstractboard = ObjectProperty(None,allownone=True) # Object to query for where to play moves
     uielements = DictProperty({})
 
     variations_exist = BooleanProperty(False)
+
+    # Board flipping
+    flip_horiz = BooleanProperty(False)
+    flip_vert = BooleanProperty(False)
+    flip_forwardslash = BooleanProperty(True)
+    flip_backslash = BooleanProperty(False)
 
     # Transient widgets
     playmarker = ObjectProperty(None,allownone=True) # Circle marking last played move
@@ -154,6 +168,22 @@ class GuiBoard(Widget):
     gridlines = ListProperty([])
 
     gobanpos = ListProperty((100,100))
+
+
+    def set_navmode(self,spinner,mode):
+        self.navmode = mode
+        if self.uielements.has_key('commentbox'):
+            for cb in self.uielements['commentbox']:
+                if mode == 'Navigate':
+                    cb.pre_text = navigate_text + '\n-----\n'
+                    cb.scroll_y = 1
+                elif mode == 'Edit':
+                    cb.pre_text = edit_text + '\n-----\n'
+                    cb.scroll_y = 1
+                elif mode == 'Score':
+                    cb.pre_text = score_text + '\n-----\n'
+                    cb.scroll_y = 1
+
 
     def clear_transient_widgets(self):
         self.remove_playmarker()
@@ -260,6 +290,18 @@ class GuiBoard(Widget):
 
     def coord_to_pos(self, coord):
         gridspacing = self.gridspacing
+        realcoord = [coord[0],coord[1]]
+        if self.flip_horiz:
+            realcoord[0] = self.game.size - 1 - realcoord[0]
+        if self.flip_vert:
+            realcoord[1] = self.game.size - 1 - realcoord[1]
+        if self.flip_forwardslash:
+            realcoord = realcoord[::-1]
+        if self.flip_backslash:
+            realcoord = realcoord[self.game.size - 1 - realcoord[0],self.game.size - 1 - realcoord[1]][::-1]
+
+        coord = realcoord
+        
         coord = (coord[0]-0.5,coord[1]-0.5)
         return (self.gobanpos[0] + self.boardindent[0] + coord[0]*gridspacing, self.gobanpos[1] + self.boardindent[1] + coord[1]*gridspacing)
 
@@ -415,6 +457,7 @@ class GuiBoard(Widget):
                     element.background_color = [1,0,0,1]
                     element.text = 'Next var\n  (1 / 1)'
                 elif elementtype == 'commentbox':
+                    element.pre_text = ''
                     element.text = ''
                 elif elementtype == 'playerdetails':
                     element.set_to_play(None)
@@ -519,7 +562,7 @@ class GuiBoard(Widget):
 
 
 class BoardContainer(Widget):
-    board = ObjectProperty(None)
+    board = ObjectProperty(None,allownone=True)
     boardsize = ListProperty([10,10])
     boardpos = ListProperty([10,10])
 
@@ -532,6 +575,14 @@ class BoardContainer(Widget):
     def on_size(self,*args,**kwargs):
         self.set_boardsize()
         self.set_boardpos()
+
+    def on_touch_down(self,touch):
+        if self.board.navmode == 'Navigate':
+            if self.x < touch.x < self.x + self.width and self.y < touch.y < self.y + self.height:
+                if touch.x > self.x + 0.5*self.width:
+                    self.board.advance_one_move()
+                else:
+                    self.board.retreat_one_move()
 
     def _keyboard_closed(self):
         print 'My keyboard has been closed!'
@@ -591,6 +642,7 @@ class GobanApp(App):
 
         boardcontainer.board.abstractboard = abstractboard
 
+        btn_opensgf = Button(text='Open SGF')
         btn_start = Button(text='Start')
         btn_end = Button(text='End')
         btn_nextvar = Button(text='Next var\n  (1 / 1)')
@@ -600,8 +652,6 @@ class GobanApp(App):
         btn_nextvar.background_color = (1,0,0,1)
         boardcontainer.board.uielements['varbutton'] = [btn_nextvar]
         
-        # btn_nextmove.bind(on_press=partial(boardcontainer.board.add_random_stone))
-        # btn_prevmove.bind(on_press=partial(boardcontainer.board.remove_random_stone))
         btn_start.bind(on_press=partial(boardcontainer.board.jump_to_start))
         btn_end.bind(on_press=partial(boardcontainer.board.jump_to_end))
         btn_nextvar.bind(on_press=partial(boardcontainer.board.next_variation))
@@ -609,20 +659,28 @@ class GobanApp(App):
         btn_prevmove.bind(on_press=partial(boardcontainer.board.retreat_one_move))
 
         navigation_layout = BoxLayout(orientation='horizontal',size_hint=(1.,0.09))
-        navigation_layout.add_widget(btn_start)
-        navigation_layout.add_widget(btn_end)
-        navigation_layout.add_widget(btn_nextvar)
+        # navigation_layout.add_widget(btn_start)
+        navigation_layout.add_widget(btn_opensgf)
         navigation_layout.add_widget(btn_prevmove)
+        navigation_layout.add_widget(btn_nextvar)
         navigation_layout.add_widget(btn_nextmove)
+        navigation_layout.add_widget(btn_end)
 
         comment_box = CommentBox(text='',size_hint=(1.,0.18))
         boardcontainer.board.uielements['commentbox'] = [comment_box]
 
-        player_details = PlayerDetails(size_hint=(1.,0.08))
+        player_details = PlayerDetails(size_hint=(0.75,1.0))
         boardcontainer.board.uielements['playerdetails'] = [player_details]
+        mode_spinner = Spinner(text='Navigate',values=('Navigate', 'Edit', 'Score'),size_hint=(0.25,1.0))
+        mode_spinner.bind(text=boardcontainer.board.set_navmode)
+
+        top_layout = BoxLayout(orientation='horizontal',size_hint=(1.,0.08))
+        top_layout.add_widget(player_details)
+        top_layout.add_widget(mode_spinner)
+        
 
         layout = BoxLayout(orientation='vertical')
-        layout.add_widget(player_details)
+        layout.add_widget(top_layout)
         layout.add_widget(boardcontainer)
         layout.add_widget(comment_box)
         layout.add_widget(navigation_layout)
@@ -631,7 +689,7 @@ class GobanApp(App):
         if sgfn[-3:] == 'sgf':
             abstractboard.load_sgf_from_file(sgfn)
         else:
-            abstractboard.load_sgf_from_file('./ff4_ex.sgf')
+            abstractboard.load_sgf_from_file('./67honinbot1.sgf')
         boardcontainer.board.reset_abstractboard()
         boardcontainer.board.get_player_details()
 

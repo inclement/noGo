@@ -198,6 +198,8 @@
 
         
 
+        
+
 <CommentBox>:
     textbox: thetb
     do_scroll_x: False
@@ -213,7 +215,7 @@
         Label:
                 
             id: thetb
-            text: self.parent.parent.text
+            text: self.parent.parent.pre_text + self.parent.parent.text
             markup: True
             text_size: self.width-10,None
             padding: 10,10
