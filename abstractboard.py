@@ -224,6 +224,7 @@ class AbstractBoard(object):
         self.game = sgf.Sgf_game.from_string(sgfdata)
         self.reset_position()
 
+
     def load_sgf_from_text(self, sgftext):
         self.game = sgf.Sgf_game.from_string(sgftext)
         self.reset_position()
@@ -331,8 +332,8 @@ class AbstractBoard(object):
         self.boards[node] = board
 
     def get_player_names(self):
-        wname = self.game.get_player_name('W')
-        bname = self.game.get_player_name('B')
+        wname = self.game.get_player_name('w')
+        bname = self.game.get_player_name('b')
         if wname is not None:
             wname = ''.join(wname.splitlines())
         else:
