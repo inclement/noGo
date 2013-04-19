@@ -148,11 +148,16 @@
                 Ellipse:
                     pos: self.pos[0] + 0.1*self.width, self.pos[1] + 0.1*self.height
                     size: (0.8*self.height,0.8*self.height)
+                Color:
+                    rgba: self.parent.parent.wtoplaycolour
+                Ellipse:
+                    pos: self.pos[0] + 0.35*self.width, self.pos[1] + 0.35*self.height
+                    size: 0.3*self.width,0.3*self.height
             size: self.parent.height, self.parent.height
             size_hint: None, None
                 
         Label:
-            text: ''.join(('',self.parent.parent.wtext,''))
+            text: ''.join(('',self.parent.parent.wtext,' (',self.parent.parent.wrank,')'))
             font_size: 0.7*self.height
             markup: True
             text_size: self.width-20, self.height
@@ -175,10 +180,15 @@
                 Ellipse:
                     pos: self.pos[0] + 0.1*self.width, self.pos[1] + 0.1*self.height
                     size: (0.8*self.height,0.8*self.height)
+                Color:
+                    rgba: self.parent.parent.btoplaycolour
+                Ellipse:
+                    pos: self.pos[0] + 0.35*self.width, self.pos[1] + 0.35*self.height
+                    size: 0.3*self.width,0.3*self.height
             size: self.parent.height, self.parent.height
             size_hint: None, None
         Label:
-            text: ''.join(('',self.parent.parent.btext,''))
+            text: ''.join(('',self.parent.parent.btext,' (',self.parent.parent.brank,')'))
             font_size: 0.7*self.height
             markup: True
             text_size: self.width-20, self.height

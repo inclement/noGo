@@ -156,7 +156,24 @@ def get_nonstone_from_node(node):
     if len(comment) > 0:
         instructions['comment'] = comment
 
+    nextplayer = get_nextplayer_from_node(node)
+    if nextplayer is not None:
+        instructions['nextplayer'] = nextplayer
+
+
     return instructions
+
+def get_nextplayer_from_node(node):
+    if len(node) > 0:
+        nextnode = node[0]
+        props = nextnode.properties()
+        if 'W' in props:
+            return 'w'
+        elif 'B' in props:
+            return 'b'
+        else:
+            return None
+    return None
 
 def get_comment_from_node(node):
     props = node.properties()
@@ -236,7 +253,13 @@ class AbstractBoard(object):
     def reset_position(self):
         self.curnode = self.game.get_root()
         self.boards = {}
-        self.boards[self.curnode] = boards.Board(self.game.size)
+        board = boards.Board(self.game.size)
+        board, instructions = apply_node_to_board(board,self.curnode)
+        self.boards[self.curnode] = board
+        return instructions
+
+
+
 
     def advance_position(self,*args,**kwargs):
         curnode = self.curnode
@@ -344,4 +367,16 @@ class AbstractBoard(object):
             bname = 'Unknown'
         return (wname,bname)
 
+    def get_player_ranks(self):
+        wrank = self.game.root.find_property('WR')
+        brank = self.game.root.find_property('BR')
+        if wrank is not None:
+            wrank = ''.join(wrank.splitlines())
+        else:
+            wrank = ''
+        if brank is not None:
+            brank = ''.join(brank.splitlines())
+        else:
+            brank = ''
+        return (wrank,brank)
         

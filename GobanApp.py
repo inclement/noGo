@@ -60,8 +60,22 @@ def markercode_to_marker(markercode):
 
 class PlayerDetails(BoxLayout):
     wtext = StringProperty('W player')
+    wrank = StringProperty('')
     btext = StringProperty('B player')
-    pass
+    brank = StringProperty('')
+    wtoplaycolour = ListProperty([0,1,0,1])
+    btoplaycolour = ListProperty([0,1,0,1])
+    def set_to_play(self,player):
+        if player == 'w':
+            self.wtoplaycolour = [0,0.8,0,1]
+            self.btoplaycolour = [0,0.8,0,0]
+        elif player == 'b':
+            self.btoplaycolour = [0,0.8,0,1]
+            self.wtoplaycolour = [0,0.8,0,0]
+        else:
+            self.wtoplaycolour = [0,0.8,0,0]
+            self.btoplaycolour = [0,0.8,0,0]
+        print 'marker sizes:',self.wtoplaycolour,self.btoplaycolour
 
 class CommentBox(ScrollView):
     text = StringProperty('')
@@ -354,13 +368,22 @@ class GuiBoard(Widget):
                     cb.scroll_timeout = 0
                     cb.scroll_timeout = 55
 
+        if 'nextplayer' in instructions:
+            player = instructions['nextplayer']
+            if self.uielements.has_key('playerdetails'):
+                for pd in self.uielements['playerdetails']:
+                    pd.set_to_play(player)
+
     def get_player_details(self,*args,**kwargs):
         wname, bname = self.abstractboard.get_player_names()
+        wrank, brank = self.abstractboard.get_player_ranks()
         if self.uielements.has_key('playerdetails'):
             pds = self.uielements['playerdetails']
             for pd in pds:
                 pd.wtext = wname
+                pd.wrank = wrank
                 pd.btext = bname
+                pd.brank = brank
         
 
     def advance_one_move(self,*args,**kwargs):
@@ -389,6 +412,8 @@ class GuiBoard(Widget):
                     element.text = 'Next var\n  (1 / 1)'
                 elif elementtype == 'commentbox':
                     element.text = ''
+                elif elementtype == 'playerdetails':
+                    element.set_to_play(None)
 
     def add_stone(self,coord=(1,1),colour='black',*args,**kwargs):
         stonesize = self.stonesize
@@ -479,6 +504,16 @@ class GuiBoard(Widget):
         instructions = self.abstractboard.decrement_variation()
         self.follow_instructions(instructions)
 
+    # Syncing
+    def reset_abstractboard(self):
+        self.clear_transient_widgets()
+        self.reset_uielements()
+        self.clear_stones()
+        instructions = self.abstractboard.reset_position()
+        self.follow_instructions(instructions)
+        
+
+
 class BoardContainer(Widget):
     board = ObjectProperty(None)
     boardsize = ListProperty([10,10])
@@ -550,14 +585,6 @@ class GobanApp(App):
 
         abstractboard = AbstractBoard()
 
-        sgfn = sys.argv[-1]
-        if sgfn[-3:] == 'sgf':
-            abstractboard.load_sgf_from_file(sgfn)
-        else:
-            abstractboard.load_sgf_from_file('./ff4_ex.sgf')
-
-
-        
         boardcontainer.board.abstractboard = abstractboard
 
         btn_start = Button(text='Start')
@@ -589,13 +616,21 @@ class GobanApp(App):
 
         player_details = PlayerDetails(size_hint=(1.,0.08))
         boardcontainer.board.uielements['playerdetails'] = [player_details]
-        boardcontainer.board.get_player_details()
 
         layout = BoxLayout(orientation='vertical')
         layout.add_widget(player_details)
         layout.add_widget(boardcontainer)
         layout.add_widget(comment_box)
         layout.add_widget(navigation_layout)
+
+        sgfn = sys.argv[-1]
+        if sgfn[-3:] == 'sgf':
+            abstractboard.load_sgf_from_file(sgfn)
+        else:
+            abstractboard.load_sgf_from_file('./ff4_ex.sgf')
+        boardcontainer.board.reset_abstractboard()
+        boardcontainer.board.get_player_details()
+
         return layout
         #return boardcontainer
 
