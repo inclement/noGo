@@ -51,6 +51,11 @@ def get_setupstones_from_node(node):
     print 'setup stones returned:', stones
     return stones
         
+def check_variations_in_node(node):
+    if node.parent is None:
+        return (1,1)
+    else:
+        return (node.parent.index(node) + 1,len(node.parent))
 
 def apply_node_to_board(board, node):
     board = board.copy()
@@ -80,7 +85,6 @@ def apply_node_to_board(board, node):
     if new_move_point is not None:
         try:
             board.play(new_move_point[0],new_move_point[1],new_move_colour)
-            add_playmarker = new_move_point
         except ValueError:
             print 'SGF played existing point'
     new_occupied_points = board.list_occupied_points()
@@ -102,11 +106,9 @@ def apply_node_to_board(board, node):
         instructions['remove'] = remove_stones
     if len(empty_stones) > 0:
         instructions['empty'] = empty_stones
-    if add_playmarker is not None:
-        instructions['playmarker'] = add_playmarker
 
-    node_markers = get_markers_from_node(node)
-    instructions.update(node_markers)
+    nonstone_instructions = get_nonstone_from_node(node)
+    instructions.update(nonstone_instructions)
 
     #instructions.update(setup_stones)
 
@@ -135,6 +137,71 @@ def compare_boards(old, new):
 
     return instructions
 
+def get_nonstone_from_node(node):
+    instructions = {}
+    
+    node_markers = get_markers_from_node(node)
+    instructions.update(node_markers)
+
+    variations = check_variations_in_node(node)
+    if variations > 1:
+        instructions['variations'] = variations
+
+    new_move_colour, new_move_point = node.get_move()
+    if new_move_point is not None:
+        add_playmarker = new_move_point
+        instructions['playmarker'] = add_playmarker
+
+    comment = get_comment_from_node(node)
+    if len(comment) > 0:
+        instructions['comment'] = comment
+
+    return instructions
+
+def get_comment_from_node(node):
+    props = node.properties()
+    annotations = []
+    judgements = []
+    comment = ''
+    if 'N' in props:
+        annotations.append('Node name: [b]%s[/b]' % node.find_property('N'))
+    if 'DM' in props:
+        judgements.append('[b]even position[/b]')
+    if 'GB' in props:
+        judgements.append('[b]good for black[/b]')
+    if 'GW' in props:
+        judgements.append('[b]good for white[/b]')
+    if 'HO' in props:
+        judgements.append('[b]hotspot[/b]')
+    if 'UC' in props:
+        judgements.append('[b]unclear position[/b]')
+    if 'BM' in props:
+        judgements.append('[b]bad move[/b]')
+    if 'DO' in props:
+        judgements.append('[b]doubtful move[/b]')
+    if 'IT' in props:
+        judgements.append('[b]interesting move[/b]')
+    if 'TE' in props:
+        judgements.append('[b]tesuji[/b]')
+    if 'V' in props:
+        annotations.append('Value: %d' % node.find_property('V'))
+    if 'C' in props:
+        comment = node.find_property('C')
+    text = ''
+    if len(annotations) > 0:
+        text = '\n'.join(annotations)
+    if len(judgements) > 0:
+        text = ''.join((text,'SGF annotations: ',', '.join(judgements)))
+    if len(comment) > 0:
+        if len(text) > 0:
+            text = ''.join((text,'\n----------\n',comment))
+        else:
+            text = comment
+
+    return text
+    
+    
+    
     
 
 class AbstractBoard(object):
@@ -207,13 +274,8 @@ class AbstractBoard(object):
 
         instructions = compare_boards(curboard, newboard)
 
-        newmove = newnode.get_move()
-        if newmove[1] is not None:
-            instructions['playmarker'] = newmove[1]
-
-        markers = get_markers_from_node(newnode)
-        if len(markers) > 0:
-            instructions.update(markers)
+        nonstone_instructions = get_nonstone_from_node(newnode)
+        instructions.update(nonstone_instructions)
 
         return instructions
 
@@ -240,9 +302,8 @@ class AbstractBoard(object):
         self.curnode = node
         newboard = self.get_or_build_board(node)
         instructions = compare_boards(oldboard,newboard)
-        newmove = node.get_move()
-        if newmove[1] is not None:
-            instructions['playmarker'] = newmove[1]
+        nonstone_instructions = get_nonstone_from_node(node)
+        instructions.update(nonstone_instructions)
         return instructions
             
 
@@ -269,5 +330,17 @@ class AbstractBoard(object):
         board, instructions = apply_node_to_board(board, node)
         self.boards[node] = board
 
+    def get_player_names(self):
+        wname = self.game.get_player_name('W')
+        bname = self.game.get_player_name('B')
+        if wname is not None:
+            wname = ''.join(wname.splitlines())
+        else:
+            wname = 'Unknown'
+        if bname is not None:
+            bname = ''.join(bname.splitlines())
+        else:
+            bname = 'Unknown'
+        return (wname,bname)
 
         

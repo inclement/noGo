@@ -1,5 +1,10 @@
 #:kivy 1.6.0
 
+<ButtonTest>:
+    text: 'Next var'
+    background_colour: self.get_colour(self.board)
+
+
 <StarPoint>:
     canvas:
         Color:
@@ -125,3 +130,81 @@
         size: self.parent.boardsize
         pos: self.parent.boardpos
 
+<PlayerDetails>:
+    orientation: 'vertical'
+    spacing: 1
+    
+    BoxLayout:
+        orientation: 'horizontal'
+        Widget:
+            canvas:
+                Color:
+                    rgba: (1,1,1,0.5)
+                Ellipse:
+                    pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
+                    size: (0.9*self.height,0.9*self.height)
+                Color:
+                    rgb: (1,1,1)
+                Ellipse:
+                    pos: self.pos[0] + 0.1*self.width, self.pos[1] + 0.1*self.height
+                    size: (0.8*self.height,0.8*self.height)
+            size: self.parent.height, self.parent.height
+            size_hint: None, None
+                
+        Label:
+            text: ''.join(('W: ',self.parent.parent.wtext,''))
+            font_size: 0.7*self.height
+            markup: True
+            text_size: self.width-20, self.height
+            padding: 10,0
+            halign: 'left'
+            valign: 'middle'
+
+    BoxLayout:
+        orientation: 'horizontal'
+        Widget:
+            size: self.parent.height, self.parent.height
+            canvas:
+                Color:
+                    rgba: (1,1,1,0.5)
+                Ellipse:
+                    pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
+                    size: (0.9*self.height,0.9*self.height)
+                Color:
+                    rgb: (0,0,0)
+                Ellipse:
+                    pos: self.pos[0] + 0.1*self.width, self.pos[1] + 0.1*self.height
+                    size: (0.8*self.height,0.8*self.height)
+            size: self.parent.height, self.parent.height
+            size_hint: None, None
+        Label:
+            text: ''.join(('B: ',self.parent.parent.btext,''))
+            font_size: 0.7*self.height
+            markup: True
+            text_size: self.width-20, self.height
+            padding: 10,0
+            halign: 'left'
+            valign: 'middle'
+
+        
+
+<CommentBox>:
+    textbox: thetb
+    do_scroll_x: False
+    scroll_distance: 10
+
+    GridLayout:
+        cols: 1
+        spacing: 10
+        size_hint_y: None
+        size: self.parent.textbox.texture_size
+
+        Label:
+                
+            id: thetb
+            text: self.parent.parent.text
+            markup: True
+            text_size: self.width-10,None
+            padding: 10,10
+            size: self.parent.width,self.texture_size[1]
+            

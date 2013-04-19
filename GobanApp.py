@@ -4,6 +4,8 @@ from kivy.graphics import Color, Rectangle, Ellipse
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.scrollview import ScrollView
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
@@ -23,10 +25,10 @@ import sys
 # Config.set('graphics', 'height', '600')
 
 # Keybindings
-advancekeys = ['right','j','l']
-retreatkeys = ['left','k','h']
-nextvariationkeys = ['up']
-prevvariationkeys = ['down']
+advancekeys = ['right','l']
+retreatkeys = ['left','h']
+nextvariationkeys = ['up','k']
+prevvariationkeys = ['down','j']
 
 blacknames = ['black','b','B','Black']
 whitenames = ['white','w','W','White']
@@ -55,6 +57,15 @@ def markercode_to_marker(markercode):
     elif markercode in textcodes:
         return 'text'
     return None
+
+class PlayerDetails(BoxLayout):
+    wtext = StringProperty('W player')
+    btext = StringProperty('B player')
+    pass
+
+class CommentBox(ScrollView):
+    text = StringProperty('')
+    pass
 
 class StarPoint(Widget):
     pass
@@ -110,6 +121,7 @@ class GuiBoard(Widget):
     gridsize = NumericProperty(19) # Board size
     mode = StringProperty('fullscreen') # How to scale the board
     abstractboard = ObjectProperty(None,allownone=True) # Object to query for where to play moves
+    uielements = DictProperty({})
 
     variations_exist = BooleanProperty(False)
 
@@ -292,6 +304,7 @@ class GuiBoard(Widget):
         print 'instructions are', instructions
 
         self.clear_transient_widgets()
+        self.reset_uielements()
         
         if 'remove' in instructions:
             remove_stones = instructions['remove']
@@ -325,7 +338,30 @@ class GuiBoard(Widget):
                     self.add_marker(marker[0],'cross')
                 elif marker[1] == 'LB':
                     self.add_marker(marker[0],'text',marker[2:])
-            
+        if 'variations' in instructions:
+            curvar, varnum = instructions['variations']
+            if varnum > 1:
+                if self.uielements.has_key('varbutton'):
+                    for button in self.uielements['varbutton']:
+                        button.background_color = [0,1,0,1]
+                        button.text = 'Next var\n  (%d / %d)' % (curvar, varnum)
+        if 'comment' in instructions:
+            commenttext = instructions['comment']
+            if self.uielements.has_key('commentbox'):
+                for cb in self.uielements['commentbox']:
+                    cb.text = commenttext
+                    cb.scroll_y = 1
+                    cb.scroll_timeout = 0
+                    cb.scroll_timeout = 55
+
+    def get_player_details(self,*args,**kwargs):
+        wname, bname = self.abstractboard.get_player_names()
+        if self.uielements.has_key('playerdetails'):
+            pds = self.uielements['playerdetails']
+            for pd in pds:
+                pd.wtext = wname
+                pd.btext = bname
+        
 
     def advance_one_move(self,*args,**kwargs):
         instructions = self.abstractboard.advance_position()
@@ -344,7 +380,16 @@ class GuiBoard(Widget):
         instructions = self.abstractboard.jump_to_node(self.abstractboard.game.get_last_node())
         self.follow_instructions(instructions)
         
-        
+    def reset_uielements(self,*args,**kwargs):
+        for elementtype in self.uielements:
+            elements = self.uielements[elementtype]
+            for element in elements:
+                if elementtype == 'varbutton':
+                    element.background_color = [1,0,0,1]
+                    element.text = 'Next var\n  (1 / 1)'
+                elif elementtype == 'commentbox':
+                    element.text = ''
+
     def add_stone(self,coord=(1,1),colour='black',*args,**kwargs):
         stonesize = self.stonesize
         stone = Stone(size=stonesize, pos=self.coord_to_pos(coord))
@@ -501,9 +546,7 @@ class BoardContainer(Widget):
 class GobanApp(App):
 
     def build(self):
-
-        
-        boardcontainer = BoardContainer(size_hint=(1.,0.93))
+        boardcontainer = BoardContainer(size_hint=(1.,0.65))
 
         abstractboard = AbstractBoard()
 
@@ -511,7 +554,7 @@ class GobanApp(App):
         if sgfn[-3:] == 'sgf':
             abstractboard.load_sgf_from_file(sgfn)
         else:
-            abstractboard.load_sgf_from_file('./testsgf.sgf')
+            abstractboard.load_sgf_from_file('./ff4_ex.sgf')
 
 
         
@@ -519,11 +562,12 @@ class GobanApp(App):
 
         btn_start = Button(text='Start')
         btn_end = Button(text='End')
-        btn_nextvar = Button(text='Next var')
+        btn_nextvar = Button(text='Next var\n  (1 / 1)')
         btn_nextmove = Button(text='Next')
         btn_prevmove = Button(text='Prev')
 
         btn_nextvar.background_color = (1,0,0,1)
+        boardcontainer.board.uielements['varbutton'] = [btn_nextvar]
         
         # btn_nextmove.bind(on_press=partial(boardcontainer.board.add_random_stone))
         # btn_prevmove.bind(on_press=partial(boardcontainer.board.remove_random_stone))
@@ -533,15 +577,24 @@ class GobanApp(App):
         btn_nextmove.bind(on_press=partial(boardcontainer.board.advance_one_move))
         btn_prevmove.bind(on_press=partial(boardcontainer.board.retreat_one_move))
 
-        navigation_layout = BoxLayout(orientation='horizontal',size_hint=(1.,0.07))
+        navigation_layout = BoxLayout(orientation='horizontal',size_hint=(1.,0.09))
         navigation_layout.add_widget(btn_start)
         navigation_layout.add_widget(btn_end)
         navigation_layout.add_widget(btn_nextvar)
         navigation_layout.add_widget(btn_prevmove)
         navigation_layout.add_widget(btn_nextmove)
 
+        comment_box = CommentBox(text='',size_hint=(1.,0.18))
+        boardcontainer.board.uielements['commentbox'] = [comment_box]
+
+        player_details = PlayerDetails(size_hint=(1.,0.08))
+        boardcontainer.board.uielements['playerdetails'] = [player_details]
+        boardcontainer.board.get_player_details()
+
         layout = BoxLayout(orientation='vertical')
+        layout.add_widget(player_details)
         layout.add_widget(boardcontainer)
+        layout.add_widget(comment_box)
         layout.add_widget(navigation_layout)
         return layout
         #return boardcontainer
@@ -550,3 +603,4 @@ class GobanApp(App):
             
 if __name__ == '__main__':
     GobanApp().run()
+
