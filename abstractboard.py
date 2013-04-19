@@ -164,6 +164,8 @@ def get_nonstone_from_node(node):
     return instructions
 
 def get_nextplayer_from_node(node):
+    if 'PL' in node.properties():
+        return node.find_property('PL')
     if len(node) > 0:
         nextnode = node[0]
         props = nextnode.properties()
@@ -233,6 +235,7 @@ class AbstractBoard(object):
         self.boards = {}
         self.curnode = game.get_root()
         self.boards[self.curnode] = boards.Board(self.game.size)
+        self.varcache = {}
 
     def load_sgf_from_file(self,filen):
         fileh = open(filen,'r')
@@ -253,6 +256,7 @@ class AbstractBoard(object):
     def reset_position(self):
         self.curnode = self.game.get_root()
         self.boards = {}
+        self.varcache = {}
         board = boards.Board(self.game.size)
         board, instructions = apply_node_to_board(board,self.curnode)
         self.boards[self.curnode] = board
@@ -265,7 +269,10 @@ class AbstractBoard(object):
         curnode = self.curnode
         curboard = self.boards[curnode]
         if len(curnode) > 0:
-            newnode = self.curnode[0]
+            if self.varcache.has_key(curnode):
+                newnode = self.curnode[self.varcache[curnode]]
+            else:
+                newnode = self.curnode[0]
         else:
             return {}
 
@@ -306,7 +313,9 @@ class AbstractBoard(object):
     def increment_variation(self):
         if self.curnode.parent is not None:
             parentnode = self.curnode.parent
-            newnode = parentnode[(parentnode.index(self.curnode)+1) % len(parentnode)]
+            newind = (parentnode.index(self.curnode)+1) % len(parentnode)
+            newnode = parentnode[newind]
+            self.varcache[parentnode] = newind
             return self.jump_to_node(newnode)
         else:
             return {}
@@ -314,7 +323,9 @@ class AbstractBoard(object):
     def decrement_variation(self):
         if self.curnode.parent is not None:
             parentnode = self.curnode.parent
-            newnode = parentnode[(parentnode.index(self.curnode)-1) % len(parentnode)]
+            newind = (parentnode.index(self.curnode)-1) % len(parentnode)
+            newnode = parentnode[newind]
+            self.varcache[parentnode] = newind
             return self.jump_to_node(newnode)
         else:
             return {}
@@ -368,14 +379,20 @@ class AbstractBoard(object):
         return (wname,bname)
 
     def get_player_ranks(self):
-        wrank = self.game.root.find_property('WR')
-        brank = self.game.root.find_property('BR')
+        try:
+            wrank = self.game.root.find_property('WR')
+        except KeyError:
+            wrank = None
+        try:
+            brank = self.game.root.find_property('BR')
+        except KeyError:
+            brank = None
         if wrank is not None:
-            wrank = ''.join(wrank.splitlines())
+            wrank = '(' + ''.join(wrank.splitlines()) + ')'
         else:
             wrank = ''
         if brank is not None:
-            brank = ''.join(brank.splitlines())
+            brank = '(' + ''.join(brank.splitlines()) + ')'
         else:
             brank = ''
         return (wrank,brank)

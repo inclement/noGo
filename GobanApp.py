@@ -367,6 +367,10 @@ class GuiBoard(Widget):
                     cb.scroll_y = 1
                     cb.scroll_timeout = 0
                     cb.scroll_timeout = 55
+        else:
+            if self.uielements.has_key('commentbox'):
+                for cb in self.uielements['commentbox']:
+                    cb.text = '[color=444444]Long press to add comment.[/color]'
 
         if 'nextplayer' in instructions:
             player = instructions['nextplayer']

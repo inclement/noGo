@@ -139,7 +139,7 @@
         Widget:
             canvas:
                 Color:
-                    rgba: (1,1,1,0.2)
+                    rgba: (0.2,0.2,0.2,1)
                 Ellipse:
                     pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
                     size: (0.9*self.height,0.9*self.height)
@@ -157,7 +157,7 @@
             size_hint: None, None
                 
         Label:
-            text: ''.join(('',self.parent.parent.wtext,' (',self.parent.parent.wrank,')'))
+            text: ''.join(('',self.parent.parent.wtext,' ',self.parent.parent.wrank,''))
             font_size: 0.7*self.height
             markup: True
             text_size: self.width-20, self.height
@@ -171,7 +171,7 @@
             size: self.parent.height, self.parent.height
             canvas:
                 Color:
-                    rgba: (1,1,1,0.8)
+                    rgba: (0.8,0.8,0.8,1)
                 Ellipse:
                     pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
                     size: (0.9*self.height,0.9*self.height)
@@ -188,7 +188,7 @@
             size: self.parent.height, self.parent.height
             size_hint: None, None
         Label:
-            text: ''.join(('',self.parent.parent.btext,' (',self.parent.parent.brank,')'))
+            text: ''.join(('',self.parent.parent.btext,' ',self.parent.parent.brank,''))
             font_size: 0.7*self.height
             markup: True
             text_size: self.width-20, self.height
