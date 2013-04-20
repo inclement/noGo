@@ -3,10 +3,12 @@ from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle, Ellipse
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
+from kivy.uix.popup import Popup
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
@@ -64,6 +66,10 @@ def markercode_to_marker(markercode):
     elif markercode in textcodes:
         return 'text'
     return None
+
+class OpenSgfDialog(FloatLayout):
+    board = ObjectProperty(None)
+    popup = ObjectProperty(None)
 
 class PlayerDetails(BoxLayout):
     wtext = StringProperty('W player')
@@ -169,6 +175,16 @@ class GuiBoard(Widget):
 
     gobanpos = ListProperty((100,100))
 
+
+    def open_sgf_dialog(self,*args,**kwargs):
+        popup = Popup(content=OpenSgfDialog(board=self),title='Open SGF',size_hint=(0.85,0.85))
+        popup.content.popup = popup
+        popup.open()
+
+    def load_sgf_from_file(self,path,filen):
+        print 'asked to load from',path,filen
+        self.abstractboard.load_sgf_from_file(filen[0])
+        self.reset_abstractboard()
 
     def set_navmode(self,spinner,mode):
         self.navmode = mode
@@ -557,6 +573,7 @@ class GuiBoard(Widget):
         self.reset_uielements()
         self.clear_stones()
         instructions = self.abstractboard.reset_position()
+        self.get_player_details()
         self.follow_instructions(instructions)
         
 
@@ -652,6 +669,7 @@ class GobanApp(App):
         btn_nextvar.background_color = (1,0,0,1)
         boardcontainer.board.uielements['varbutton'] = [btn_nextvar]
         
+        btn_opensgf.bind(on_release=partial(boardcontainer.board.open_sgf_dialog))
         btn_start.bind(on_press=partial(boardcontainer.board.jump_to_start))
         btn_end.bind(on_press=partial(boardcontainer.board.jump_to_end))
         btn_nextvar.bind(on_press=partial(boardcontainer.board.next_variation))

@@ -238,6 +238,7 @@ class AbstractBoard(object):
         self.varcache = {}
 
     def load_sgf_from_file(self,filen):
+        print 'abstractboard asked to load sgf from',str(filen)
         fileh = open(filen,'r')
         sgfdata = fileh.read()
         fileh.close()

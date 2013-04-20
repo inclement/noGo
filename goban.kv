@@ -1,5 +1,25 @@
 #:kivy 1.6.0
 
+<OpenSGFDialog>:
+    BoxLayout:
+        size: self.parent.size
+        pos: self.parent.pos
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+            filters: ['*.sgf']
+            path: '/home/asandy/noGo'
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: self.parent.parent.parent.popup.dismiss()
+            Button:
+                text: "Load"
+                on_press: self.parent.parent.parent.board.load_sgf_from_file(filechooser.path,filechooser.selection)
+                on_release: self.parent.parent.parent.popup.dismiss()
+
 <ButtonTest>:
     text: 'Next var'
     background_colour: self.get_colour(self.board)
