@@ -9,6 +9,8 @@ from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
 from kivy.uix.popup import Popup
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import *
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
@@ -68,7 +70,11 @@ def markercode_to_marker(markercode):
         return 'text'
     return None
 
+class HomeScreen(BoxLayout):
+    managedby = ObjectProperty(None,allownone=True)
+
 class PhoneBoardView(BoxLayout):
+    manager = ObjectProperty(None)
     boardcontainer = ObjectProperty(None)
     board = ObjectProperty(None)
 
@@ -94,7 +100,6 @@ class PlayerDetails(BoxLayout):
         else:
             self.wtoplaycolour = [0,0.8,0,0]
             self.btoplaycolour = [0,0.8,0,0]
-        print 'marker sizes:',self.wtoplaycolour,self.btoplaycolour
 
 class CommentBox(ScrollView):
     pre_text = StringProperty('')
@@ -163,6 +168,10 @@ class GuiBoard(Widget):
 
     wname = StringProperty('')
     wrank = StringProperty('')
+    bname = StringProperty('')
+    brank = StringProperty('')
+    next_to_play = StringProperty('e')
+
 
     comment_pre_text = StringProperty('')
     comment_text = StringProperty('')
@@ -205,20 +214,14 @@ class GuiBoard(Widget):
 
     def set_navmode(self,spinner,mode):
         self.navmode = mode
-        if self.uielements.has_key('commentbox'):
-            for cb in self.uielements['commentbox']:
-                if mode == 'Navigate':
-                    cb.pre_text = navigate_text + '\n-----\n'
-                    cb.scroll_y = 1
-                elif mode == 'Edit':
-                    cb.pre_text = edit_text + '\n-----\n'
-                    cb.scroll_y = 1
-                elif mode == 'Score':
-                    cb.pre_text = score_text + '\n-----\n'
-                    cb.scroll_y = 1
-                elif mode == 'Record':
-                    cb.pre_text = record_text + '\n-----\n'
-                    cb.scroll_y = 1
+        if mode == 'Navigate':
+            self.comment_pre_text = navigate_text + '\n-----\n'
+        elif mode == 'Edit':
+            self.comment_pre_text = edit_text + '\n-----\n'
+        elif mode == 'Score':
+            self.comment_pre_text = score_text + '\n-----\n'
+        elif mode == 'Record':
+            self.comment_pre_text = record_text + '\n-----\n'
 
 
     def clear_transient_widgets(self):
@@ -410,25 +413,13 @@ class GuiBoard(Widget):
                         button.text = 'Next var\n  (%d / %d)' % (curvar, varnum)
         if 'comment' in instructions:
             commenttext = instructions['comment']
-            if self.uielements.has_key('commentbox'):
-                for cb in self.uielements['commentbox']:
-                    self.comment_text = commenttext
-                    print 'set self.comment_text to', commenttext
-                    cb.text = commenttext
-                    cb.scroll_y = 1
-                    cb.scroll_timeout = 0
-                    cb.scroll_timeout = 55
+            self.comment_text = commenttext
         else:
-            if self.uielements.has_key('commentbox'):
-                for cb in self.uielements['commentbox']:
-                    self.comment_text = '[color=444444]Long press to add comment.[/color]'
-                    cb.text = '[color=444444]Long press to add comment.[/color]'
+            self.comment_text = '[color=444444]Long press to add comment.[/color]'
 
         if 'nextplayer' in instructions:
             player = instructions['nextplayer']
-            if self.uielements.has_key('playerdetails'):
-                for pd in self.uielements['playerdetails']:
-                    pd.set_to_play(player)
+            self.next_to_play = player
 
     def get_player_details(self,*args,**kwargs):
         wname, bname = self.abstractboard.get_player_names()
@@ -437,13 +428,6 @@ class GuiBoard(Widget):
         self.wname = wname
         self.brank = brank
         self.bname = bname
-        if self.uielements.has_key('playerdetails'):
-            pds = self.uielements['playerdetails']
-            for pd in pds:
-                pd.wtext = wname
-                pd.wrank = wrank
-                pd.btext = bname
-                pd.brank = brank
         
 
     def advance_one_move(self,*args,**kwargs):
@@ -464,17 +448,17 @@ class GuiBoard(Widget):
         self.follow_instructions(instructions)
         
     def reset_uielements(self,*args,**kwargs):
+        self.comment_pre_text = ''
+        self.comment_text = ''
+
+        self.next_to_play = 'e'
+        
         for elementtype in self.uielements:
             elements = self.uielements[elementtype]
             for element in elements:
                 if elementtype == 'varbutton':
                     element.background_color = [1,0,0,1]
                     element.text = 'Next var\n  (1 / 1)'
-                elif elementtype == 'commentbox':
-                    element.pre_text = ''
-                    element.text = ''
-                elif elementtype == 'playerdetails':
-                    element.set_to_play(None)
 
     def add_stone(self,coord=(1,1),colour='black',*args,**kwargs):
         stonesize = self.stonesize
@@ -593,12 +577,16 @@ class BoardContainer(Widget):
         self.set_boardpos()
 
     def on_touch_down(self,touch):
-        if self.board.navmode == 'Navigate':
-            if self.x < touch.x < self.x + self.width and self.y < touch.y < self.y + self.height:
-                if touch.x > self.x + 0.5*self.width:
-                    self.board.advance_one_move()
-                else:
-                    self.board.retreat_one_move()
+        if self.collide_point(*touch.pos):
+            if self.board.navmode == 'Navigate':
+                    if touch.x > self.x + 0.5*self.width:
+                        self.board.advance_one_move()
+                    else:
+                        self.board.retreat_one_move()
+            # elif self.board.navmode in ['Edit','Record']:
+            #     self.add_
+
+            
 
     def _keyboard_closed(self):
         print 'My keyboard has been closed!'
@@ -652,68 +640,23 @@ class BoardContainer(Widget):
 class GobanApp(App):
 
     def build(self):
-        boardcontainer = BoardContainer(size_hint=(1.,0.65))
+        sm = ScreenManager(transition=SlideTransition(direction='left'))
 
-        abstractboard = AbstractBoard()
+        pbv = PhoneBoardView()
+        pbv.board.load_sgf_from_file('',['./67honinbot1.sgf'])
 
-        boardcontainer.board.abstractboard = abstractboard
+        bv = Screen(name="Board")
+        bv.add_widget(pbv)
+        hv = Screen(name="Home")
+        hv.add_widget(HomeScreen(managedby=sm))
 
-        btn_opensgf = Button(text='Open SGF')
-        btn_start = Button(text='Start')
-        btn_end = Button(text='End')
-        btn_nextvar = Button(text='Next var\n  (1 / 1)')
-        btn_nextmove = Button(text='Next')
-        btn_prevmove = Button(text='Prev')
+        pbv.managedby = sm
 
-        btn_nextvar.background_color = (1,0,0,1)
-        boardcontainer.board.uielements['varbutton'] = [btn_nextvar]
-        
-        btn_opensgf.bind(on_release=partial(boardcontainer.board.open_sgf_dialog))
-        btn_start.bind(on_press=partial(boardcontainer.board.jump_to_start))
-        btn_end.bind(on_press=partial(boardcontainer.board.jump_to_end))
-        btn_nextvar.bind(on_press=partial(boardcontainer.board.next_variation))
-        btn_nextmove.bind(on_press=partial(boardcontainer.board.advance_one_move))
-        btn_prevmove.bind(on_press=partial(boardcontainer.board.retreat_one_move))
+        sm.add_widget(hv)
+        sm.add_widget(bv)
 
-        navigation_layout = BoxLayout(orientation='horizontal',size_hint=(1.,0.09))
-        # navigation_layout.add_widget(btn_start)
-        navigation_layout.add_widget(btn_opensgf)
-        navigation_layout.add_widget(btn_prevmove)
-        navigation_layout.add_widget(btn_nextvar)
-        navigation_layout.add_widget(btn_nextmove)
-        navigation_layout.add_widget(btn_end)
-
-        comment_box = CommentBox(text='',size_hint=(1.,0.18))
-        boardcontainer.board.uielements['commentbox'] = [comment_box]
-
-        player_details = PlayerDetails(size_hint=(0.75,1.0))
-        boardcontainer.board.uielements['playerdetails'] = [player_details]
-        mode_spinner = Spinner(text='Navigate',values=('Navigate', 'Edit', 'Record', 'Score'),size_hint=(0.25,1.0))
-        mode_spinner.bind(text=boardcontainer.board.set_navmode)
-
-        top_layout = BoxLayout(orientation='horizontal',size_hint=(1.,0.08))
-        top_layout.add_widget(player_details)
-        top_layout.add_widget(mode_spinner)
-        
-
-        layout = BoxLayout(orientation='vertical')
-        layout.add_widget(top_layout)
-        layout.add_widget(boardcontainer)
-        layout.add_widget(comment_box)
-        layout.add_widget(navigation_layout)
-
-        sgfn = sys.argv[-1]
-        if sgfn[-3:] == 'sgf':
-            abstractboard.load_sgf_from_file(sgfn)
-        else:
-            abstractboard.load_sgf_from_file('./67honinbot1.sgf')
-        boardcontainer.board.reset_abstractboard()
-        boardcontainer.board.get_player_details()
-
-        test = PhoneBoardView()
-        test.board.load_sgf_from_file('',['./67honinbot1.sgf'])
-
-        return test
+        return sm
+        # return pbv
         #return layout
         #return boardcontainer
 

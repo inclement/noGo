@@ -1,5 +1,24 @@
 #:kivy 1.6.0
 
+<HomeScreen>:
+    id: homeroot
+    orientation: 'vertical'
+
+    Image:
+        size_hint: ((1.,0.2))
+        mipmap: True
+        source: 'logo-1.png'
+
+    GridLayout:
+        cols: 2
+        Button:
+            text: 'Go to board'
+            on_press: homeroot.managedby.current = 'Board'
+        Button:
+            text: 'Also go to board'
+            on_press: homeroot.managedby.current = 'Board'
+        
+
 <PhoneBoardView>:
     boardcontainer: bc
     board: bc.board
@@ -10,10 +29,23 @@
         orientation: 'horizontal'
         size_hint: (1.,0.08)
 
+        Button:
+            size_hint: (0.2,1.0)
+            text: 'Home'
+            on_press: self.parent.parent.managedby.current = 'Home'
+            
+
         PlayerDetails:
             id: pd
             board: bc.board
             size_hint: (0.75,1.0)
+
+            wtext: bc.board.wname
+            wrank: bc.board.wrank
+            btext: bc.board.bname
+            brank: bc.board.brank
+            next_to_play: bc.board.next_to_play
+            on_next_to_play: self.set_to_play(self.next_to_play)
 
         Spinner:
             text: 'Navigate'
@@ -25,11 +57,11 @@
         id: bc
         size_hint: (1.,0.65)
 
-        uielements: {'playerdetails': [pd],'varbutton': [btn_nextvar]}
+        uielements: {'varbutton': [btn_nextvar]}
 
     CommentBox:
         id: thecb
-        text: bc.board.comment_pre_text + bc.board.comment_text + 'yay'
+        text: bc.board.comment_pre_text + bc.board.comment_text
         size_hint: (1.0,0.18)
 
     BoxLayout:
@@ -299,6 +331,8 @@
     do_scroll_x: False
     scroll_distance: 5
     scroll_timeout: 250
+
+    on_text: self.scroll_y = 1; self.scroll_timeout=0; self.scroll_timeout = 55
 
     GridLayout:
         cols: 1
