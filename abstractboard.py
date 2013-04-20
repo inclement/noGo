@@ -238,11 +238,14 @@ class AbstractBoard(object):
         self.varcache = {}
 
     def load_sgf_from_file(self,filen):
-        print 'abstractboard asked to load sgf from',str(filen)
+        print 'asked to load from',filen
         fileh = open(filen,'r')
         sgfdata = fileh.read()
         fileh.close()
-        self.game = sgf.Sgf_game.from_string(sgfdata)
+        try:
+            self.game = sgf.Sgf_game.from_string(sgfdata)
+        except ValueError:
+            self.game = sgf.Sgf_game(19)
         self.reset_position()
 
 

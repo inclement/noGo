@@ -1,5 +1,69 @@
 #:kivy 1.6.0
 
+<PhoneBoardView>:
+    boardcontainer: bc
+    board: bc.board
+
+    orientation: 'vertical'
+
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint: (1.,0.08)
+
+        PlayerDetails:
+            id: pd
+            board: bc.board
+            size_hint: (0.75,1.0)
+
+        Spinner:
+            text: 'Navigate'
+            values: ['Navigate','Edit','Record','Score']
+            size_hint: (0.25,1.0)
+            on_text: bc.board.set_navmode(self,self.text)
+
+    BoardContainer:
+        id: bc
+        size_hint: (1.,0.65)
+
+        uielements: {'playerdetails': [pd],'varbutton': [btn_nextvar]}
+
+    CommentBox:
+        id: thecb
+        text: bc.board.comment_pre_text + bc.board.comment_text + 'yay'
+        size_hint: (1.0,0.18)
+
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint: (1.0,0.09)
+
+        Button:
+            id: btn_opensgf
+            text: 'Open SGF'
+            on_release: bc.board.open_sgf_dialog()
+        Button:
+            id: btn_prevmove
+            text: 'Prev'
+            on_press: bc.board.retreat_one_move()
+        Button:
+            id: btn_nextvar
+            text: 'Next var\n (1 / 1)'
+            on_press: bc.board.next_variation()
+        Button:
+            id: btn_nextmove
+            text: 'Next'
+            on_press: bc.board.advance_one_move()
+        Button:
+            id: btn_end
+            text: 'End'
+            on_press: bc.board.jump_to_end()
+        
+
+
+
+
+        
+    
+
 <OpenSGFDialog>:
     BoxLayout:
         size: self.parent.size
@@ -8,10 +72,9 @@
         FileChooserListView:
             id: filechooser
             filters: ['*.sgf']
-            path: '/home/asandy/noGo'
         BoxLayout:
             size_hint_y: None
-            height: 30
+            height: (50,'dp')
             Button:
                 text: "Cancel"
                 on_release: self.parent.parent.parent.popup.dismiss()
@@ -30,8 +93,8 @@
         Color:
             rgb: 0,0,0
         Ellipse:
-            size: 0.2*self.width, 0.2*self.height
-            pos: self.pos[0] + 0.4*self.width, self.pos[1] + 0.4*self.height
+            size: 0.25*self.width, 0.25*self.height
+            pos: self.pos[0] + 0.375*self.width, self.pos[1] + 0.375*self.height
 
 <PlayMarker>:
     canvas:
@@ -124,6 +187,16 @@
             pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
 
 <GuiBoard>:
+    gobansize: self.size
+    showcoords: False
+    numcells: self.gridsize + 1 + int(self.showcoords)
+    boardindent: float(self.width) / self.numcells, float(self.height) / self.numcells
+    boardlength: self.size[0] * float(self.gridsize-1)/self.numcells
+    stonesize: (float(self.gobansize[0])/(self.numcells),float(self.gobansize[0])/(self.numcells))
+    gridspacing: float(self.width)/(self.numcells)
+
+    on_gridsize: self.draw_starpoints()
+    
     canvas:
         Color:
             rgb: (0.980, 0.766, 0.402)
@@ -149,6 +222,7 @@
         id: theboard
         size: self.parent.boardsize
         pos: self.parent.boardpos
+        uielements: self.parent.uielements
 
 <PlayerDetails>:
     orientation: 'vertical'

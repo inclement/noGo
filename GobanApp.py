@@ -30,8 +30,9 @@ import sys
 # Config.set('graphics', 'height', '600')
 
 navigate_text = '[b]Navigation mode[/b] selected. Tap on the right side of the board to advance the game, or the left to move back.'
-edit_text = '[b]Edit mode[/b] selected.'
+edit_text = '[b]Edit mode[/b] selected. Use the edit tools below the board to add SGF markers and cut/paste variations.'
 score_text = '[b]Score mode[/b] selected. Tap on groups to toggle them as dead/alive.'
+record_text = '[b]Record mode[/b] selected. Press, move and release on the board to play stones. Pressing back and replaying a move will give the option of whether to replace the next move or to create a new variation.'
 
 # Keybindings
 advancekeys = ['right','l']
@@ -67,11 +68,16 @@ def markercode_to_marker(markercode):
         return 'text'
     return None
 
+class PhoneBoardView(BoxLayout):
+    boardcontainer = ObjectProperty(None)
+    board = ObjectProperty(None)
+
 class OpenSgfDialog(FloatLayout):
     board = ObjectProperty(None)
     popup = ObjectProperty(None)
 
 class PlayerDetails(BoxLayout):
+    board = ObjectProperty(None)
     wtext = StringProperty('W player')
     wrank = StringProperty('')
     btext = StringProperty('B player')
@@ -148,10 +154,19 @@ starposs = {19:[(3,3),(3,9),(3,15),(9,3),(9,9),(9,15),(15,3),(15,9),(15,15)]}
 class GuiBoard(Widget):
     gridsize = NumericProperty(19) # Board size
     navmode = StringProperty('Navigate') # How to scale the board
-    abstractboard = ObjectProperty(None,allownone=True) # Object to query for where to play moves
+    abstractboard = ObjectProperty(AbstractBoard()) # Object to query for where to play moves
     uielements = DictProperty({})
 
     variations_exist = BooleanProperty(False)
+
+    showcoords = BooleanProperty(False)
+
+    wname = StringProperty('')
+    wrank = StringProperty('')
+
+    comment_pre_text = StringProperty('')
+    comment_text = StringProperty('')
+    
 
     # Board flipping
     flip_horiz = BooleanProperty(False)
@@ -168,6 +183,7 @@ class GuiBoard(Widget):
     starpoint_positions = DictProperty(starposs)
 
     gobansize = ListProperty((100,100))
+    numcells = NumericProperty(10)
     boardindent = ListProperty((100,100))
     stonesize = ListProperty((100,100))
     gridspacing = NumericProperty(10)
@@ -177,6 +193,7 @@ class GuiBoard(Widget):
 
 
     def open_sgf_dialog(self,*args,**kwargs):
+        print 'moo'
         popup = Popup(content=OpenSgfDialog(board=self),title='Open SGF',size_hint=(0.85,0.85))
         popup.content.popup = popup
         popup.open()
@@ -198,6 +215,9 @@ class GuiBoard(Widget):
                     cb.scroll_y = 1
                 elif mode == 'Score':
                     cb.pre_text = score_text + '\n-----\n'
+                    cb.scroll_y = 1
+                elif mode == 'Record':
+                    cb.pre_text = record_text + '\n-----\n'
                     cb.scroll_y = 1
 
 
@@ -281,17 +301,7 @@ class GuiBoard(Widget):
             self.set_playmarker(self.playmarker.coord)
         self.set_playmarker
 
-    def on_gridsize(self):
-        self.draw_starpoints()
-
     def on_size(self,*args,**kwargs):
-        self.gobansize = self.size
-        self.boardindent = self.get_boardindent()
-        self.boardlength = self.get_boardlength()
-        self.stonesize = self.current_stone_size()
-        self.gridspacing = self.get_gridspacing()
-
-        # pos
         self.gobanpos = self.pos
         self.gridlines = self.get_gridlines()
 
@@ -321,21 +331,6 @@ class GuiBoard(Widget):
         coord = (coord[0]-0.5,coord[1]-0.5)
         return (self.gobanpos[0] + self.boardindent[0] + coord[0]*gridspacing, self.gobanpos[1] + self.boardindent[1] + coord[1]*gridspacing)
 
-    def current_stone_size(self):
-        newsize = float(self.gobansize[0]) / (self.gridsize + 2)
-        return (newsize,newsize)
-
-    def get_boardindent(self):
-        indent = (1.5*float(self.width)/(self.gridsize + 2),1.5*float(self.height)/(self.gridsize + 2))
-        return indent
-
-    def get_boardlength(self):
-        length = self.size[0] * float(self.gridsize-1) / (self.gridsize + 2)
-        return length
-
-    def get_gridspacing(self):
-        return float(self.width)/(self.gridsize + 2)
-
     def get_gridlines(self):
         startx = self.boardindent[0] + self.gobanpos[0]
         starty = self.boardindent[1] + self.gobanpos[1]
@@ -347,11 +342,6 @@ class GuiBoard(Widget):
 
         curx = startx
         cury = starty
-
-        # print 'size', self.size
-        # print 'start', curx, cury
-        # print 'length', length, self.size[1] - 3*gridspacing
-        # print 'gobansize', self.gobansize
 
         dir = 1.0
         for y in range(self.gridsize - 1):
@@ -374,6 +364,7 @@ class GuiBoard(Widget):
     # Stone methods
     def follow_instructions(self,instructions,*args,**kwargs):
         print 'instructions are', instructions
+        print 'uielements are',self.uielements
 
         self.clear_transient_widgets()
         self.reset_uielements()
@@ -421,6 +412,8 @@ class GuiBoard(Widget):
             commenttext = instructions['comment']
             if self.uielements.has_key('commentbox'):
                 for cb in self.uielements['commentbox']:
+                    self.comment_text = commenttext
+                    print 'set self.comment_text to', commenttext
                     cb.text = commenttext
                     cb.scroll_y = 1
                     cb.scroll_timeout = 0
@@ -428,6 +421,7 @@ class GuiBoard(Widget):
         else:
             if self.uielements.has_key('commentbox'):
                 for cb in self.uielements['commentbox']:
+                    self.comment_text = '[color=444444]Long press to add comment.[/color]'
                     cb.text = '[color=444444]Long press to add comment.[/color]'
 
         if 'nextplayer' in instructions:
@@ -439,6 +433,10 @@ class GuiBoard(Widget):
     def get_player_details(self,*args,**kwargs):
         wname, bname = self.abstractboard.get_player_names()
         wrank, brank = self.abstractboard.get_player_ranks()
+        self.wrank = wrank
+        self.wname = wname
+        self.brank = brank
+        self.bname = bname
         if self.uielements.has_key('playerdetails'):
             pds = self.uielements['playerdetails']
             for pd in pds:
@@ -582,6 +580,7 @@ class BoardContainer(Widget):
     board = ObjectProperty(None,allownone=True)
     boardsize = ListProperty([10,10])
     boardpos = ListProperty([10,10])
+    uielements = DictProperty({})
 
     def __init__(self, **kwargs):
         super(BoardContainer, self).__init__(**kwargs)
@@ -689,7 +688,7 @@ class GobanApp(App):
 
         player_details = PlayerDetails(size_hint=(0.75,1.0))
         boardcontainer.board.uielements['playerdetails'] = [player_details]
-        mode_spinner = Spinner(text='Navigate',values=('Navigate', 'Edit', 'Score'),size_hint=(0.25,1.0))
+        mode_spinner = Spinner(text='Navigate',values=('Navigate', 'Edit', 'Record', 'Score'),size_hint=(0.25,1.0))
         mode_spinner.bind(text=boardcontainer.board.set_navmode)
 
         top_layout = BoxLayout(orientation='horizontal',size_hint=(1.,0.08))
@@ -711,7 +710,11 @@ class GobanApp(App):
         boardcontainer.board.reset_abstractboard()
         boardcontainer.board.get_player_details()
 
-        return layout
+        test = PhoneBoardView()
+        test.board.load_sgf_from_file('',['./67honinbot1.sgf'])
+
+        return test
+        #return layout
         #return boardcontainer
 
 
