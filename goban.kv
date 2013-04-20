@@ -1,5 +1,16 @@
 #:kivy 1.6.0
 
+<MakeMoveMarker>:
+    pos: self.set_position_from_coord(self.coord)
+    size: self.board.stonesize
+    canvas:
+        Color:
+            rgba: self.colour
+        Ellipse:
+            pos: self.pos
+            size: self.size
+        
+
 <HomeScreen>:
     id: homeroot
     orientation: 'vertical'
@@ -30,7 +41,7 @@
         size_hint: (1.,0.08)
 
         Button:
-            size_hint: (0.2,1.0)
+            size_hint: (0.15,1.0)
             text: 'Home'
             on_press: self.parent.parent.managedby.current = 'Home'
             
@@ -95,6 +106,44 @@
 
         
     
+<PickNewVarType>:
+    BoxLayout:
+        size: self.parent.size
+        pos: self.parent.pos
+        orientation: "vertical"
+        Button:
+            text: "...replace next move?"
+            text_size: self.parent.width,None
+            halign: 'center'
+            valign: 'middle'
+            on_press: self.parent.parent.board.add_new_stone(self.parent.parent.coord,'replacenext')
+            on_release: self.parent.parent.popup.dismiss()
+        Button:
+            text: "...insert move before next?"
+            text_size: self.parent.width,None
+            halign: 'center'
+            valign: 'middle'
+            on_release: self.parent.parent.popup.dismiss()
+        Button:
+            text: "...create new variation?"
+            text_size: self.parent.width,None
+            halign: 'center'
+            valign: 'middle'
+            on_press: self.parent.parent.board.add_new_stone(self.parent.parent.coord)
+            on_release: self.parent.parent.popup.dismiss()
+        Button:
+            text: "...create new mainline variation?"
+            text_size: self.parent.width,None
+            halign: 'center'
+            valign: 'middle'
+            on_press: self.parent.parent.board.add_new_stone(self.parent.parent.coord,'newmain')
+            on_release: self.parent.parent.popup.dismiss()
+        Button:
+            text: "...cancel?"
+            text_size: self.parent.width,None
+            halign: 'center'
+            valign: 'middle'
+            on_press: self.parent.parent.popup.dismiss()
 
 <OpenSGFDialog>:
     BoxLayout:
@@ -259,10 +308,13 @@
 <PlayerDetails>:
     orientation: 'vertical'
     spacing: 1
+    wstone: white_stone
+    bstone: black_stone
     
     BoxLayout:
         orientation: 'horizontal'
         Widget:
+            id: white_stone
             canvas:
                 Color:
                     rgba: (0.2,0.2,0.2,1)
@@ -294,6 +346,7 @@
     BoxLayout:
         orientation: 'horizontal'
         Widget:
+            id: black_stone
             size: self.parent.height, self.parent.height
             canvas:
                 Color:

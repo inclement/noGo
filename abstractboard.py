@@ -157,25 +157,24 @@ def get_nonstone_from_node(node):
         instructions['comment'] = comment
 
     nextplayer = get_nextplayer_from_node(node)
-    if nextplayer is not None:
-        instructions['nextplayer'] = nextplayer
-
+    instructions['nextplayer'] = nextplayer
 
     return instructions
 
 def get_nextplayer_from_node(node):
     if 'PL' in node.properties():
         return node.find_property('PL')
-    if len(node) > 0:
-        nextnode = node[0]
-        props = nextnode.properties()
+    else:
+        props = node.properties()
         if 'W' in props:
-            return 'w'
-        elif 'B' in props:
             return 'b'
-        else:
-            return None
-    return None
+        if 'B' in props:
+            return 'w'
+        if 'HA' in props:
+            return 'w'
+        if node.parent is None:
+            return 'b'
+    return 'a'
 
 def get_comment_from_node(node):
     props = node.properties()
@@ -266,9 +265,6 @@ class AbstractBoard(object):
         self.boards[self.curnode] = board
         return instructions
 
-
-
-
     def advance_position(self,*args,**kwargs):
         curnode = self.curnode
         curboard = self.boards[curnode]
@@ -343,8 +339,46 @@ class AbstractBoard(object):
         instructions = compare_boards(oldboard,newboard)
         nonstone_instructions = get_nonstone_from_node(node)
         instructions.update(nonstone_instructions)
+        self.build_varcache_to_node(node)
         return instructions
-            
+
+    def add_new_node(self,coord,colour,newmainline=False):
+        print 'Adding new node at',coord,colour
+        curboard = self.boards[self.curnode]
+        if curboard.board[coord[0]][coord[1]] is not None:
+            print 'Addition denied, stone already exists!'
+            return {}
+        if not newmainline:
+            newnode = self.curnode.new_child()
+        else: 
+            newnode = self.curnode.new_child(0)
+        newnode.set_move(colour,coord)
+        return self.jump_to_node(newnode)
+
+    def replace_next_node(self,coord,colour):
+        if self.varcache.has_key(self.curnode):
+            newnode = self.curnode[self.varcache[curnode]]
+        else:
+            newnode = self.curnode[0]
+        newnode.set_move(colour,coord)
+        self.recursively_destroy_boards_from(newnode)
+        return self.jump_to_node(newnode)
+
+    def recursively_destroy_boards_from(self,node):
+        if self.boards.has_key(node):
+            deadboard = self.boards.pop(node)
+        for child in node:
+            self.recursively_destroy_boards_from(child)
+
+    def build_varcache_to_node(self,node):
+        while node.parent is not None:
+            newnode = node.parent
+            if len(newnode) > 1:
+                nodeind = newnode.index(node)
+                self.varcache[newnode] = nodeind
+            node = newnode
+
+
 
     def get_or_build_board(self, node):
         if not self.boards.has_key(node):
@@ -400,4 +434,11 @@ class AbstractBoard(object):
         else:
             brank = ''
         return (wrank,brank)
+
+    def do_children_exist(self):
+        if len(self.curnode) > 0:
+            return True
+        else:
+            return False
+    
         

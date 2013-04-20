@@ -52,6 +52,22 @@ def colourname_to_colour(colourname):
     else:
         return None
 
+def alternate_colour(colour):
+    if colour == 'b':
+        return 'w'
+    elif colour == 'w':
+        return 'b'
+    else:
+        return 'b'
+
+def get_move_marker_colour(col):
+    if col == 'w':
+        return [1,1,1,0.5]
+    elif col == 'b':
+        return [0,0,0,0.5]
+    else:
+        return [0.5,0.5,0.5,0.5]
+
 trianglecodes = ['triangle','TR']
 squarecodes = ['square','SQ']
 circlecodes = ['circle','CR']
@@ -78,11 +94,33 @@ class PhoneBoardView(BoxLayout):
     boardcontainer = ObjectProperty(None)
     board = ObjectProperty(None)
 
+class MakeMoveMarker(Widget):
+    coord = ListProperty((0,0))
+    board = ObjectProperty(None)
+    colour = ListProperty((1,1,1,0.5))
+    def set_position_from_coord(self,coord):
+        if self.board is not None:
+            if not (0<=coord[0]<self.board.gridsize and 0<=coord[1]<self.board.gridsize):
+                self.colour[3] = 0.0
+            else:
+                self.colour[3] = 0.5
+            newpos = self.board.coord_to_pos(self.coord)
+            return newpos
+        else:
+            return (0,0)
+
+class PickNewVarType(FloatLayout):
+    board = ObjectProperty(None)
+    popup = ObjectProperty(None)
+    coord = ListProperty((0,0))
+
 class OpenSgfDialog(FloatLayout):
     board = ObjectProperty(None)
     popup = ObjectProperty(None)
 
 class PlayerDetails(BoxLayout):
+    wstone = ObjectProperty(None)
+    bstone = ObjectProperty(None)
     board = ObjectProperty(None)
     wtext = StringProperty('W player')
     wrank = StringProperty('')
@@ -100,6 +138,11 @@ class PlayerDetails(BoxLayout):
         else:
             self.wtoplaycolour = [0,0.8,0,0]
             self.btoplaycolour = [0,0.8,0,0]
+    def on_touch_down(self,touch):
+        if self.wstone.collide_point(*touch.pos):
+            self.board.next_to_play = 'w'
+        elif self.bstone.collide_point(*touch.pos):
+            self.board.next_to_play = 'b'
 
 class CommentBox(ScrollView):
     pre_text = StringProperty('')
@@ -154,13 +197,16 @@ class Stone(Widget):
             # should raise exception
             
 
-starposs = {19:[(3,3),(3,9),(3,15),(9,3),(9,9),(9,15),(15,3),(15,9),(15,15)]}
+starposs = {19:[(3,3),(3,9),(3,15),(9,3),(9,9),(9,15),(15,3),(15,9),(15,15)],
+            9:[(2,2),(5,2),(2,5),(5,5),(4,4)]}
             
 class GuiBoard(Widget):
     gridsize = NumericProperty(19) # Board size
     navmode = StringProperty('Navigate') # How to scale the board
     abstractboard = ObjectProperty(AbstractBoard()) # Object to query for where to play moves
     uielements = DictProperty({})
+    makemovemarker = ObjectProperty(None,allownone=True)
+    touchoffset = ListProperty((0,0))
 
     variations_exist = BooleanProperty(False)
 
@@ -200,9 +246,31 @@ class GuiBoard(Widget):
 
     gobanpos = ListProperty((100,100))
 
+    def take_stone_input(self,coords):
+        if tuple(coords) not in self.stones:
+            children_exist = self.abstractboard.do_children_exist()
+            if not(children_exist):
+                self.add_new_stone(coords)
+            else:
+                popup = Popup(content=PickNewVarType(board=self,coord=coords),title='Do you want to...',size_hint=(0.85,0.85))
+                popup.content.popup = popup
+                popup.open()
+
+    def add_new_stone(self,coords,newtype='newvar'):
+        print 'Called add_new_stone', coords, newtype
+        colour = self.next_to_play
+        if newtype == 'newvar':
+            instructions = self.abstractboard.add_new_node(coords,self.next_to_play)
+            self.follow_instructions(instructions)
+        if newtype == 'newmain':
+            instructions = self.abstractboard.add_new_node(coords,self.next_to_play,newmainline=True)
+            self.follow_instructions(instructions)
+        if newtype == 'replacenext':
+            instructions = self.abstractboard.replace_next_node(coords,self.next_to_play)
+            self.follow_instructions(instructions)
+        print 'add_new_stone received instructions:',instructions
 
     def open_sgf_dialog(self,*args,**kwargs):
-        print 'moo'
         popup = Popup(content=OpenSgfDialog(board=self),title='Open SGF',size_hint=(0.85,0.85))
         popup.content.popup = popup
         popup.open()
@@ -334,6 +402,23 @@ class GuiBoard(Widget):
         coord = (coord[0]-0.5,coord[1]-0.5)
         return (self.gobanpos[0] + self.boardindent[0] + coord[0]*gridspacing, self.gobanpos[1] + self.boardindent[1] + coord[1]*gridspacing)
 
+    def pos_to_coord(self,pos):
+        gridspacing = self.gridspacing
+        relx = (pos[0] - (self.gobanpos[0] + self.boardindent[0])) / gridspacing
+        rely = (pos[1] - (self.gobanpos[1] + self.boardindent[1])) / gridspacing
+        relx += self.touchoffset[0]
+        rely += self.touchoffset[1]
+        realcoord = (int(round(relx)),int(round(rely)))
+        if self.flip_horiz:
+            realcoord[0] = self.game.size - 1 - realcoord[0]
+        if self.flip_vert:
+            realcoord[1] = self.game.size - 1 - realcoord[1]
+        if self.flip_forwardslash:
+            realcoord = realcoord[::-1]
+        if self.flip_backslash:
+            realcoord = realcoord[self.game.size - 1 - realcoord[0],self.game.size - 1 - realcoord[1]][::-1]
+        return realcoord
+
     def get_gridlines(self):
         startx = self.boardindent[0] + self.gobanpos[0]
         starty = self.boardindent[1] + self.gobanpos[1]
@@ -366,8 +451,7 @@ class GuiBoard(Widget):
         
     # Stone methods
     def follow_instructions(self,instructions,*args,**kwargs):
-        print 'instructions are', instructions
-        print 'uielements are',self.uielements
+        print '### instructions are', instructions
 
         self.clear_transient_widgets()
         self.reset_uielements()
@@ -419,7 +503,10 @@ class GuiBoard(Widget):
 
         if 'nextplayer' in instructions:
             player = instructions['nextplayer']
-            self.next_to_play = player
+            if player in ['b','w']:
+                self.next_to_play = player
+            elif player == 'a':
+                self.next_to_play = alternate_colour(self.next_to_play)
 
     def get_player_details(self,*args,**kwargs):
         wname, bname = self.abstractboard.get_player_names()
@@ -451,7 +538,7 @@ class GuiBoard(Widget):
         self.comment_pre_text = ''
         self.comment_text = ''
 
-        self.next_to_play = 'e'
+        #self.next_to_play = 'b'
         
         for elementtype in self.uielements:
             elements = self.uielements[elementtype]
@@ -565,6 +652,7 @@ class BoardContainer(Widget):
     boardsize = ListProperty([10,10])
     boardpos = ListProperty([10,10])
     uielements = DictProperty({})
+    makemovemarker = ObjectProperty(None,allownone=True)
 
     def __init__(self, **kwargs):
         super(BoardContainer, self).__init__(**kwargs)
@@ -583,8 +671,27 @@ class BoardContainer(Widget):
                         self.board.advance_one_move()
                     else:
                         self.board.retreat_one_move()
-            # elif self.board.navmode in ['Edit','Record']:
-            #     self.add_
+            elif self.board.navmode in ['Edit','Record']:
+                print 'Touch down at', self.board.pos_to_coord(touch.pos)
+                print 'next to play is',self.board.next_to_play
+                marker = MakeMoveMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
+                self.makemovemarker = marker
+                self.add_widget(marker)
+
+    def on_touch_move(self,touch):
+        if self.makemovemarker is not None:
+            self.makemovemarker.coord = self.board.pos_to_coord(touch.pos)
+
+    def on_touch_up(self,touch):
+        if self.makemovemarker is not None:
+            marker = self.makemovemarker
+            finalcoord = marker.coord
+            self.makemovemarker = None
+            self.remove_widget(marker)
+            print 'Marker let go at', finalcoord
+            if (0<=finalcoord[0]<self.board.gridsize) and (0<=finalcoord[1]<self.board.gridsize):
+                self.board.take_stone_input(finalcoord)
+
 
             
 
