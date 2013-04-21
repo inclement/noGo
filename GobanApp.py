@@ -94,17 +94,27 @@ class BlackStoneImage(Widget):
     pass
 
 class StandaloneGameChooser(BoxLayout):
-    managedby = ObjectProperty(None)
+    managedby = ObjectProperty(None,allownone=True)
+    gameslist = ObjectProperty()
     def populate_from_directory(self,dir):
         sgfs = glob(''.join((dir,'/*.sgf')))
         print 'sgfs found in directory: ',sgfs
         for sgfpath in sgfs:
             sgfpath = abspath(sgfpath)
             info = get_gameinfo_from_file(sgfpath)
+            info['filepath'] = sgfpath
             print info
-            pathwidget = GameChooserInfo(filepath=sgfpath,owner=self).construct_from_sgfinfo(info)
-            self.add_widget(pathwidget)
-        
+            pathwidget = GameChooserButton(owner=self)
+            pathwidget.construct_from_sgfinfo(info)
+            self.gameslist.add_widget(pathwidget)
+
+class GameChooserButton(Button):
+    info = ObjectProperty()
+    owner = ObjectProperty(None)
+    filepath = StringProperty('')
+    def construct_from_sgfinfo(self,info):
+        self.info.construct_from_sgfinfo(info)
+    
 
 class GameChooserInfo(BoxLayout):
     owner = ObjectProperty('')
@@ -141,6 +151,8 @@ class GameChooserInfo(BoxLayout):
             self.date = info['date']
         else:
             self.date = '---'
+        if 'filepath' in info:
+            self.filepath = info['filepath']
         return self
 
 class NextButton(Button):
