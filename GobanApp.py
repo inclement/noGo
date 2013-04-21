@@ -103,7 +103,7 @@ class MakeMoveMarker(Widget):
             if not (0<=coord[0]<self.board.gridsize and 0<=coord[1]<self.board.gridsize):
                 self.colour[3] = 0.0
             else:
-                self.colour[3] = 0.5
+                self.colour[3] = 0.75
             newpos = self.board.coord_to_pos(self.coord)
             return newpos
         else:
@@ -147,7 +147,12 @@ class PlayerDetails(BoxLayout):
 class CommentBox(ScrollView):
     pre_text = StringProperty('')
     text = StringProperty('')
-    pass
+    def on_touch_down(self,touch):
+        if self.collide_point(*touch.pos):
+            print 'Commentbox touch profile', touch.profile
+            if touch.is_double_tap:
+                print 'Touch is double tap!'
+
 
 class StarPoint(Widget):
     pass
@@ -248,8 +253,16 @@ class GuiBoard(Widget):
 
     def take_stone_input(self,coords):
         if tuple(coords) not in self.stones:
+            existingvars = map(lambda j: j.get_move(),self.abstractboard.curnode)
+            alreadyexists = False
+            for entry in existingvars:
+                if entry[0] == self.next_to_play and entry[1][0] == coords[0] and entry[1][1] == coords[1]:
+                    instructions = self.abstractboard.jump_to_node(self.abstractboard.curnode[existingvars.index(entry)])
+                    print 'entry already exists!'
+                    self.follow_instructions(instructions)
+                    return True
             children_exist = self.abstractboard.do_children_exist()
-            if not(children_exist):
+            if not children_exist:
                 self.add_new_stone(coords)
             else:
                 popup = Popup(content=PickNewVarType(board=self,coord=coords),title='Do you want to...',size_hint=(0.85,0.85))

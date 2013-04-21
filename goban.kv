@@ -9,6 +9,17 @@
         Ellipse:
             pos: self.pos
             size: self.size
+        Color:
+            rgb: (0.095,0,0.434)
+        Line:
+            points: [self.board.x,self.y + 0.5*self.height,self.board.x + self.board.width,self.y + 0.5*self.height]
+            width: 2.
+            cap: 'none'
+        Line:
+            points: [self.x + 0.5*self.width,self.board.y,self.x + 0.5*self.width,self.board.y + self.board.height]
+            width: 2.
+            cap: 'none'
+        
         
 
 <HomeScreen>:

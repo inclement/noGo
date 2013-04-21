@@ -348,6 +348,11 @@ class AbstractBoard(object):
         if curboard.board[coord[0]][coord[1]] is not None:
             print 'Addition denied, stone already exists!'
             return {}
+        curnode = self.curnode
+        for entry in self.curnode:
+            ecolour,ecoord = entry.get_move()
+            if ecolour == colour and ecoord[0] == coord[0] and ecoord[1] == coord[1]:
+                return self.jump_to_node(entry)
         if not newmainline:
             newnode = self.curnode.new_child()
         else: 
