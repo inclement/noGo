@@ -86,6 +86,26 @@ def markercode_to_marker(markercode):
         return 'text'
     return None
 
+class GameChooserEntry(BoxLayout):
+    bname = StringProperty('')
+    wname = StringProperty('')
+    brank = StringProperty('')
+    wrank = StringProperty('')
+    result = StringProperty('')
+    date = StringProperty('')
+    filepath = StringProperty('')
+
+class NextButton(Button):
+    pass
+
+class PrevButton(Button):
+    pass
+
+class CommentInput(BoxLayout):
+    board = ObjectProperty(None)
+    popup = ObjectProperty(None)
+    comment = StringProperty('')
+
 class HomeScreen(BoxLayout):
     managedby = ObjectProperty(None,allownone=True)
 
@@ -147,11 +167,18 @@ class PlayerDetails(BoxLayout):
 class CommentBox(ScrollView):
     pre_text = StringProperty('')
     text = StringProperty('')
+    board = ObjectProperty(None,allownone=True)
     def on_touch_down(self,touch):
         if self.collide_point(*touch.pos):
-            print 'Commentbox touch profile', touch.profile
-            if touch.is_double_tap:
-                print 'Touch is double tap!'
+            if self.board is not None:
+                callback = self.board.get_new_comment
+                Clock.schedule_once(callback,1)
+                touch.ud['event'] = callback
+    def on_touch_up(self,touch):
+        try: 
+            Clock.unschedule(touch.ud['event'])
+        except KeyError:
+            pass
 
 
 class StarPoint(Widget):
@@ -292,6 +319,19 @@ class GuiBoard(Widget):
         print 'asked to load from',path,filen
         self.abstractboard.load_sgf_from_file(filen[0])
         self.reset_abstractboard()
+
+    def get_new_comment(self,*args,**kwargs):
+        print 'get new comment called'
+        if self.comment_text == '[color=444444]Long press to add comment.[/color]':
+            popup = Popup(content=CommentInput(board=self,comment=''),title='Edit comment:',size_hint=(0.85,0.85))
+        else:
+            popup = Popup(content=CommentInput(board=self,comment=self.comment_text),title='Edit comment:',size_hint=(0.85,0.85))
+        popup.content.popup = popup
+        popup.open()
+
+    def set_new_comment(self,comment):
+        self.comment_text = comment
+        self.abstractboard.curnode.set('C',comment)
 
     def set_navmode(self,spinner,mode):
         self.navmode = mode
@@ -531,8 +571,10 @@ class GuiBoard(Widget):
         
 
     def advance_one_move(self,*args,**kwargs):
-        instructions = self.abstractboard.advance_position()
-        self.follow_instructions(instructions)
+        children_exist = self.abstractboard.do_children_exist()
+        if children_exist:
+            instructions = self.abstractboard.advance_position()
+            self.follow_instructions(instructions)
 
 
     def retreat_one_move(self,*args,**kwargs):
@@ -669,9 +711,9 @@ class BoardContainer(Widget):
 
     def __init__(self, **kwargs):
         super(BoardContainer, self).__init__(**kwargs)
-        self._keyboard = Window.request_keyboard(
-            self._keyboard_closed, self)
-        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        # self._keyboard = Window.request_keyboard(
+        #     self._keyboard_closed, self)
+        # self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
     def on_size(self,*args,**kwargs):
         self.set_boardsize()

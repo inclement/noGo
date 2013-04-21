@@ -1,5 +1,96 @@
 #:kivy 1.6.0
 
+<GameChooserEntry>:
+    id: gc
+    orientation: 'vertical'
+    BoxLayout:
+        orientation: 'horizontal'
+        WhiteStoneImage
+        Label:
+            size_hint: (0.75,1.)
+            text: gc.wname
+        Label:
+            size_hint: (0.25,1.)
+            text: gc.date
+    BoxLayout:
+        orientation: 'horizontal'
+        BlackStoneImage
+        Label:
+            size_hint: (0.75,1.)
+            text: gc.bname
+        Label:
+            size_hint: (0.25,1.)
+            text: gc.date
+
+        
+
+<WhiteStoneImage>:
+    size: self.parent.height, self.parent.height
+    canvas:
+        Color:
+            rgba: (0.2,0.2,0.2,1)
+        Ellipse:
+            pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
+            size: (0.9*self.height,0.9*self.height)
+        Color:
+            rgb: (1,1,1)
+        Ellipse:
+            pos: self.pos[0] + 0.1*self.width, self.pos[1] + 0.1*self.height
+            size: (0.8*self.height,0.8*self.height)
+
+<BlackStoneImage>:
+    size: self.parent.height, self.parent.height
+    canvas:
+        Color:
+            rgba: (0.8,0.8,0.8,1)
+        Ellipse:
+            pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
+            size: (0.9*self.height,0.9*self.height)
+        Color:
+            rgb: (0,0,0)
+        Ellipse:
+            pos: self.pos[0] + 0.1*self.width, self.pos[1] + 0.1*self.height
+            size: (0.8*self.height,0.8*self.height)
+
+
+<NextButton>:
+    canvas:
+        Color:
+            rgb: (0.9,0.9,0.9)
+        Line:
+            points: [self.x + 0.5*self.width - 5, self.y + 0.5*self.height - 10, self.x + 0.5*self.width + 5, self.y + 0.5*self.height, self.x + 0.5*self.width - 5, self.y + 0.5*self.height + 10]
+            width: 2
+            cap: 'square'
+            joint: 'miter'
+
+<PrevButton>:
+    canvas:
+        Color:
+            rgb: (0.9,0.9,0.9)
+        Line:
+            points: [self.x + 0.5*self.width + 5, self.y + 0.5*self.height - 10, self.x + 0.5*self.width - 5, self.y + 0.5*self.height, self.x + 0.5*self.width + 5, self.y + 0.5*self.height + 10]
+            width: 2
+            cap: 'square'
+            joint: 'miter'
+           
+<CommentInput>:
+    orientation: 'vertical'
+
+    TextInput:
+        id: commentinput
+        text: self.parent.comment
+        size_hint: (1.,0.9)
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint: (1.,0.1)
+        Button:
+            text: 'Cancel'
+            on_press: self.parent.parent.popup.dismiss()
+        Button:
+            text: 'Submit'
+            on_press: self.parent.parent.board.set_new_comment(commentinput.text)
+            on_release: self.parent.parent.popup.dismiss()
+
 <MakeMoveMarker>:
     pos: self.set_position_from_coord(self.coord)
     size: self.board.stonesize
@@ -85,6 +176,7 @@
         id: thecb
         text: bc.board.comment_pre_text + bc.board.comment_text
         size_hint: (1.0,0.18)
+        board: bc.board
 
     BoxLayout:
         orientation: 'horizontal'
@@ -94,17 +186,15 @@
             id: btn_opensgf
             text: 'Open SGF'
             on_release: bc.board.open_sgf_dialog()
-        Button:
+        PrevButton:
             id: btn_prevmove
-            text: 'Prev'
             on_press: bc.board.retreat_one_move()
         Button:
             id: btn_nextvar
             text: 'Next var\n (1 / 1)'
             on_press: bc.board.next_variation()
-        Button:
+        NextButton:
             id: btn_nextmove
-            text: 'Next'
             on_press: bc.board.advance_one_move()
         Button:
             id: btn_end
