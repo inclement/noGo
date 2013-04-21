@@ -4,15 +4,18 @@
     id: sgc
     gameslist: thegames
     orientation: 'vertical'
-    Label:
+    BoxLayout:
+        orientation: 'horizontal'
         size_hint: (1.,0.1)
-        text: 'top'
+        Button:
+            text: 'Home'
+            on_press: sgc.managedby.current = 'Home'
 
     Widget:
         size_hint:(1.,0.05)
         canvas:
             Color:
-                rgb: (0.,0.,0.8)
+                rgb: (0.195,0.641,0.805)
             Line:
                 points: [self.x + 0.05*self.width, self.y + 0.5*self.height, self.x + 0.95*self.width, self.y + 0.5*self.height]
                 width: 2
@@ -140,6 +143,7 @@
         id: commentinput
         text: self.parent.comment
         size_hint: (1.,0.9)
+        focus: True
     BoxLayout:
         orientation: 'horizontal'
         size_hint: (1.,0.1)
@@ -222,7 +226,7 @@
 
         Spinner:
             text: 'Navigate'
-            values: ['Navigate','Edit','Score']
+            values: ['Navigate','Edit','Score','Guess']
             size_hint: (0.25,1.0)
             on_text: bc.board.set_navmode(self,self.text)
 
