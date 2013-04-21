@@ -308,7 +308,8 @@ class GuiBoard(Widget):
     abstractboard = ObjectProperty(AbstractBoard()) # Object to query for where to play moves
     uielements = DictProperty({})
     makemovemarker = ObjectProperty(None,allownone=True)
-    touchoffset = ListProperty((0,0))
+    touchoffset = ListProperty([0,0])
+    guesses = ListProperty([0,0])
 
     variations_exist = BooleanProperty(False)
 
@@ -350,21 +351,39 @@ class GuiBoard(Widget):
 
     def take_stone_input(self,coords):
         if tuple(coords) not in self.stones:
-            existingvars = map(lambda j: j.get_move(),self.abstractboard.curnode)
-            alreadyexists = False
-            for entry in existingvars:
-                if entry[0] == self.next_to_play and entry[1][0] == coords[0] and entry[1][1] == coords[1]:
-                    instructions = self.abstractboard.jump_to_node(self.abstractboard.curnode[existingvars.index(entry)])
-                    print 'entry already exists!'
-                    self.follow_instructions(instructions)
-                    return True
-            children_exist = self.abstractboard.do_children_exist()
-            if not children_exist:
-                self.add_new_stone(coords)
-            else:
-                popup = Popup(content=PickNewVarType(board=self,coord=coords),title='Do you want to...',size_hint=(0.85,0.85))
-                popup.content.popup = popup
-                popup.open()
+            if self.navmode == 'Edit':
+                existingvars = map(lambda j: j.get_move(),self.abstractboard.curnode)
+                alreadyexists = False
+                for entry in existingvars:
+                    if entry[0] == self.next_to_play and entry[1][0] == coords[0] and entry[1][1] == coords[1]:
+                        instructions = self.abstractboard.jump_to_node(self.abstractboard.curnode[existingvars.index(entry)])
+                        print 'entry already exists!'
+                        self.follow_instructions(instructions)
+                        return True
+                children_exist = self.abstractboard.do_children_exist()
+                if not children_exist:
+                    self.add_new_stone(coords)
+                else:
+                    popup = Popup(content=PickNewVarType(board=self,coord=coords),title='Do you want to...',size_hint=(0.85,0.85))
+                    popup.content.popup = popup
+                    popup.open()
+            elif self.navmode == 'Guess':
+                self.guesses[1] += 1
+                nextcoords = self.abstractboard.get_next_coords()
+                if nextcoords[0] is not None and nextcoords[1] is not None:
+                    correct = False
+                    if coords[0] == nextcoords[0] and coords[1] == nextcoords[1]:
+                        self.guesses[0] += 1
+                        correct = True
+                        instructions = self.abstractboard.advance_position()
+                        self.follow_instructions(instructions)
+                    self.comment_pre_text = '%.1f%% correct' % (100*float(self.guesses[0])/self.guesses[1])
+                    if not correct:
+                        self.comment_pre_text += ', currently off by %dx and %dy' % (abs(coords[0]-nextcoords[0]),abs(coords[1]-nextcoords[1]))
+                    self.comment_pre_text += '\n-----\n'
+                    
+
+            
 
     def add_new_stone(self,coords,newtype='newvar'):
         print 'Called add_new_stone', coords, newtype
@@ -796,7 +815,7 @@ class BoardContainer(Widget):
                         self.board.advance_one_move()
                     else:
                         self.board.retreat_one_move()
-            elif self.board.navmode in ['Edit','Record']:
+            elif self.board.navmode in ['Edit','Record','Guess']:
                 print 'Touch down at', self.board.pos_to_coord(touch.pos)
                 print 'next to play is',self.board.next_to_play
                 marker = MakeMoveMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
@@ -804,7 +823,7 @@ class BoardContainer(Widget):
                     self.remove_widget(self.makemovemarker)
                 self.makemovemarker = marker
                 self.add_widget(marker)
-            elif self.board.navmode == 'Guess'
+                
 
     def on_touch_move(self,touch):
         if self.makemovemarker is not None:

@@ -447,6 +447,15 @@ class AbstractBoard(object):
             node = newnode
 
 
+    def get_next_coords(self):
+        curnode = self.curnode
+        if len(curnode) < 1:
+            return (None,None)
+        if self.varcache.has_key(curnode):
+            newnode = curnode[varcache[curnode]]
+        else:
+            newnode = curnode[0]
+        return newnode.get_move()[1]
 
     def get_or_build_board(self, node):
         if not self.boards.has_key(node):
