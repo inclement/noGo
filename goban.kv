@@ -1,56 +1,90 @@
 #:kivy 1.6.0
 
-<GameChooserEntry>:
+<StandaloneGameChooser>:
+    id: sgc
+    orientation: 'vertical'
+
+<GameChooserInfo>:
     id: gc
     orientation: 'vertical'
     BoxLayout:
         orientation: 'horizontal'
-        WhiteStoneImage
+        WhiteStoneImage:
+            size: self.parent.height,self.parent.height
+            size_hint: None,None
         Label:
-            size_hint: (0.75,1.)
-            text: gc.wname
+            size_hint: (0.65,1.)
+            text: gc.wname + ' ' + gc.wrank
+            text_size: self.width,self.height
+            padding: 20,0
+            halign: 'left'
+            valign: 'middle'
+            markup: True
         Label:
-            size_hint: (0.25,1.)
+            size_hint: (0.35,1.)
             text: gc.date
+            text_size: self.width-20,self.height
+            padding: 10,0
+            halign: 'right'
+            valign: 'middle'
     BoxLayout:
         orientation: 'horizontal'
-        BlackStoneImage
+        BlackStoneImage:
+            size: self.parent.height,self.parent.height
+            size_hint: None, None
         Label:
-            size_hint: (0.75,1.)
-            text: gc.bname
+            size_hint: (0.65,1.)
+            text: gc.bname + ' ' + gc.brank
+            text_size: self.width,self.height
+            padding: 20,0
+            halign: 'left'
+            valign: 'middle'
+            markup: True
         Label:
-            size_hint: (0.25,1.)
-            text: gc.date
+            size_hint: (0.35,1.)
+            text: gc.result
+            text_size: self.width-20,self.height
+            padding: 10,0
+            halign: 'right'
+            valign: 'middle'
+    BoxLayout:
+        orientation: 'horizontal'
+        Label:
+            text: gc.filepath
+            text_size: self.width-20,self.height
+            padding: 10,0
+            halign: 'left'
+            valign: 'middle'
+
+         
 
         
 
 <WhiteStoneImage>:
-    size: self.parent.height, self.parent.height
     canvas:
         Color:
             rgba: (0.2,0.2,0.2,1)
         Ellipse:
-            pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
-            size: (0.9*self.height,0.9*self.height)
+            pos: self.pos[0] + 0.1*self.width, self.pos[1] + 0.1*self.height
+            size: (0.8*self.height,0.8*self.height)
         Color:
             rgb: (1,1,1)
         Ellipse:
-            pos: self.pos[0] + 0.1*self.width, self.pos[1] + 0.1*self.height
-            size: (0.8*self.height,0.8*self.height)
+            pos: self.pos[0] + 0.15*self.width, self.pos[1] + 0.15*self.height
+            size: (0.7*self.height,0.7*self.height)
 
 <BlackStoneImage>:
-    size: self.parent.height, self.parent.height
     canvas:
         Color:
             rgba: (0.8,0.8,0.8,1)
         Ellipse:
-            pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
-            size: (0.9*self.height,0.9*self.height)
+            pos: self.pos[0] + 0.1*self.width, self.pos[1] + 0.1*self.height
+            size: (0.8*self.height,0.8*self.height)
         Color:
             rgb: (0,0,0)
         Ellipse:
-            pos: self.pos[0] + 0.1*self.width, self.pos[1] + 0.1*self.height
-            size: (0.8*self.height,0.8*self.height)
+            pos: self.pos[0] + 0.15*self.width, self.pos[1] + 0.15*self.height
+            size: (0.7*self.height,0.7*self.height)
 
 
 <NextButton>:
@@ -128,8 +162,8 @@
             text: 'Go to board'
             on_press: homeroot.managedby.current = 'Board'
         Button:
-            text: 'Also go to board'
-            on_press: homeroot.managedby.current = 'Board'
+            text: 'Go to game chooser'
+            on_press: homeroot.managedby.current = 'Choose'
         
 
 <PhoneBoardView>:
@@ -162,7 +196,7 @@
 
         Spinner:
             text: 'Navigate'
-            values: ['Navigate','Edit','Record','Score']
+            values: ['Navigate','Edit','Score']
             size_hint: (0.25,1.0)
             on_text: bc.board.set_navmode(self,self.text)
 

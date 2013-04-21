@@ -7,6 +7,69 @@ game tree.
 
 from gomill import sgf, boards
 
+def get_sgf_from_file(filen):
+    fileh = open(filen)
+    string = fileh.read()
+    game = sgf.Sgf_game.from_string(string)
+    return game
+
+def get_gameinfo_from_file(filen):
+    return get_gameinfo_from_sgf(get_sgf_from_file(filen))
+
+def get_gameinfo_from_sgf(game):
+    info = {}
+    bname = game.get_player_name('b')
+    if bname is not None:
+        info['bname'] = bname
+    wname = game.get_player_name('w')
+    if wname is not None:
+        info['wname'] = wname
+    komi = game.get_komi()
+    if komi is not None:
+        info['komi'] = game.get_komi()
+    size = game.get_size()
+    if size is not None:
+        info['size'] = game.get_size()
+    handicap = game.get_handicap()
+    if handicap is not None:
+        info['handicap'] = game.get_handicap()
+    rootnode = game.get_root()
+    props = rootnode.properties()
+    if 'RE' in props:
+        info['result'] = rootnode.find_property('RE')
+    if 'SO' in props:
+        info['source'] = rootnode.find_property('SO')
+    if 'BR' in props:
+        info['brank'] = rootnode.find_property('BR')
+    if 'WR' in props:
+        info['wrank'] = rootnode.find_property('WR')
+    if 'BT' in props:
+        info['bteam'] = rootnode.find_property('BT')
+    if 'WT' in props:
+        info['wteam'] = rootnode.find_property('WT')
+    if 'CP' in props:
+        info['copyright'] = rootnode.find_property('CP')
+    if 'DT' in props:
+        info['date'] = rootnode.find_property('DT')
+    if 'EV' in props:
+        info['event'] = rootnode.find_property('EV')
+    if 'GN' in props:
+        info['gname'] = rootnode.find_property('GN')
+    if 'GC' in props:
+        info['gamecomment'] = rootnode.find_property('GC')
+    if 'OT' in props:
+        info['overtime'] = rootnode.find_property('OT')
+    if 'RU' in props:
+        info['rules'] = rootnode.find_property('RU')
+    if 'TM' in props:
+        info['timelim'] = rootnode.find_property('TM')
+    if 'US' in props:
+        info['user'] = rootnode.find_property('US')
+    return info
+    
+    
+
+
 def get_markers_from_node(node):
     properties = node.properties()
     instructions = {'marker':[]}

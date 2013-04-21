@@ -21,9 +21,11 @@ from random import random as r
 from random import choice
 from math import sin
 from functools import partial
+from glob import glob
+from os.path import abspath
 
 from gomill import sgf, boards
-from abstractboard import AbstractBoard
+from abstractboard import *
 
 import sys
 
@@ -86,7 +88,26 @@ def markercode_to_marker(markercode):
         return 'text'
     return None
 
-class GameChooserEntry(BoxLayout):
+class WhiteStoneImage(Widget):
+    pass
+class BlackStoneImage(Widget):
+    pass
+
+class StandaloneGameChooser(BoxLayout):
+    managedby = ObjectProperty(None)
+    def populate_from_directory(self,dir):
+        sgfs = glob(''.join((dir,'/*.sgf')))
+        print 'sgfs found in directory: ',sgfs
+        for sgfpath in sgfs:
+            sgfpath = abspath(sgfpath)
+            info = get_gameinfo_from_file(sgfpath)
+            print info
+            pathwidget = GameChooserInfo(filepath=sgfpath,owner=self).construct_from_sgfinfo(info)
+            self.add_widget(pathwidget)
+        
+
+class GameChooserInfo(BoxLayout):
+    owner = ObjectProperty('')
     bname = StringProperty('')
     wname = StringProperty('')
     brank = StringProperty('')
@@ -94,6 +115,33 @@ class GameChooserEntry(BoxLayout):
     result = StringProperty('')
     date = StringProperty('')
     filepath = StringProperty('')
+    def construct_from_sgfinfo(self,info):
+        if 'bname' in info:
+            self.bname = info['bname']
+        else:
+            self.bname = 'Unknown'
+        if 'wname' in info:
+            self.wname = info['wname']
+        else:
+            self.wname = 'Unknown'
+        if 'brank' in info:
+            self.brank = '(' + info['brank'] + ')'
+        if 'wrank' in info:
+            self.wrank = '(' + info['wrank'] + ')'
+        if 'result' in info:
+            result = info['result']
+            if result[0] in ['w','W']:
+                self.wname = ''.join(('[b]',self.wname,'[/b]'))
+            elif result[0] in ['b','B']:
+                self.bname = ''.join(('[b]',self.bname,'[/b]'))
+            self.result = info['result']
+        else:
+            self.result = '?'
+        if 'date' in info:
+            self.date = info['date']
+        else:
+            self.date = '---'
+        return self
 
 class NextButton(Button):
     pass
@@ -169,12 +217,22 @@ class CommentBox(ScrollView):
     text = StringProperty('')
     board = ObjectProperty(None,allownone=True)
     def on_touch_down(self,touch):
+        super(CommentBox,self).on_touch_down(touch)
         if self.collide_point(*touch.pos):
             if self.board is not None:
                 callback = self.board.get_new_comment
-                Clock.schedule_once(callback,1)
+                Clock.schedule_once(callback,1.1)
                 touch.ud['event'] = callback
+    def on_touch_move(self,touch):
+        super(CommentBox,self).on_touch_move(touch)
+        print touch.x - touch.ox, touch.y - touch.oy
+        if (touch.x - touch.ox)**2 + (touch.y - touch.oy)**2 > 25:
+            try: 
+                Clock.unschedule(touch.ud['event'])
+            except KeyError:
+                pass
     def on_touch_up(self,touch):
+        super(CommentBox,self).on_touch_up(touch)
         try: 
             Clock.unschedule(touch.ud['event'])
         except KeyError:
@@ -807,15 +865,22 @@ class GobanApp(App):
         pbv = PhoneBoardView()
         pbv.board.load_sgf_from_file('',['./67honinbot1.sgf'])
 
+        gc = StandaloneGameChooser(managedby=sm)
+
         bv = Screen(name="Board")
         bv.add_widget(pbv)
         hv = Screen(name="Home")
         hv.add_widget(HomeScreen(managedby=sm))
+        gv = Screen(name="Choose")
+        gv.add_widget(gc)
+
+        gc.populate_from_directory('.')
 
         pbv.managedby = sm
 
         sm.add_widget(hv)
         sm.add_widget(bv)
+        sm.add_widget(gv)
 
         return sm
         # return pbv
