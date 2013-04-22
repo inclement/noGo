@@ -1,5 +1,13 @@
 #:kivy 1.6.0
 
+<GuessPopup>
+    canvas:
+        Color:
+            rgba: [self.colour[0],self.colour[1],self.colour[2],self.alpha]
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
 <StandaloneGameChooser>:
     id: sgc
     gameslist: thegames

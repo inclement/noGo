@@ -7,11 +7,13 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
+from kivy.uix.stencilview import StencilView
 from kivy.uix.spinner import Spinner
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.screenmanager import *
 from kivy.utils import platform
+from kivy.animation import Animation
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
@@ -38,6 +40,7 @@ navigate_text = '[b]Navigation mode[/b] selected. Tap on the right side of the b
 edit_text = '[b]Edit mode[/b] selected. Use the edit tools below the board to add SGF markers and cut/paste variations.'
 score_text = '[b]Score mode[/b] selected. Tap on groups to toggle them as dead/alive.'
 record_text = '[b]Record mode[/b] selected. Press, move and release on the board to play stones. Pressing back and replaying a move will give the option of whether to replace the next move or to create a new variation.'
+guess_text = '[b]Guess mode[/b] selected. Try to play stones that match the existing game. A marker indicates how good the guess was, and if correct the game advances.'
 
 # Keybindings
 advancekeys = ['right','l']
@@ -88,6 +91,11 @@ def markercode_to_marker(markercode):
     elif markercode in textcodes:
         return 'text'
     return None
+
+class GuessPopup(Widget):
+    alpha = NumericProperty(1)
+    colour = ListProperty([1,0,0])
+    pass
 
 class WhiteStoneImage(Widget):
     pass
@@ -335,6 +343,7 @@ class GuiBoard(Widget):
     # Transient widgets
     playmarker = ObjectProperty(None,allownone=True) # Circle marking last played move
     boardmarkers = DictProperty({})
+    guesspopup = ObjectProperty(None,allownone=True)
 
     stones = DictProperty({})
     starpoints = DictProperty()
@@ -377,13 +386,39 @@ class GuiBoard(Widget):
                         correct = True
                         instructions = self.abstractboard.advance_position()
                         self.follow_instructions(instructions)
-                    self.comment_pre_text = '%.1f%% correct' % (100*float(self.guesses[0])/self.guesses[1])
+                    pre_text = '%.1f%% correct' % (100*float(self.guesses[0])/self.guesses[1])
                     if not correct:
-                        self.comment_pre_text += ', currently off by %dx and %dy' % (abs(coords[0]-nextcoords[0]),abs(coords[1]-nextcoords[1]))
-                    self.comment_pre_text += '\n-----\n'
+                        off_by_x = abs(coords[0]-nextcoords[0])
+                        off_by_y = abs(coords[1]-nextcoords[1])
+                        self.set_guess_popup(coords,max(off_by_x,off_by_y))
+                        pre_text = '[color=ff0000]Wrong[/color] - ' + pre_text
+                    else:
+                        pre_text = '[color=00ff00]Correct![/color] - ' + pre_text
+                    pre_text += '\n-----\n'
+                    self.comment_pre_text = pre_text
                     
+    def set_guess_popup(self,centre, size):
+        if self.guesspopup is not None:
+            self.remove_widget(self.guesspopup)
+            self.guesspopup = None
+        centrecoords = self.coord_to_pos(centre)
+        cx,cy = centrecoords
+        lr = (cx - (size+0.25)*self.stonesize[0], cy - (size+0.25)*self.stonesize[1])
+        tr = (cx + (size+1.25)*self.stonesize[0], cy + (size+1.25)*self.stonesize[1])
+        markerpos = lr
+        markersize = (tr[0]-lr[0],tr[1]-lr[1])
+        markercolour = [0. + size/(0.5*self.gridsize), 1. - size/(0.5*self.gridsize), 0.]
+        gp = GuessPopup(pos=markerpos, size=markersize, colour=markercolour,alpha=0.1)
+        self.guesspopup = gp
+        ani = Animation(alpha=1.0,t='in_out_quad',duration=0.2) + Animation(alpha=(0.15),t='in_out_quad', duration=0.5)
+        #ani.bind(on_complete=self.remove_guess_popup)
+        ani.start(gp)
+        self.add_widget(gp)
 
-            
+    def remove_guess_popup(self,*args,**kwargs):
+        if self.guesspopup is not None:
+            self.remove_widget(self.guesspopup)
+            self.guesspopup = None
 
     def add_new_stone(self,coords,newtype='newvar'):
         print 'Called add_new_stone', coords, newtype
@@ -423,6 +458,8 @@ class GuiBoard(Widget):
         self.abstractboard.curnode.set('C',comment)
 
     def set_navmode(self,spinner,mode):
+        if mode != 'Guess':
+            self.remove_guess_popup()
         self.navmode = mode
         if mode == 'Navigate':
             self.comment_pre_text = navigate_text + '\n-----\n'
@@ -430,8 +467,8 @@ class GuiBoard(Widget):
             self.comment_pre_text = edit_text + '\n-----\n'
         elif mode == 'Score':
             self.comment_pre_text = score_text + '\n-----\n'
-        elif mode == 'Record':
-            self.comment_pre_text = record_text + '\n-----\n'
+        elif mode == 'Guess':
+            self.comment_pre_text = guess_text + '\n-----\n'
 
 
     def clear_transient_widgets(self):
@@ -597,6 +634,7 @@ class GuiBoard(Widget):
 
         self.clear_transient_widgets()
         self.reset_uielements()
+        self.remove_guess_popup()
         
         if 'remove' in instructions:
             remove_stones = instructions['remove']
@@ -791,7 +829,7 @@ class GuiBoard(Widget):
         
 
 
-class BoardContainer(Widget):
+class BoardContainer(StencilView):
     board = ObjectProperty(None,allownone=True)
     boardsize = ListProperty([10,10])
     boardpos = ListProperty([10,10])
