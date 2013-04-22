@@ -7,6 +7,35 @@ game tree.
 
 from gomill import sgf, boards
 
+# class ScoreBoard:
+#     def __init__(self,size=19):
+#         self.scoringboard = boards.Board(size)
+#         self.board = [[] for i in range(size)]
+#         self.size = size
+#     def set_board(self,arr):
+#         self.board.board = arr
+#     def get_score(self):
+#         self.scoringboard.board = self.remove_dead()
+#         return self.board.area_score()
+#     def toggle_status_at(self,coord):
+#         cur = self.board[coord[0]][coord[1]]
+#         if cur == 'w':
+#             self.board[coord[0]][coord[1]] = 'dw'
+#         elif cur == 'b':
+#             self.board[coord[0]][coord[1]] = 'db'
+#         return self.get_score()
+#     def propagate_dead(self):
+#         board = self.board
+#         changing = True
+#         while changing:
+#             for x in range(self.size):
+#                 for y in range(self.size):
+#                     cur = board[x][y]
+                    
+            
+        
+
+
 def get_sgf_from_file(filen):
     fileh = open(filen)
     string = fileh.read()
@@ -120,6 +149,18 @@ def check_variations_in_node(node):
     else:
         return (node.parent.index(node) + 1,len(node.parent))
 
+def get_variations_from_node(node):
+    vars = []
+    if node.parent is not None:
+        parent = node.parent
+        if len(parent) > 1:
+            for child in parent:
+                if child is not node:
+                    childmove = child.get_move()
+                    if childmove[0] is not None and childmove[1] is not None:
+                        vars.append((childmove[0],childmove[1],parent.index(child)+1))
+    return vars
+
 def apply_node_to_board(board, node):
     board = board.copy()
     add_stones = []
@@ -221,6 +262,10 @@ def get_nonstone_from_node(node):
 
     nextplayer = get_nextplayer_from_node(node)
     instructions['nextplayer'] = nextplayer
+
+    varposs = get_variations_from_node(node)
+    if len(varposs) > 0:
+        instructions['varpositions'] = varposs
 
     return instructions
 
@@ -405,8 +450,7 @@ class AbstractBoard(object):
         self.build_varcache_to_node(node)
         return instructions
 
-    def add_new_node(self,coord,colour,newmainline=False):
-        print 'Adding new node at',coord,colour
+    def add_new_node(self,coord,colour,newmainline=False,jump=True):
         curboard = self.boards[self.curnode]
         if curboard.board[coord[0]][coord[1]] is not None:
             print 'Addition denied, stone already exists!'
@@ -421,7 +465,10 @@ class AbstractBoard(object):
         else: 
             newnode = self.curnode.new_child(0)
         newnode.set_move(colour,coord)
-        return self.jump_to_node(newnode)
+        if jump:
+            return self.jump_to_node(newnode)
+        else:
+            return {}
 
     def replace_next_node(self,coord,colour):
         if self.varcache.has_key(self.curnode):
@@ -431,6 +478,17 @@ class AbstractBoard(object):
         newnode.set_move(colour,coord)
         self.recursively_destroy_boards_from(newnode)
         return self.jump_to_node(newnode)
+
+    def insert_before_next_node(self,coord,colour):
+        if self.varcache.has_key(self.curnode):
+            reparentnode = self.curnode[self.varcache[curnode]]
+        else:
+            reparentnode = self.curnode[0]
+
+        self.add_new_node(coord,colour,jump=False)
+        reparentnode.reparent(self.curnode[-1])
+        self.recursively_destroy_boards_from(reparentnode)
+        return self.jump_to_node(self.curnode[-1])
 
     def recursively_destroy_boards_from(self,node):
         if self.boards.has_key(node):

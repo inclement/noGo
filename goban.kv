@@ -234,7 +234,7 @@
 
         Spinner:
             text: 'Navigate'
-            values: ['Navigate','Edit','Score','Guess']
+            values: ['Navigate','Play','Score','Guess','Zoom']
             size_hint: (0.25,1.0)
             on_text: bc.board.set_navmode(self,self.text)
 
@@ -266,6 +266,7 @@
             text: 'Next var\n (1 / 1)'
             on_press: bc.board.next_variation()
         NextButton:
+            board: bc.board
             id: btn_nextmove
             on_press: bc.board.advance_one_move()
         Button:
@@ -296,6 +297,7 @@
             text_size: self.parent.width,None
             halign: 'center'
             valign: 'middle'
+            on_press: self.parent.parent.board.add_new_stone(self.parent.parent.coord,'insert')
             on_release: self.parent.parent.popup.dismiss()
         Button:
             text: "...create new variation?"
@@ -326,6 +328,7 @@
         FileChooserListView:
             id: filechooser
             filters: ['*.sgf']
+            path: '.'
         BoxLayout:
             size_hint_y: None
             height: (50,'dp')
@@ -440,6 +443,26 @@
             size: (0.9*self.size[0],0.9*self.size[1])
             pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
 
+<VarStone>:
+    canvas:
+        Color:
+            rgba: 0,0,0,0.5
+        Ellipse:
+            size: self.size
+            pos: self.pos
+
+        Color:
+            rgba: self.colour
+        Ellipse:
+            size: (0.9*self.size[0],0.9*self.size[1])
+            pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
+    Label:
+        size: self.parent.size
+        pos: self.parent.pos
+        text: self.parent.text
+        color: self.parent.textcolour
+
+
 <GuiBoard>:
     gobansize: self.size
     showcoords: False
@@ -461,7 +484,7 @@
         Color:
             hsv: (0,0,0)
         Line:
-            points: [self.pos[0] + self.boardindent[0], self.pos[1] + self.boardindent[1], self.pos[0] + self.width - self.boardindent[0], self.pos[1] + self.boardindent[1], self.pos[0] + self.width - self.boardindent[0], self.pos[1] + self.height - self.boardindent[1], self.pos[0] + self.boardindent[0], self.pos[1] + self.height - self.boardindent[1]]
+            points: [self.gobanpos[0] + self.boardindent[0], self.gobanpos[1] + self.boardindent[1], self.gobanpos[0] + self.width - self.boardindent[0], self.gobanpos[1] + self.boardindent[1], self.gobanpos[0] + self.width - self.boardindent[0], self.gobanpos[1] + self.height - self.boardindent[1], self.gobanpos[0] + self.boardindent[0], self.gobanpos[1] + self.height - self.boardindent[1]]
             width: 1.0
             close: True
 
@@ -573,5 +596,5 @@
             markup: True
             text_size: self.width-10,None
             padding: 10,10
-            size: self.parent.width,self.texture_size[1]
+            size: self.parent.width-10,self.texture_size[1]
             

@@ -8,6 +8,7 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.stencilview import StencilView
+from kivy.uix.scatter import Scatter
 from kivy.uix.spinner import Spinner
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -39,8 +40,9 @@ import sys
 navigate_text = '[b]Navigation mode[/b] selected. Tap on the right side of the board to advance the game, or the left to move back.'
 edit_text = '[b]Edit mode[/b] selected. Use the edit tools below the board to add SGF markers and cut/paste variations.'
 score_text = '[b]Score mode[/b] selected. Tap on groups to toggle them as dead/alive.'
-record_text = '[b]Record mode[/b] selected. Press, move and release on the board to play stones. Pressing back and replaying a move will give the option of whether to replace the next move or to create a new variation.'
+play_text = '[b]Play mode[/b] selected. Press, move and release on the board to play stones. Pressing back and replaying a move will give the option of whether to replace the next move or to create a new variation.'
 guess_text = '[b]Guess mode[/b] selected. Try to play stones that match the existing game. A marker indicates how good the guess was, and if correct the game advances.'
+zoom_text = '[b]Zoom mode[/b] selected. Experimental.'
 
 # Keybindings
 advancekeys = ['right','l']
@@ -165,7 +167,21 @@ class GameChooserInfo(BoxLayout):
         return self
 
 class NextButton(Button):
-    pass
+    board = ObjectProperty(None,allownone=True)
+    def on_touch_down(self, touch):
+        super(NextButton,self).on_touch_down(touch)
+        if self.collide_point(*touch.pos):
+            if self.board is not None:
+                self.board.stop_autoplay()
+                callback = self.board.start_autoplay
+                Clock.schedule_once(callback,1.1)
+                touch.ud['event'] = callback
+    def on_touch_up(self,touch):
+        super(NextButton,self).on_touch_up(touch)
+        try: 
+            Clock.unschedule(touch.ud['event'])
+        except KeyError:
+            pass
 
 class PrevButton(Button):
     pass
@@ -305,7 +321,21 @@ class Stone(Widget):
         else:
             print 'colour doesn\'t exist'
             # should raise exception
-            
+
+class VarStone(Widget):
+    colour = ListProperty([1,1,1,0.5])
+    textcolour = ListProperty([0,0,0.5])
+    text = StringProperty('')
+    def set_colour(self,colour):
+        if colour in ['black','b']:
+            self.colour = [0,0,0,0.3]
+            self.textcolour = [1,1,1,0.8]
+        elif colour in ['white','w']:
+            self.colour = [1,1,1,0.6]
+            self.textcolour = [0,0,0,0.8]
+        else:
+            print 'colour doesn\'t exist:', colour
+            # should raise exception
 
 starposs = {19:[(3,3),(3,9),(3,15),(9,3),(9,9),(9,15),(15,3),(15,9),(15,15)],
             9:[(2,2),(5,2),(2,5),(5,5),(4,4)]}
@@ -344,6 +374,7 @@ class GuiBoard(Widget):
     playmarker = ObjectProperty(None,allownone=True) # Circle marking last played move
     boardmarkers = DictProperty({})
     guesspopup = ObjectProperty(None,allownone=True)
+    varstones = DictProperty({})
 
     stones = DictProperty({})
     starpoints = DictProperty()
@@ -358,9 +389,18 @@ class GuiBoard(Widget):
 
     gobanpos = ListProperty((100,100))
 
+    def start_autoplay(self,*args,**kwargs):
+        Clock.schedule_interval(self.advance_one_move,0.25)
+        self.pre_text = '[b]Autoplay[/b] activated. Tap on the navigation buttons (or the board in navigation mode) to stop autoplaying.'
+    def stop_autoplay(self,*args,**kwargs):
+        try:
+            Clock.unschedule(self.advance_one_move)
+        except:
+            pass
+
     def take_stone_input(self,coords):
         if tuple(coords) not in self.stones:
-            if self.navmode == 'Edit':
+            if self.navmode == 'Play':
                 existingvars = map(lambda j: j.get_move(),self.abstractboard.curnode)
                 alreadyexists = False
                 for entry in existingvars:
@@ -432,6 +472,9 @@ class GuiBoard(Widget):
         if newtype == 'replacenext':
             instructions = self.abstractboard.replace_next_node(coords,self.next_to_play)
             self.follow_instructions(instructions)
+        if newtype == 'insert':
+            instructions = self.abstractboard.insert_before_next_node(coords,self.next_to_play)
+            self.follow_instructions(instructions)
         print 'add_new_stone received instructions:',instructions
 
     def open_sgf_dialog(self,*args,**kwargs):
@@ -463,18 +506,21 @@ class GuiBoard(Widget):
         self.navmode = mode
         if mode == 'Navigate':
             self.comment_pre_text = navigate_text + '\n-----\n'
-        elif mode == 'Edit':
-            self.comment_pre_text = edit_text + '\n-----\n'
+        elif mode == 'Play':
+            self.comment_pre_text = play_text + '\n-----\n'
         elif mode == 'Score':
             self.comment_pre_text = score_text + '\n-----\n'
         elif mode == 'Guess':
             self.comment_pre_text = guess_text + '\n-----\n'
+        elif mode == 'Zoom':
+            self.comment_pre_text = zoom_text + '\n-----\n'
 
 
     def clear_transient_widgets(self):
         self.remove_playmarker()
         # self.remove_komarker()
         self.clear_markers()
+        self.clear_variation_stones()
 
     ## Board markers
     def add_marker(self,coord,mtype,other=[]):
@@ -563,6 +609,13 @@ class GuiBoard(Widget):
     def on_pos(self,*args,**kwargs):
         self.on_size()
 
+    def on_gobanpos(self,*args,**kwargs):
+        self.gridlines = self.get_gridlines()
+
+        self.update_starpoints()
+        self.update_stones()
+        self.update_playmarker()
+        self.update_markers()
 
     def coord_to_pos(self, coord):
         gridspacing = self.gridspacing
@@ -675,6 +728,12 @@ class GuiBoard(Widget):
                     for button in self.uielements['varbutton']:
                         button.background_color = [0,1,0,1]
                         button.text = 'Next var\n  (%d / %d)' % (curvar, varnum)
+        if 'varpositions' in instructions:
+            vars = instructions['varpositions']
+            for entry in vars:
+                colour,coord,number = entry
+                self.add_variation_stone(coord,colour,number)
+                
         if 'comment' in instructions:
             commenttext = instructions['comment']
             self.comment_text = commenttext
@@ -728,6 +787,20 @@ class GuiBoard(Widget):
                 if elementtype == 'varbutton':
                     element.background_color = [1,0,0,1]
                     element.text = 'Next var\n  (1 / 1)'
+
+    def add_variation_stone(self,coord=(1,1),colour='black',num=1,*args,**kwargs):
+        stonesize = self.stonesize
+        stone = VarStone(size=stonesize, pos=self.coord_to_pos(coord), text=str(num))
+        stone.set_colour(colour)
+        if self.varstones.has_key(coord):
+            self.remove_stone(coord)
+        self.varstones[coord] = stone
+        self.add_widget(stone)
+
+    def clear_variation_stones(self):
+        for coord in self.varstones.keys():
+            stone = self.varstones.pop(coord)
+            self.remove_widget(stone)
 
     def add_stone(self,coord=(1,1),colour='black',*args,**kwargs):
         stonesize = self.stonesize
@@ -847,13 +920,14 @@ class BoardContainer(StencilView):
         self.set_boardpos()
 
     def on_touch_down(self,touch):
+        self.board.stop_autoplay()
         if self.collide_point(*touch.pos):
             if self.board.navmode == 'Navigate':
                     if touch.x > self.x + 0.5*self.width:
                         self.board.advance_one_move()
                     else:
                         self.board.retreat_one_move()
-            elif self.board.navmode in ['Edit','Record','Guess']:
+            elif self.board.navmode in ['Play','Guess']:
                 print 'Touch down at', self.board.pos_to_coord(touch.pos)
                 print 'next to play is',self.board.next_to_play
                 marker = MakeMoveMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
@@ -861,6 +935,9 @@ class BoardContainer(StencilView):
                     self.remove_widget(self.makemovemarker)
                 self.makemovemarker = marker
                 self.add_widget(marker)
+            elif self.board.navmode == 'Zoom':
+                ani = Animation(gobanpos=(self.board.gobanpos[0]-100,self.board.gobanpos[1]-100),t='in_out_quad',duration=2) + Animation(gobanpos=self.board.gobanpos,t='in_out_quad',duration=2)
+                ani.start(self.board)
                 
 
     def on_touch_move(self,touch):
