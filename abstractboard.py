@@ -42,8 +42,20 @@ def get_sgf_from_file(filen):
     game = sgf.Sgf_game.from_string(string)
     return game
 
+def argsconverter_get_gameinfo_from_file(row_index,filen):
+    info = get_gameinfo_from_file(filen)
+    info['size_hint'] = (1.,None)
+    info['height'] = (70,'sp')
+    return info
+
 def get_gameinfo_from_file(filen):
-    return get_gameinfo_from_sgf(get_sgf_from_file(filen))
+    try:
+        info = get_gameinfo_from_sgf(get_sgf_from_file(filen))
+    except:
+        print 'Something went wrong with',filen
+        info = {'wname':'[color=ff0000]ERROR[/color] reading file'}
+    info['filepath'] = filen
+    return info
 
 def get_gameinfo_from_sgf(game):
     info = {}
@@ -58,7 +70,7 @@ def get_gameinfo_from_sgf(game):
         info['komi'] = game.get_komi()
     size = game.get_size()
     if size is not None:
-        info['size'] = game.get_size()
+        info['gridsize'] = game.get_size()
     handicap = game.get_handicap()
     if handicap is not None:
         info['handicap'] = game.get_handicap()
@@ -91,7 +103,10 @@ def get_gameinfo_from_sgf(game):
     if 'RU' in props:
         info['rules'] = rootnode.find_property('RU')
     if 'TM' in props:
-        info['timelim'] = rootnode.find_property('TM')
+        try:
+            info['timelim'] = rootnode.find_property('TM')
+        except:
+            pass
     if 'US' in props:
         info['user'] = rootnode.find_property('US')
     return info
@@ -381,8 +396,6 @@ class AbstractBoard(object):
                 newnode = self.curnode[self.varcache[curnode]]
             else:
                 newnode = self.curnode[0]
-        else:
-            return {}
 
         self.curnode = newnode
         newboard = curboard.copy()

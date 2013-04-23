@@ -13,6 +13,8 @@ from kivy.uix.spinner import Spinner
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.screenmanager import *
+from kivy.adapters.listadapter import ListAdapter
+from kivy.uix.listview import ListView, ListItemButton
 from kivy.utils import platform
 from kivy.animation import Animation
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
@@ -119,23 +121,28 @@ class StandaloneGameChooser(BoxLayout):
             pathwidget.construct_from_sgfinfo(info)
             self.gameslist.add_widget(pathwidget)
 
-class GameChooserButton(Button):
+class GameChooserButton(ListItemButton):
     info = ObjectProperty()
-    owner = ObjectProperty(None)
+    owner = ObjectProperty(None,allownone=True)
     filepath = StringProperty('')
-    def construct_from_sgfinfo(self,info):
-        self.info.construct_from_sgfinfo(info)
-    
-
-class GameChooserInfo(BoxLayout):
-    owner = ObjectProperty('')
     bname = StringProperty('')
     wname = StringProperty('')
     brank = StringProperty('')
     wrank = StringProperty('')
     result = StringProperty('')
     date = StringProperty('')
+    def construct_from_sgfinfo(self,info):
+        self.info.construct_from_sgfinfo(info)
+
+class GameChooserInfo(BoxLayout):
+    owner = ObjectProperty('')
     filepath = StringProperty('')
+    bname = StringProperty('')
+    wname = StringProperty('')
+    brank = StringProperty('')
+    wrank = StringProperty('')
+    result = StringProperty('')
+    date = StringProperty('')
     def construct_from_sgfinfo(self,info):
         if 'bname' in info:
             self.bname = info['bname']
@@ -747,6 +754,10 @@ class GuiBoard(Widget):
             elif player == 'a':
                 self.next_to_play = alternate_colour(self.next_to_play)
 
+        if 'pre_text' in instructions:
+            text = instructions['pre_text']
+            self.comment_pre_text = text
+
     def get_player_details(self,*args,**kwargs):
         wname, bname = self.abstractboard.get_player_names()
         wrank, brank = self.abstractboard.get_player_ranks()
@@ -1008,6 +1019,11 @@ class BoardContainer(StencilView):
 class NogoManager(ScreenManager):
     pass
 
+class DataItem(object):
+    def __init__(self, text='', is_selected=False):
+        self.text = text
+        self.is_selected = is_selected
+
 class GobanApp(App):
 
     def build(self):
@@ -1017,6 +1033,20 @@ class GobanApp(App):
         pbv.board.load_sgf_from_file('',['./67honinbot1.sgf'])
 
         gc = StandaloneGameChooser(managedby=sm)
+
+        files = map(abspath,glob('./games/Gosei/*.sgf'))
+        print 'sgf files in current directory:',files
+        args_converter = argsconverter_get_gameinfo_from_file
+
+        list_adapter = ListAdapter(data=files,
+                                   args_converter = args_converter,
+                                   selection_mode='single',
+                                   allow_empty_selection=True,
+                                   cls=GameChooserButton
+                                   )
+        list_view = ListView(adapter=list_adapter)
+        gc.add_widget(list_view)
+
 
         bv = Screen(name="Board")
         bv.add_widget(pbv)
