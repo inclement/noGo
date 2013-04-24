@@ -1,37 +1,89 @@
 #:kivy 1.6.0
+#:import main main
+
+<MySpinnerOption>:
+    height: (60,'sp')
 
 <GameInfo>:
     orientation: 'vertical'
+    do_scroll_x: False
 
-    Label:
-        text: 'W player:'
-        textsize: self.size
-        halign: 'left'
-    TextInput:
-        text: self.parent.wname
-        multiline: False
-    Label:
-        text: 'B player:'
-        textsize: self.size
-        halign: 'left'
-    TextInput:
-        text: self.parent.bname
-        multiline: False
-    Label:
-        text: 'Komi:'
-    TextInput:
-        text: self.parent.komi
-        multiline: False
-    Label:
-        text: 'Result:'
-    TextInput:
-        text: self.parent.result
-        multiline: False
-    Label:
-        text: 'Event:'
-    TextInput:
-        text: self.parent.event
-        multiline: False
+    ScrollView:
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: (300,'sp')
+            BoxLayout:
+                orientation: 'horizontal'
+                Label:
+                    text: 'W player:'
+                    textsize: self.size
+                    halign: 'left'
+                    valign: 'middle'
+                    size_hint: (0.65,1.)
+                Label:
+                    text: 'W rank:'
+                    size_hint: (0.35,1.)
+            BoxLayout:
+                orientation: 'horizontal'
+                TextInput:
+                    text: root.wname
+                    multiline: False
+                    size_hint: (0.65,1.)
+                TextInput:
+                    text: root.wrank
+                    multiline: False
+                    size_hint: (0.35,1.)
+            BoxLayout:
+                orientation: 'horizontal'
+                Label:
+                    text: 'B player:'
+                    size_hint: (0.65,1.)
+                Label:
+                    text: 'B rank:'
+                    size_hint: (0.35,1.)
+            BoxLayout:
+                orientation: 'horizontal'
+                TextInput:
+                    text: root.bname
+                    multiline: False
+                    size_hint: (0.65,1.)
+                TextInput:
+                    text: root.brank
+                    multiline: False
+                    size_hint: (0.35,1.)
+            BoxLayout:
+                orientation: 'horizontal'
+                Label:
+                    text: 'Komi:'
+                Label:
+                    text: 'Result:'
+            BoxLayout:
+                orientation: 'horizontal'
+                TextInput:
+                    text: root.komi
+                    multiline: False
+                TextInput:
+                    text: root.result
+                    multiline: False
+            Label:
+                text: 'Event:'
+            TextInput:
+                text: root.event
+                multiline: False
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: None
+        height: (60,'sp')
+        Button:
+            text: 'Cancel'
+            on_press: root.popup.dismiss()
+        Button:
+            text: 'Submit'
+     
+        
+        
+    
 
 <GuessPopup>
     canvas:
@@ -243,11 +295,14 @@
         Button:
             text: 'Go to game chooser'
             on_press: homeroot.managedby.current = 'Choose'
-        
+        Button:
+            text: 'New board'
+            on_press: homeroot.managedby.new_board()
 
 <PhoneBoardView>:
     boardcontainer: bc
     board: bc.board
+    spinner: navspinner
 
     orientation: 'vertical'
 
@@ -274,10 +329,12 @@
             on_next_to_play: self.set_to_play(self.next_to_play)
 
         Spinner:
+            id: navspinner
             text: 'Navigate'
             values: ['Navigate','Play','Score','Guess','Zoom']
             size_hint: (0.25,1.0)
             on_text: bc.board.set_navmode(self,self.text)
+            option_cls: main.MySpinnerOption
 
     BoardContainer:
         id: bc

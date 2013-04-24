@@ -9,7 +9,7 @@ from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.stencilview import StencilView
 from kivy.uix.scatter import Scatter
-from kivy.uix.spinner import Spinner
+from kivy.uix.spinner import Spinner, SpinnerOption
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.screenmanager import *
@@ -96,9 +96,15 @@ def markercode_to_marker(markercode):
         return 'text'
     return None
 
+class MySpinnerOption(SpinnerOption):
+    pass
+
 class GameInfo(BoxLayout):
+    popup = ObjectProperty(None,allownone=True)
     bname = StringProperty('')
     wname = StringProperty('')
+    brank = StringProperty('')
+    wrank = StringProperty('')
     komi = StringProperty('')
     result = StringProperty('')
     event = StringProperty('')
@@ -107,6 +113,10 @@ class GameInfo(BoxLayout):
             self.bname = gi['bname']
         if 'wname' in gi:
             self.wname = gi['wname']
+        if 'brank' in gi:
+            self.brank = gi['brank']
+        if 'wrank' in gi:
+            self.wrank = gi['wrank']
         if 'komi' in gi:
             self.komi = str(gi['komi'])
         if 'result' in gi:
@@ -220,9 +230,11 @@ class HomeScreen(BoxLayout):
     managedby = ObjectProperty(None,allownone=True)
 
 class PhoneBoardView(BoxLayout):
-    manager = ObjectProperty(None)
-    boardcontainer = ObjectProperty(None)
-    board = ObjectProperty(None)
+    managedby = ObjectProperty(None,allownone=True)
+    screenname = StringProperty('')
+    boardcontainer = ObjectProperty(None,allownone=True)
+    board = ObjectProperty(None,allownone=True)
+    spinner = ObjectProperty(None,allownone=True)
 
 class MakeMoveMarker(Widget):
     coord = ListProperty((0,0))
@@ -368,7 +380,7 @@ starposs = {19:[(3,3),(3,9),(3,15),(9,3),(9,9),(9,15),(15,3),(15,9),(15,15)],
 class GuiBoard(Widget):
     gridsize = NumericProperty(19) # Board size
     navmode = StringProperty('Navigate') # How to scale the board
-    abstractboard = ObjectProperty(AbstractBoard()) # Object to query for where to play moves
+    abstractboard = ObjectProperty(None,allownone=True) # Object to query for where to play moves
     uielements = DictProperty({})
     makemovemarker = ObjectProperty(None,allownone=True)
     touchoffset = ListProperty([0,0])
@@ -415,6 +427,11 @@ class GuiBoard(Widget):
 
     gobanpos = ListProperty((100,100))
 
+    def __init__(self,*args,**kwargs):
+        super(GuiBoard,self).__init__(*args,**kwargs)
+        instructions = self.abstractboard = AbstractBoard()
+        self.reset_abstractboard()
+
     def start_autoplay(self,*args,**kwargs):
         Clock.schedule_interval(self.advance_one_move,0.25)
         self.pre_text = '[b]Autoplay[/b] activated. Tap on the navigation buttons (or the board in navigation mode) to stop autoplaying.'
@@ -428,6 +445,7 @@ class GuiBoard(Widget):
         gi = GameInfo()
         gi.populate_from_gameinfo(self.gameinfo)
         popup = Popup(content=gi,title='Game info.',size_hint=(0.85,0.85))
+        popup.content.popup = popup
         popup.open()
 
         
@@ -777,7 +795,9 @@ class GuiBoard(Widget):
         if 'nextplayer' in instructions:
             player = instructions['nextplayer']
             if player in ['b','w']:
+                print 'next_to_play from',self.next_to_play
                 self.next_to_play = player
+                print '-->',self.next_to_play
             elif player == 'a':
                 self.next_to_play = alternate_colour(self.next_to_play)
 
@@ -1045,7 +1065,30 @@ class BoardContainer(StencilView):
 
 
 class NogoManager(ScreenManager):
-    pass
+    boards = ListProperty([])
+    def new_board(self,from_file='',mode='Play'):
+        pbv = PhoneBoardView()
+        if from_file != '':
+            try:
+                pbv.load_sgf_from_file('',[from_file])
+            except:
+                popup = Popup(content=Label(text='SGF was unable to be opened. Please check the file exists and is a valid SGF.',title='Error opening file'),size_hint=(0.85,0.4),title='Error')
+                popup.open()
+                return False
+        i = 1
+        while True:
+            if not self.has_screen('Board %d' % i):
+                name = 'Board %d' % i
+                break
+            i += 1
+        s = Screen(name=name)
+        s.add_widget(pbv)
+        pbv.screenname = name
+        pbv.managedby = self
+        pbv.spinner.text = mode
+        self.add_widget(s)
+        self.boards.append(name)
+        self.current = name
 
 class DataItem(object):
     def __init__(self, text='', is_selected=False):
@@ -1074,7 +1117,6 @@ class GobanApp(App):
                                    )
         list_view = ListView(adapter=list_adapter)
         gc.add_widget(list_view)
-
 
         bv = Screen(name="Board")
         bv.add_widget(pbv)

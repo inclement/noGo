@@ -356,7 +356,9 @@ class AbstractBoard(object):
 
         self.boards = {}
         self.curnode = game.get_root()
-        self.boards[self.curnode] = boards.Board(self.game.size)
+        board = boards.Board(self.game.size)
+        board, instructions = apply_node_to_board(board,self.curnode)
+        self.boards[self.curnode] = board
         self.varcache = {}
 
     def load_sgf_from_file(self,filen):
