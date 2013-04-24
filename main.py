@@ -96,6 +96,24 @@ def markercode_to_marker(markercode):
         return 'text'
     return None
 
+class GameInfo(BoxLayout):
+    bname = StringProperty('')
+    wname = StringProperty('')
+    komi = StringProperty('')
+    result = StringProperty('')
+    event = StringProperty('')
+    def populate_from_gameinfo(self,gi):
+        if 'bname' in gi:
+            self.bname = gi['bname']
+        if 'wname' in gi:
+            self.wname = gi['wname']
+        if 'komi' in gi:
+            self.komi = str(gi['komi'])
+        if 'result' in gi:
+            self.result = gi['result']
+        if 'event' in gi:
+            self.event = gi['event']
+
 class GuessPopup(Widget):
     alpha = NumericProperty(1)
     colour = ListProperty([1,0,0])
@@ -355,6 +373,7 @@ class GuiBoard(Widget):
     makemovemarker = ObjectProperty(None,allownone=True)
     touchoffset = ListProperty([0,0])
     guesses = ListProperty([0,0])
+    gameinfo = DictProperty({})
 
     variations_exist = BooleanProperty(False)
 
@@ -404,6 +423,14 @@ class GuiBoard(Widget):
             Clock.unschedule(self.advance_one_move)
         except:
             pass
+
+    def view_game_info(self):
+        gi = GameInfo()
+        gi.populate_from_gameinfo(self.gameinfo)
+        popup = Popup(content=gi,title='Game info.',size_hint=(0.85,0.85))
+        popup.open()
+
+        
 
     def take_stone_input(self,coords):
         if tuple(coords) not in self.stones:
@@ -910,6 +937,7 @@ class GuiBoard(Widget):
         instructions = self.abstractboard.reset_position()
         self.get_player_details()
         self.follow_instructions(instructions)
+        self.gameinfo = get_gameinfo_from_sgf(self.abstractboard.game)
         
 
 

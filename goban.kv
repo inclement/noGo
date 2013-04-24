@@ -1,5 +1,38 @@
 #:kivy 1.6.0
 
+<GameInfo>:
+    orientation: 'vertical'
+
+    Label:
+        text: 'W player:'
+        textsize: self.size
+        halign: 'left'
+    TextInput:
+        text: self.parent.wname
+        multiline: False
+    Label:
+        text: 'B player:'
+        textsize: self.size
+        halign: 'left'
+    TextInput:
+        text: self.parent.bname
+        multiline: False
+    Label:
+        text: 'Komi:'
+    TextInput:
+        text: self.parent.komi
+        multiline: False
+    Label:
+        text: 'Result:'
+    TextInput:
+        text: self.parent.result
+        multiline: False
+    Label:
+        text: 'Event:'
+    TextInput:
+        text: self.parent.event
+        multiline: False
+
 <GuessPopup>
     canvas:
         Color:
@@ -278,9 +311,9 @@
             id: btn_nextmove
             on_press: bc.board.advance_one_move()
         Button:
-            id: btn_end
-            text: 'End'
-            on_press: bc.board.jump_to_end()
+            id: btn_gameinfo
+            text: 'Info'
+            on_press: bc.board.view_game_info()
         
 
 
