@@ -390,6 +390,16 @@ class AbstractBoard(object):
         self.boards[self.curnode] = board
         return instructions
 
+    def jump_to_varbranch(self):
+        curnode = self.curnode
+        while len(curnode) <= 1 and curnode.parent is not None:
+            print 'curnode',len(curnode)
+            curnode = curnode.parent
+        if self.varcache.has_key(curnode):
+            self.varcache[curnode] = 0
+        return self.jump_to_node(curnode)
+            
+
     def advance_position(self,*args,**kwargs):
         curnode = self.curnode
         curboard = self.boards[curnode]

@@ -1,5 +1,7 @@
 #:kivy 1.6.0
 #:import main main
+#:import la kivy.adapters.listadapter
+#:import lv kivy.uix.listview
 
 <MySpinnerOption>:
     height: (60,'sp')
@@ -288,16 +290,23 @@
         source: 'logo-1.png'
 
     GridLayout:
-        cols: 2
+        cols: 3
+        size_hint: (1.,0.5)
         Button:
-            text: 'Go to board'
-            on_press: homeroot.managedby.current = 'Board'
-        Button:
-            text: 'Go to game chooser'
+            text: 'Game collections'
             on_press: homeroot.managedby.current = 'Choose'
         Button:
             text: 'New board'
             on_press: homeroot.managedby.new_board()
+        Button:
+            text: 'Open SGF from file'
+            on_release: homeroot.managedby.open_sgf_dialog()
+
+    ListView:
+        adapter: la.ListAdapter(data=root.managedby.boards,args_converter = lambda c,j: {'text': j,'size_hint_y': None, 'height': (50,'sp')}, selection_mode='single', allow_empty_selection=True,cls=lv.ListItemButton)
+    Label:
+        size_hint: (1.,0.5)
+        text: str(root.managedby.screen_names)
 
 <PhoneBoardView>:
     boardcontainer: bc
@@ -312,8 +321,14 @@
 
         Button:
             size_hint: (0.15,1.0)
-            text: 'Home'
-            on_press: self.parent.parent.managedby.current = 'Home'
+            on_release: self.parent.parent.managedby.current = 'Home'
+            Image:
+                width: self.parent.width
+                y: self.parent.y + 0.05*self.parent.height
+                height: 0.9*self.parent.height
+                source: 'back-1.png'
+                keep_ratio: True
+                mipmap: True
             
 
         PlayerDetails:
@@ -353,9 +368,9 @@
         size_hint: (1.0,0.09)
 
         Button:
-            id: btn_opensgf
-            text: 'Open SGF'
-            on_release: bc.board.open_sgf_dialog()
+            id: btn_varbranch
+            text: 'Var branch'
+            on_release: bc.board.back_to_varbranch()
         PrevButton:
             id: btn_prevmove
             on_press: bc.board.retreat_one_move()
@@ -435,7 +450,7 @@
                 on_release: self.parent.parent.parent.popup.dismiss()
             Button:
                 text: "Load"
-                on_press: self.parent.parent.parent.board.load_sgf_from_file(filechooser.path,filechooser.selection)
+                on_press: root.manager.new_board(filechooser.selection[0],'Navigate')
                 on_release: self.parent.parent.parent.popup.dismiss()
 
 <ButtonTest>:

@@ -257,7 +257,7 @@ class PickNewVarType(FloatLayout):
     coord = ListProperty((0,0))
 
 class OpenSgfDialog(FloatLayout):
-    board = ObjectProperty(None)
+    manager = ObjectProperty(None)
     popup = ObjectProperty(None)
 
 class PlayerDetails(BoxLayout):
@@ -268,9 +268,11 @@ class PlayerDetails(BoxLayout):
     wrank = StringProperty('')
     btext = StringProperty('B player')
     brank = StringProperty('')
+    next_to_play = StringProperty('')
     wtoplaycolour = ListProperty([0,1,0,1])
     btoplaycolour = ListProperty([0,1,0,1])
     def set_to_play(self,player):
+        print 'set_to_play called!',player
         if player == 'w':
             self.wtoplaycolour = [0,0.8,0,1]
             self.btoplaycolour = [0,0.8,0,0]
@@ -448,7 +450,9 @@ class GuiBoard(Widget):
         popup.content.popup = popup
         popup.open()
 
-        
+    def back_to_varbranch(self):
+        instructions = self.abstractboard.jump_to_varbranch()
+        self.follow_instructions(instructions)
 
     def take_stone_input(self,coords):
         if tuple(coords) not in self.stones:
@@ -1066,13 +1070,20 @@ class BoardContainer(StencilView):
 
 class NogoManager(ScreenManager):
     boards = ListProperty([])
+    def open_sgf_dialog(self):
+        popup = Popup(content=OpenSgfDialog(manager=self),title='Open SGF',size_hint=(0.85,0.85))
+        popup.content.popup = popup
+        popup.open()
     def new_board(self,from_file='',mode='Play'):
+        print 'from_file is',from_file
         pbv = PhoneBoardView()
         if from_file != '':
             try:
-                pbv.load_sgf_from_file('',[from_file])
+                print 'loading from file'
+                pbv.board.load_sgf_from_file('',[from_file])
+                print 'done loading'
             except:
-                popup = Popup(content=Label(text='SGF was unable to be opened. Please check the file exists and is a valid SGF.',title='Error opening file'),size_hint=(0.85,0.4),title='Error')
+                popup = Popup(content=Label(text='Unable to open SGF. Please check the file exists and is a valid SGF.',title='Error opening file'),size_hint=(0.85,0.4),title='Error')
                 popup.open()
                 return False
         i = 1
@@ -1081,6 +1092,7 @@ class NogoManager(ScreenManager):
                 name = 'Board %d' % i
                 break
             i += 1
+        print 'made new board, next_to_play is', pbv.board.next_to_play
         s = Screen(name=name)
         s.add_widget(pbv)
         pbv.screenname = name
@@ -1100,9 +1112,6 @@ class GobanApp(App):
     def build(self):
         sm = NogoManager(transition=SlideTransition(direction='left'))
 
-        pbv = PhoneBoardView()
-        pbv.board.load_sgf_from_file('',['./67honinbot1.sgf'])
-
         gc = StandaloneGameChooser(managedby=sm)
 
         files = map(abspath,glob('./games/Gosei/*.sgf'))
@@ -1118,8 +1127,6 @@ class GobanApp(App):
         list_view = ListView(adapter=list_adapter)
         gc.add_widget(list_view)
 
-        bv = Screen(name="Board")
-        bv.add_widget(pbv)
         hv = Screen(name="Home")
         hv.add_widget(HomeScreen(managedby=sm))
         gv = Screen(name="Choose")
@@ -1127,10 +1134,9 @@ class GobanApp(App):
 
         gc.populate_from_directory('.')
 
-        pbv.managedby = sm
+        #pbv.managedby = sm
 
         sm.add_widget(hv)
-        sm.add_widget(bv)
         sm.add_widget(gv)
 
         return sm
