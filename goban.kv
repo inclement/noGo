@@ -3,6 +3,35 @@
 #:import la kivy.adapters.listadapter
 #:import lv kivy.uix.listview
 
+<CollectionsIndex>:
+    id: ci
+    collections_list: collections
+    orientation: 'vertical'
+
+    ListView:
+        id: collections
+    
+    Widget:
+        size_hint:(1.,0.05)
+        canvas:
+            Color:
+                rgb: (0.195,0.641,0.805)
+            Line:
+                points: [self.x + 0.05*self.width, self.y + 0.5*self.height, self.x + 0.95*self.width, self.y + 0.5*self.height]
+                width: 2
+                cap: 'square'
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint: (1.,0.1)
+        Button:
+            size_hint: (0.25,1.)
+            text: 'Home'
+            on_press: root.managedby.current = 'Home'
+        Button:
+            size_hint: (0.75,1.)
+            text: 'View selected collection'
+            on_release: root.managedby.view_or_open_collection(collections.adapter.selection)
+
 <PrintyButton>:
     text: ''
 
@@ -100,15 +129,10 @@
 
 <StandaloneGameChooser>:
     id: sgc
-    gameslist: thegames
     orientation: 'vertical'
-    BoxLayout:
-        orientation: 'horizontal'
-        size_hint: (1.,0.1)
-        Button:
-            text: 'Home'
-            on_press: sgc.managedby.current = 'Home'
-
+    gameslist: gl
+    ListView:
+        id: gl
     Widget:
         size_hint:(1.,0.05)
         canvas:
@@ -118,11 +142,32 @@
                 points: [self.x + 0.05*self.width, self.y + 0.5*self.height, self.x + 0.95*self.width, self.y + 0.5*self.height]
                 width: 2
                 cap: 'square'
-    
     BoxLayout:
-        size_hint: (1.,0.95)
+        orientation: 'horizontal'
+        size_hint: (1.,0.1)
+        Button:
+            text: 'Home'
+            on_press: sgc.managedby.current = 'Home'
+
+    
+
+<CollectionChooserButton>:
+    height: (50,'sp')
+    size_hint: 1.,None
+    BoxLayout:
+        pos: self.parent.pos
+        size: self.parent.size
         orientation: 'vertical'
-        id: thegames
+        Label:
+            text: '%s (%d games)' % (root.colname, root.numentries)
+            textsize: self.size
+            halign: 'left'
+            valign: 'middle'
+        Label:
+            text: root.coldir
+            textsize: self.size
+            halign: 'left'
+            valign: 'middle'
 
 <GameChooserButton>:
     info: gamechooser
@@ -299,10 +344,10 @@
         size_hint: (1.,0.25)
         Button:
             text: 'Game collections'
-            on_press: homeroot.managedby.current = 'Choose'
+            on_press: homeroot.managedby.current = 'Collections Index'
         Button:
             text: 'New board'
-            on_press: homeroot.managedby.new_board()
+            on_release: homeroot.managedby.new_board()
         Button:
             text: 'Open SGF from file'
             on_release: homeroot.managedby.open_sgf_dialog()

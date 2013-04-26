@@ -29,6 +29,7 @@ from math import sin
 from functools import partial
 from glob import glob
 from os.path import abspath
+from json import dump as jsondump, load as jsonload
 
 from gomill import sgf, boards
 from abstractboard import *
@@ -145,6 +146,15 @@ class WhiteStoneImage(Widget):
 class BlackStoneImage(Widget):
     pass
 
+def get_collectioninfo_from_dir(row_index,dirn):
+    sgfs = glob(dirn + '/*.sgf')
+    colname = dirn.split('/')[-1]
+    return {'colname': colname, 'coldir': dirn, 'numentries': len(sgfs)}
+
+class CollectionsIndex(BoxLayout):
+    collections_list = ObjectProperty(None,allownone=True)
+    managedby = ObjectProperty(None,allownone=True)
+
 class StandaloneGameChooser(BoxLayout):
     managedby = ObjectProperty(None,allownone=True)
     gameslist = ObjectProperty()
@@ -159,6 +169,11 @@ class StandaloneGameChooser(BoxLayout):
             pathwidget = GameChooserButton(owner=self)
             pathwidget.construct_from_sgfinfo(info)
             self.gameslist.add_widget(pathwidget)
+
+class CollectionChooserButton(ListItemButton):
+    colname = StringProperty('')
+    coldir = StringProperty('')
+    numentries = NumericProperty(0)
 
 class GameChooserButton(ListItemButton):
     info = ObjectProperty()
@@ -1087,12 +1102,47 @@ class NogoManager(ScreenManager):
         print 'open games list is',l
         if len(l)>0:
             self.current = l[0].text
+    def view_or_open_collection(self,dirn):
+        if len(dirn) > 0:
+            dirn = dirn[0].coldir
+            if self.has_screen('Collection ' + dirn):
+                self.current = 'Collection ' + dirn
+            else:
+                files = map(abspath,glob(dirn + '/*.sgf'))
+                screenname = 'Collection ' + dirn
+                args_converter = argsconverter_get_gameinfo_from_file
+                list_adapter = ListAdapter(data=files,
+                                           args_converter = args_converter,
+                                           selection_mode='single',
+                                           allow_empty_selection=True,
+                                           cls=GameChooserButton
+                                           )
+                gc = StandaloneGameChooser(managedby=self)
+                gc.gameslist.adapter = list_adapter
+                s = Screen(name=screenname)
+                s.add_widget(gc)
+                self.add_widget(s)
+                self.current = s.name
+                
+
+                
     def open_sgf_dialog(self):
         popup = Popup(content=OpenSgfDialog(manager=self),title='Open SGF',size_hint=(0.85,0.85))
         popup.content.popup = popup
         popup.open()
     def new_board(self,from_file='',mode='Play'):
         print 'from_file is',from_file
+
+        i = 1
+        while True:
+            if not self.has_screen('Board %d' % i):
+                name = 'Board %d' % i
+                break
+            i += 1
+        s = Screen(name=name)
+        self.add_widget(s)
+        self.current = name
+
         pbv = PhoneBoardView()
         if from_file != '':
             try:
@@ -1103,21 +1153,32 @@ class NogoManager(ScreenManager):
                 popup = Popup(content=Label(text='Unable to open SGF. Please check the file exists and is a valid SGF.',title='Error opening file'),size_hint=(0.85,0.4),title='Error')
                 popup.open()
                 return False
-        i = 1
-        while True:
-            if not self.has_screen('Board %d' % i):
-                name = 'Board %d' % i
-                break
-            i += 1
-        print 'made new board, next_to_play is', pbv.board.next_to_play
-        s = Screen(name=name)
         s.add_widget(pbv)
         pbv.screenname = name
         pbv.managedby = self
         pbv.spinner.text = mode
-        self.add_widget(s)
         self.boards.append(name)
-        self.current = name
+    def create_collections_index(self):
+        fileh = open('game_collection_locations.json','r')
+        collection_folders = jsonload(fileh)
+        fileh.close()
+        collections_index = CollectionsIndex(managedby=self)
+        collections_args_converter = get_collectioninfo_from_dir
+        list_adapter = ListAdapter(data=collection_folders,
+                                   args_converter=collections_args_converter,
+                                   selection_mode='single',
+                                   allow_empty_selection=True,
+                                   cls=CollectionChooserButton
+                                   )
+        collections_index.collections_list.adapter = list_adapter
+        
+
+        
+        collections_screen = Screen(name='Collections Index')
+        collections_screen.add_widget(collections_index)
+        self.add_widget(collections_screen)
+
+
 
 class DataItem(object):
     def __init__(self, text='', is_selected=False):
@@ -1135,19 +1196,21 @@ class GobanApp(App):
     def build(self):
         sm = NogoManager(transition=SlideTransition(direction='left'))
 
-        gc = StandaloneGameChooser(managedby=sm)
-        files = map(abspath,glob('./games/Gosei/*.sgf'))
-        print 'sgf files in current directory:',files
-        args_converter = argsconverter_get_gameinfo_from_file
+        #gc = StandaloneGameChooser(managedby=sm)
+        # files = map(abspath,glob('./games/Gosei/*.sgf'))
+        # print 'sgf files in current directory:',files
+        # args_converter = argsconverter_get_gameinfo_from_file
 
-        list_adapter = ListAdapter(data=files,
-                                   args_converter = args_converter,
-                                   selection_mode='single',
-                                   allow_empty_selection=True,
-                                   cls=GameChooserButton
-                                   )
-        list_view = ListView(adapter=list_adapter)
-        gc.add_widget(list_view)
+        # list_adapter = ListAdapter(data=files,
+        #                            args_converter = args_converter,
+        #                            selection_mode='single',
+        #                            allow_empty_selection=True,
+        #                            cls=GameChooserButton
+        #                            )
+        # list_view = ListView(adapter=list_adapter)
+        # gc.add_widget(list_view)
+
+        sm.create_collections_index()
 
         hv = Screen(name="Home")
         hs = HomeScreen(managedby=sm)
@@ -1170,15 +1233,16 @@ class GobanApp(App):
         # hs.add_widget(buttons)
 
         hv.add_widget(hs)
-        gv = Screen(name="Choose")
-        gv.add_widget(gc)
+        # gv = Screen(name="Choose")
+        # gv.add_widget(gc)
 
-        gc.populate_from_directory('.')
+        # gc.populate_from_directory('.')
 
         #pbv.managedby = sm
 
         sm.add_widget(hv)
-        sm.add_widget(gv)
+        # sm.add_widget(gv)
+        sm.current = 'Home'
 
         return sm
         # return pbv
