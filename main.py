@@ -96,6 +96,17 @@ def markercode_to_marker(markercode):
         return 'text'
     return None
 
+class MyListView(ListView):
+    selection = ListProperty()
+
+class PrintyButton(Button):
+    def getselchan(self,*args,**kwargs):
+        print args
+        print kwargs
+        self.text = str(args) + str(kwargs)
+        print args[0][0].text
+
+
 class MySpinnerOption(SpinnerOption):
     pass
 
@@ -228,6 +239,8 @@ class CommentInput(BoxLayout):
 
 class HomeScreen(BoxLayout):
     managedby = ObjectProperty(None,allownone=True)
+    gamesview = ObjectProperty(None,allownone=True)
+    pb = ObjectProperty(None, allownone=True)
 
 class PhoneBoardView(BoxLayout):
     managedby = ObjectProperty(None,allownone=True)
@@ -1070,6 +1083,10 @@ class BoardContainer(StencilView):
 
 class NogoManager(ScreenManager):
     boards = ListProperty([])
+    def set_current_from_opengameslist(self,l):
+        print 'open games list is',l
+        if len(l)>0:
+            self.current = l[0].text
     def open_sgf_dialog(self):
         popup = Popup(content=OpenSgfDialog(manager=self),title='Open SGF',size_hint=(0.85,0.85))
         popup.content.popup = popup
@@ -1107,13 +1124,18 @@ class DataItem(object):
         self.text = text
         self.is_selected = is_selected
 
+def printargs(*args,**kwargs):
+    '###### printargs'
+    print args
+    print kwargs
+    '######'
+
 class GobanApp(App):
 
     def build(self):
         sm = NogoManager(transition=SlideTransition(direction='left'))
 
         gc = StandaloneGameChooser(managedby=sm)
-
         files = map(abspath,glob('./games/Gosei/*.sgf'))
         print 'sgf files in current directory:',files
         args_converter = argsconverter_get_gameinfo_from_file
@@ -1128,7 +1150,26 @@ class GobanApp(App):
         gc.add_widget(list_view)
 
         hv = Screen(name="Home")
-        hv.add_widget(HomeScreen(managedby=sm))
+        hs = HomeScreen(managedby=sm)
+
+        # list_adapter = ListAdapter(data=sm.boards,
+        #                            args_converter = lambda c,j: {'text': j, 'size_hint_y': None, 'height': (50,'sp')},
+        #                            selection_mode='single',
+        #                            allow_empty_mode=True,
+        #                            cls=ListItemButton,
+        #                            )
+        print hs.gamesview.adapter
+        # hs.gamesview.adapter = list_adapter
+        # list_view = ListView(adapter=list_adapter,size_hint=(1.,0.6))
+        # buttons = BoxLayout(size_hint=(1.,0.1),orientation='horizontal')
+        # buttons.add_widget(Button(text='Switch to selected game.'))
+        # buttons.add_widget(PrintyButton(text='???'))
+
+        # list_adapter.bind(on_selection_change=printargs)
+        # hs.add_widget(list_view)
+        # hs.add_widget(buttons)
+
+        hv.add_widget(hs)
         gv = Screen(name="Choose")
         gv.add_widget(gc)
 

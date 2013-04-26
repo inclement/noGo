@@ -3,6 +3,9 @@
 #:import la kivy.adapters.listadapter
 #:import lv kivy.uix.listview
 
+<PrintyButton>:
+    text: ''
+
 <MySpinnerOption>:
     height: (60,'sp')
 
@@ -283,6 +286,8 @@
 <HomeScreen>:
     id: homeroot
     orientation: 'vertical'
+    gamesview: opengames
+    pb: pb
 
     Image:
         size_hint: ((1.,0.2))
@@ -291,7 +296,7 @@
 
     GridLayout:
         cols: 3
-        size_hint: (1.,0.5)
+        size_hint: (1.,0.25)
         Button:
             text: 'Game collections'
             on_press: homeroot.managedby.current = 'Choose'
@@ -302,11 +307,23 @@
             text: 'Open SGF from file'
             on_release: homeroot.managedby.open_sgf_dialog()
 
-    ListView:
-        adapter: la.ListAdapter(data=root.managedby.boards,args_converter = lambda c,j: {'text': j,'size_hint_y': None, 'height': (50,'sp')}, selection_mode='single', allow_empty_selection=True,cls=lv.ListItemButton)
     Label:
-        size_hint: (1.,0.5)
-        text: str(root.managedby.screen_names)
+        text: 'Currently open games:'
+        size_hint: (1.,0.05)
+    MyListView:
+        id: opengames
+        size_hint: (1.,0.60)
+        adapter: la.ListAdapter(data=root.managedby.boards,args_converter = lambda c,j: {'text': j,'size_hint_y': None, 'height': (50,'sp')}, selection_mode='single', allow_empty_selection=True,cls=lv.ListItemButton)
+        selection: self.adapter.selection
+    BoxLayout:
+        size_hint: (1.,0.1)
+        orientation: 'horizontal'
+        Button:
+            text: '???'
+        PrintyButton:
+            id: pb
+            text: 'Switch to selected game.'
+            on_release: root.managedby.set_current_from_opengameslist(opengames.adapter.selection)
 
 <PhoneBoardView>:
     boardcontainer: bc
