@@ -158,6 +158,8 @@ class CollectionsIndex(BoxLayout):
 class StandaloneGameChooser(BoxLayout):
     managedby = ObjectProperty(None,allownone=True)
     gameslist = ObjectProperty()
+    name = StringProperty('')
+    dirn = StringProperty('')
     def populate_from_directory(self,dir):
         sgfs = glob(''.join((dir,'/*.sgf')))
         print 'sgfs found in directory: ',sgfs
@@ -1098,9 +1100,26 @@ class BoardContainer(StencilView):
 
 class NogoManager(ScreenManager):
     boards = ListProperty([])
+    back_screen_name = StringProperty('')
+    def switch_and_set_back(self,newcurrent):
+        self.back_screen_name = self.current
+        self.current = newcurrent
+    def go_home(self):
+        self.transition = SlideTransition(direction='right')
+        self.current = 'Home'
+        self.back_screen_name = 'Home'
+        self.transition = SlideTransition(direction='left')
+    def go_back(self):
+        self.transition = SlideTransition(direction='right')
+        if self.has_screen(self.back_screen_name):
+            self.current = self.back_screen_name
+        else:
+            self.current = 'Home'
+        self.transition = SlideTransition(direction='left')
     def set_current_from_opengameslist(self,l):
         print 'open games list is',l
         if len(l)>0:
+            self.back_screen_name = self.current
             self.current = l[0].text
     def view_or_open_collection(self,dirn):
         if len(dirn) > 0:
@@ -1117,21 +1136,23 @@ class NogoManager(ScreenManager):
                                            allow_empty_selection=True,
                                            cls=GameChooserButton
                                            )
-                gc = StandaloneGameChooser(managedby=self)
+                gc = StandaloneGameChooser(managedby=self,name=dirn.split('/')[-1],dirn=dirn)
                 gc.gameslist.adapter = list_adapter
                 s = Screen(name=screenname)
                 s.add_widget(gc)
                 self.add_widget(s)
-                self.current = s.name
-                
-
-                
+                self.switch_and_set_back(s.name)
     def open_sgf_dialog(self):
         popup = Popup(content=OpenSgfDialog(manager=self),title='Open SGF',size_hint=(0.85,0.85))
         popup.content.popup = popup
         popup.open()
+    def board_from_gamechooser(self,filens):
+        if len(filens) > 0:
+            filen = filens[0].filepath
+            self.new_board(filen,'Navigate')
     def new_board(self,from_file='',mode='Play'):
         print 'from_file is',from_file
+        self.back_screen_name = self.current
 
         i = 1
         while True:

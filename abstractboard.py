@@ -44,6 +44,7 @@ def get_sgf_from_file(filen):
 
 def argsconverter_get_gameinfo_from_file(row_index,filen):
     info = get_gameinfo_from_file(filen)
+    info['filen'] = filen
     info['size_hint'] = (1.,None)
     info['height'] = (70,'sp')
     return info

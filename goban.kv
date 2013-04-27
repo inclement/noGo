@@ -12,7 +12,8 @@
         id: collections
     
     Widget:
-        size_hint:(1.,0.05)
+        size_hint:(1.,None)
+        height: (2,'sp')
         canvas:
             Color:
                 rgb: (0.195,0.641,0.805)
@@ -25,8 +26,8 @@
         size_hint: (1.,0.1)
         Button:
             size_hint: (0.25,1.)
-            text: 'Home'
-            on_press: root.managedby.current = 'Home'
+            text: 'Back'
+            on_press: root.managedby.go_back()
         Button:
             size_hint: (0.75,1.)
             text: 'View selected collection'
@@ -131,10 +132,28 @@
     id: sgc
     orientation: 'vertical'
     gameslist: gl
+    Label:
+        height: 30,'sp'
+        size_hint_y: None
+        text: self.parent.name + ' Collection'
+        font_size: (25,'sp')
+        textsize: self.size
+        valign: 'middle'
+    Widget:
+        size_hint:(1.,None)
+        height: (2,'sp')
+        canvas:
+            Color:
+                rgb: (0.195,0.641,0.805)
+            Line:
+                points: [self.x + 0.05*self.width, self.y + 0.5*self.height, self.x + 0.95*self.width, self.y + 0.5*self.height]
+                width: 2
+                cap: 'square'
     ListView:
         id: gl
     Widget:
-        size_hint:(1.,0.05)
+        size_hint:(1.,None)
+        height: (2,'sp')
         canvas:
             Color:
                 rgb: (0.195,0.641,0.805)
@@ -146,10 +165,13 @@
         orientation: 'horizontal'
         size_hint: (1.,0.1)
         Button:
-            text: 'Home'
-            on_press: sgc.managedby.current = 'Home'
-
-    
+            size_hint: (0.25,1.)
+            text: 'Back'
+            on_press: sgc.managedby.go_back()
+        Button:
+            size_hint: (0.75,1.)
+            text: 'Open selected game'
+            on_press: root.managedby.board_from_gamechooser(gl.adapter.selection)
 
 <CollectionChooserButton>:
     height: (50,'sp')
@@ -344,7 +366,7 @@
         size_hint: (1.,0.25)
         Button:
             text: 'Game collections'
-            on_press: homeroot.managedby.current = 'Collections Index'
+            on_press: homeroot.managedby.switch_and_set_back('Collections Index')
         Button:
             text: 'New board'
             on_release: homeroot.managedby.new_board()
@@ -383,7 +405,7 @@
 
         Button:
             size_hint: (0.15,1.0)
-            on_release: self.parent.parent.managedby.current = 'Home'
+            on_release: self.parent.parent.managedby.go_home()
             Image:
                 width: self.parent.width
                 y: self.parent.y + 0.05*self.parent.height
@@ -425,6 +447,12 @@
         size_hint: (1.0,0.18)
         board: bc.board
 
+    Widget:
+        size_hint_y: None
+        height: (2,'sp')
+        canvas:
+            Line:
+                points: [self.x + 0.05*self.width, self.y + 0.5*self.height, self.x + 0.95*self.width, self.y + 0.5*self.height]
     BoxLayout:
         orientation: 'horizontal'
         size_hint: (1.0,0.09)
