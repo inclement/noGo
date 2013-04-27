@@ -30,6 +30,7 @@ from functools import partial
 from glob import glob
 from os.path import abspath
 from json import dump as jsondump, load as jsonload
+import json
 
 from gomill import sgf, boards
 from abstractboard import *
@@ -1128,8 +1129,12 @@ class BoardContainer(StencilView):
 
 
 class NogoManager(ScreenManager):
+    app = ObjectProperty(None,allownone=True)
     boards = ListProperty([])
     back_screen_name = StringProperty('')
+
+    # Properties to keep an eye on
+    touchoffset = ListProperty([0,0])
     def switch_and_set_back(self,newcurrent):
         self.back_screen_name = self.current
         self.current = newcurrent
@@ -1208,6 +1213,7 @@ class NogoManager(ScreenManager):
         pbv.screenname = name
         pbv.managedby = self
         pbv.spinner.text = mode
+        pbv.board.touchoffset = self.touchoffset
         self.boards.append(name)
     def create_collections_index(self):
         fileh = open('game_collection_locations.json','r')
@@ -1228,6 +1234,19 @@ class NogoManager(ScreenManager):
         collections_screen = Screen(name='Collections Index')
         collections_screen.add_widget(collections_index)
         self.add_widget(collections_screen)
+    def propagate_input_mode(self,val):
+        if val == 'phone':
+            newtouchoffset = [0,3]
+        elif val == 'tablet/stylus':
+            newtouchoffset = [0,0]
+        else:
+            newtouchoffset = [0,3]
+            print 'An unrecognised input mode was chosen. Defaulting to [0,3] offset.'
+        self.touchoffset = newtouchoffset
+        for name in self.screen_names:
+            if name[:5] == 'Board':
+                curboard = self.get_screen(name)
+                curboard.children[0].board.touchoffset = newtouchoffset
 
 
 
@@ -1243,65 +1262,57 @@ def printargs(*args,**kwargs):
     '######'
 
 class GobanApp(App):
-
+    manager = ObjectProperty(None,allownone=True)
     def build(self):
+        config = self.config
+        print 'my config is',config
         sm = NogoManager(transition=SlideTransition(direction='left'))
-
-        #gc = StandaloneGameChooser(managedby=sm)
-        # files = map(abspath,glob('./games/Gosei/*.sgf'))
-        # print 'sgf files in current directory:',files
-        # args_converter = argsconverter_get_gameinfo_from_file
-
-        # list_adapter = ListAdapter(data=files,
-        #                            args_converter = args_converter,
-        #                            selection_mode='single',
-        #                            allow_empty_selection=True,
-        #                            cls=GameChooserButton
-        #                            )
-        # list_view = ListView(adapter=list_adapter)
-        # gc.add_widget(list_view)
-
+        self.manager = sm
+        sm.app = self
 
         hv = Screen(name="Home")
         hs = HomeScreen(managedby=sm)
-
-        # list_adapter = ListAdapter(data=sm.boards,
-        #                            lambda j,c: get_game_chooser_info_from_board(sm,c),
-        #                            selection_mode='single',
-        #                            allow_empty_mode=True,
-        #                            cls=OpenChooserButton,
-        #                            )
-        # hs.gamesview.adapter = list_adapter
-        # hs.gamesview.adapter = list_adapter
-        # list_view = ListView(adapter=list_adapter,size_hint=(1.,0.6))
-        # buttons = BoxLayout(size_hint=(1.,0.1),orientation='horizontal')
-        # buttons.add_widget(Button(text='Switch to selected game.'))
-        # buttons.add_widget(PrintyButton(text='???'))
-
-        # list_adapter.bind(on_selection_change=printargs)
-        # hs.add_widget(list_view)
-        # hs.add_widget(buttons)
-
         hv.add_widget(hs)
-        # gv = Screen(name="Choose")
-        # gv.add_widget(gc)
-
-        # gc.populate_from_directory('.')
-
-        #pbv.managedby = sm
-
         sm.add_widget(hv)
         sm.create_collections_index()
-        # sm.add_widget(gv)
         sm.current = 'Home'
 
+        # Get initial settings from config panel
+        config = self.config
+        sm.propagate_input_mode(config.getdefault('Board','input_mode','phone'))
+
         return sm
-        # return pbv
-        #return layout
-        #return boardcontainer
+
+    def build_settings(self,settings):
+        jsondata = json.dumps([
+            {"type": "options",
+             "title": "Input method",
+             "desc": "Stone input method",
+             "section": "Board",
+             "key": "input_mode",
+             "options": ["phone","tablet/stylus"]},
+            {"type": "bool",
+             "title": "Show coordinates",
+             "desc": "Whether or not to display coordinates on the board.",
+             "section": "Board",
+             "key": "coordinates",
+             "true": "auto"},
+            ])
+        settings.add_json_panel('Board',
+                                self.config,
+                                data=jsondata)
+
+    def build_config(self, config):
+        config.setdefaults('Board',{'input_mode':'phone','coordinates':False})
 
     def on_pause(self,*args,**kwargs):
         return True
+
+    def on_config_change(self, config, section, key, value):
+        if key == 'input_mode':
+            self.manager.propagate_input_mode(value)
+
+                
 
 
             

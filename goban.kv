@@ -250,15 +250,6 @@
         wrank: self.parent.wrank
         result: self.parent.result
         date: self.parent.date
-    Widget:
-        size_hint_y: None
-        height: (2,'sp')
-        canvas:
-            Color:
-                rgb: (0.195,0.641,0.805)
-            Line:
-                points: [self.x + 0.05*self.width, self.y + 0.5*self.height, self.x + 0.95*self.width, self.y + 0.5*self.height]
-                width: 1
 
 
 <GameChooserInfo>:
@@ -307,6 +298,15 @@
             text_size: self.width-20,self.height
             halign: 'left'
             valign: 'middle'
+    Widget:
+        size_hint_y: None
+        height: (2,'sp')
+        canvas:
+            Color:
+                rgb: (0.195,0.641,0.805)
+            Line:
+                points: [self.x + 0.05*self.width, self.y + 0.5*self.height, self.x + 0.95*self.width, self.y + 0.5*self.height]
+                width: 1
 
          
 
@@ -473,6 +473,8 @@
         Button:
             size_hint: (0.15,1.0)
             on_release: self.parent.parent.managedby.go_home()
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
             Image:
                 width: self.parent.width
                 y: self.parent.y + 0.05*self.parent.height
