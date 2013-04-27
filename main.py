@@ -97,6 +97,28 @@ def markercode_to_marker(markercode):
         return 'text'
     return None
 
+def get_game_chooser_info_from_boardname(sm,boardname):
+    board = sm.get_screen(boardname).children[0].board
+    gameinfo = board.gameinfo
+    if 'wname' in gameinfo:
+        wname = gameinfo['wname']
+    else:
+        wname = 'Unknown'
+    if 'bname' in gameinfo:
+        bname = gameinfo['bname']
+    else:
+        bname = 'Unknown'
+    if 'filepath'  in gameinfo:
+        filepath = gameinfo['filepath']
+    else:
+        filepath = 'Not yet saved'
+    if 'date' in gameinfo:
+        date = gameinfo['date']
+    else:
+        date = '---'
+    return {'boardname': boardname, 'wname': wname, 'bname': bname, 'filepath': filepath, 'date': date}
+    
+
 class MyListView(ListView):
     selection = ListProperty()
 
@@ -176,6 +198,13 @@ class CollectionChooserButton(ListItemButton):
     colname = StringProperty('')
     coldir = StringProperty('')
     numentries = NumericProperty(0)
+
+class OpenChooserButton(ListItemButton):
+    wname = StringProperty('')
+    bname = StringProperty('')
+    date = StringProperty('')
+    filepath = StringProperty('')
+    boardname = StringProperty('')
 
 class GameChooserButton(ListItemButton):
     info = ObjectProperty()
@@ -1119,8 +1148,9 @@ class NogoManager(ScreenManager):
     def set_current_from_opengameslist(self,l):
         print 'open games list is',l
         if len(l)>0:
+            screenname = l[0].boardname
             self.back_screen_name = self.current
-            self.current = l[0].text
+            self.current = screenname
     def view_or_open_collection(self,dirn):
         if len(dirn) > 0:
             dirn = dirn[0].coldir
@@ -1231,18 +1261,17 @@ class GobanApp(App):
         # list_view = ListView(adapter=list_adapter)
         # gc.add_widget(list_view)
 
-        sm.create_collections_index()
 
         hv = Screen(name="Home")
         hs = HomeScreen(managedby=sm)
 
         # list_adapter = ListAdapter(data=sm.boards,
-        #                            args_converter = lambda c,j: {'text': j, 'size_hint_y': None, 'height': (50,'sp')},
+        #                            lambda j,c: get_game_chooser_info_from_board(sm,c),
         #                            selection_mode='single',
         #                            allow_empty_mode=True,
-        #                            cls=ListItemButton,
+        #                            cls=OpenChooserButton,
         #                            )
-        print hs.gamesview.adapter
+        # hs.gamesview.adapter = list_adapter
         # hs.gamesview.adapter = list_adapter
         # list_view = ListView(adapter=list_adapter,size_hint=(1.,0.6))
         # buttons = BoxLayout(size_hint=(1.,0.1),orientation='horizontal')
@@ -1262,6 +1291,7 @@ class GobanApp(App):
         #pbv.managedby = sm
 
         sm.add_widget(hv)
+        sm.create_collections_index()
         # sm.add_widget(gv)
         sm.current = 'Home'
 

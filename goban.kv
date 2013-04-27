@@ -10,6 +10,8 @@
 
     ListView:
         id: collections
+        scroll_distance: 5
+        scroll_timeout: 250
     
     Widget:
         size_hint:(1.,None)
@@ -28,10 +30,14 @@
             size_hint: (0.25,1.)
             text: 'Back'
             on_press: root.managedby.go_back()
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
         Button:
             size_hint: (0.75,1.)
             text: 'View selected collection'
             on_release: root.managedby.view_or_open_collection(collections.adapter.selection)
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
 
 <PrintyButton>:
     text: ''
@@ -151,6 +157,8 @@
                 cap: 'square'
     ListView:
         id: gl
+        scroll_distance: 5
+        scroll_timeout: 250
     Widget:
         size_hint:(1.,None)
         height: (2,'sp')
@@ -190,6 +198,44 @@
             textsize: self.size
             halign: 'left'
             valign: 'middle'
+        Widget:
+            size_hint:(1.,None)
+            height: (2,'sp')
+            canvas:
+                Color:
+                    rgb: (0.195,0.641,0.805)
+                Line:
+                    points: [self.x + 0.05*self.width, self.y + 0.5*self.height, self.x + 0.95*self.width, self.y + 0.5*self.height]
+                    width: 1
+                    cap: 'square'
+            
+
+<OpenChooserButton>:
+    size_hint_y: None
+    height: (90,'sp')
+    BoxLayout:
+        size: self.parent.size
+        pos: self.parent.pos
+        orientation: 'vertical'
+        Label:
+            padding: (-10,0)
+            text: root.wname + ' vs ' + root.bname
+            text_size: self.size
+            halign: 'left'
+            valign: 'middle'
+        Label:
+            padding: (-10,0)
+            text: root.date
+            text_size: self.size
+            halign: 'left'
+            valign: 'middle'
+        Label:
+            padding: (-10,0)
+            text: root.filepath
+            text_size: self.size
+            halign: 'left'
+            valign: 'middle'
+    
 
 <GameChooserButton>:
     info: gamechooser
@@ -204,6 +250,15 @@
         wrank: self.parent.wrank
         result: self.parent.result
         date: self.parent.date
+    Widget:
+        size_hint_y: None
+        height: (2,'sp')
+        canvas:
+            Color:
+                rgb: (0.195,0.641,0.805)
+            Line:
+                points: [self.x + 0.05*self.width, self.y + 0.5*self.height, self.x + 0.95*self.width, self.y + 0.5*self.height]
+                width: 1
 
 
 <GameChooserInfo>:
@@ -218,7 +273,6 @@
             size_hint: (0.65,1.)
             text: gc.wname + ' ' + gc.wrank
             text_size: self.width-10,self.height
-            padding: 20,0
             halign: 'left'
             valign: 'middle'
             markup: True
@@ -226,7 +280,6 @@
             size_hint: (0.35,1.)
             text: gc.date
             text_size: self.width-10,self.height
-            padding: 10,0
             halign: 'right'
             valign: 'middle'
     BoxLayout:
@@ -238,7 +291,6 @@
             size_hint: (0.65,1.)
             text: gc.bname + ' ' + gc.brank
             text_size: self.width-10,self.height
-            padding: 20,0
             halign: 'left'
             valign: 'middle'
             markup: True
@@ -246,7 +298,6 @@
             size_hint: (0.35,1.)
             text: gc.result
             text_size: self.width-10,self.height
-            padding: 10,0
             halign: 'right'
             valign: 'middle'
     BoxLayout:
@@ -254,7 +305,6 @@
         Label:
             text: gc.filepath
             text_size: self.width-20,self.height
-            padding: 10,0
             halign: 'left'
             valign: 'middle'
 
@@ -367,20 +417,37 @@
         Button:
             text: 'Game collections'
             on_press: homeroot.managedby.switch_and_set_back('Collections Index')
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
         Button:
             text: 'New board'
             on_release: homeroot.managedby.new_board()
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
+                
         Button:
             text: 'Open SGF from file'
             on_release: homeroot.managedby.open_sgf_dialog()
-
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
+    Widget:
+        size_hint_y: None
+        height: (2,'sp')
+        canvas:
+            Color:
+                rgb: (0.195,0.641,0.805)
+            Line:
+                points: [self.x + 0.05*self.width, self.y + 0.5*self.height, self.x + 0.95*self.width, self.y + 0.5*self.height]
+                width: 2
     Label:
         text: 'Currently open games:'
         size_hint: (1.,0.05)
     MyListView:
         id: opengames
+        scroll_distance: 5
+        scroll_timeout: 250
         size_hint: (1.,0.60)
-        adapter: la.ListAdapter(data=root.managedby.boards,args_converter = lambda c,j: {'text': j,'size_hint_y': None, 'height': (50,'sp')}, selection_mode='single', allow_empty_selection=True,cls=lv.ListItemButton)
+        adapter: la.ListAdapter(data=root.managedby.boards,args_converter = lambda c,j: main.get_game_chooser_info_from_boardname(root.managedby,j), selection_mode='single', allow_empty_selection=True,cls=main.OpenChooserButton)
         selection: self.adapter.selection
     BoxLayout:
         size_hint: (1.,0.1)
@@ -451,8 +518,11 @@
         size_hint_y: None
         height: (2,'sp')
         canvas:
+            Color:
+                rgb: (0.195,0.641,0.805)
             Line:
                 points: [self.x + 0.05*self.width, self.y + 0.5*self.height, self.x + 0.95*self.width, self.y + 0.5*self.height]
+                width: 2
     BoxLayout:
         orientation: 'horizontal'
         size_hint: (1.0,0.09)
@@ -461,21 +531,31 @@
             id: btn_varbranch
             text: 'Var branch'
             on_release: bc.board.back_to_varbranch()
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
         PrevButton:
             id: btn_prevmove
             on_press: bc.board.retreat_one_move()
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
         Button:
             id: btn_nextvar
             text: 'Next var\n (1 / 1)'
             on_press: bc.board.next_variation()
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
         NextButton:
             board: bc.board
             id: btn_nextmove
             on_press: bc.board.advance_one_move()
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
         Button:
             id: btn_gameinfo
             text: 'Info'
             on_press: bc.board.view_game_info()
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
         
 
 
@@ -738,7 +818,6 @@
             font_size: 0.7*self.height
             markup: True
             text_size: self.width-20, self.height
-            padding: 10,0
             halign: 'left'
             valign: 'middle'
 
@@ -770,7 +849,6 @@
             font_size: 0.7*self.height
             markup: True
             text_size: self.width-20, self.height
-            padding: 10,0
             halign: 'left'
             valign: 'middle'
 
@@ -798,6 +876,5 @@
             text: self.parent.parent.pre_text + self.parent.parent.text
             markup: True
             text_size: self.width-10,None
-            padding: 10,10
             size: self.parent.width-10,self.texture_size[1]
             
