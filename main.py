@@ -8,6 +8,7 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.stencilview import StencilView
+from kivy.uix.dropdown import DropDown
 from kivy.uix.scatter import Scatter
 from kivy.uix.spinner import Spinner, SpinnerOption
 from kivy.uix.popup import Popup
@@ -31,6 +32,8 @@ from glob import glob
 from os.path import abspath
 from json import dump as jsondump, load as jsonload
 import json
+from time import asctime
+
 
 from gomill import sgf, boards
 from abstractboard import *
@@ -118,7 +121,27 @@ def get_game_chooser_info_from_boardname(sm,boardname):
     else:
         date = '---'
     return {'boardname': boardname, 'wname': wname, 'bname': bname, 'filepath': filepath, 'date': date}
+
+def get_temp_filepath():
+    tempdir = './games/unsaved'
+    return tempdir + '/' + asctime().replace(' ','_') + '.sgf'
     
+    
+class GameOptions(DropDown):
+    board = ObjectProperty(None,allownone=True)
+
+class GameOptionsButton(Button):
+    ddn = ObjectProperty(None,allownone=True)
+    board = ObjectProperty(None,allownone=True)
+    def __init__(self,*args,**kwargs):
+        super(GameOptionsButton,self).__init__()
+        self.ddn = GameOptions(board=self.board)
+    def on_touch_up(self,touch):
+        self.ddn.board = self.board
+        if touch.grab_current == self:
+            self.ddn.open(self)
+        return super(GameOptionsButton,self).on_touch_up(touch)
+        
 
 class MyListView(ListView):
     selection = ListProperty()
@@ -136,6 +159,7 @@ class MySpinnerOption(SpinnerOption):
 
 class GameInfo(BoxLayout):
     popup = ObjectProperty(None,allownone=True)
+    board = ObjectProperty(None,allownone=True)
     bname = StringProperty('')
     wname = StringProperty('')
     brank = StringProperty('')
@@ -177,6 +201,10 @@ def get_collectioninfo_from_dir(row_index,dirn):
 class CollectionsIndex(BoxLayout):
     collections_list = ObjectProperty(None,allownone=True)
     managedby = ObjectProperty(None,allownone=True)
+
+class SaveQuery(BoxLayout):
+    collections_list = ObjectProperty(None,allownone=True)
+    board = ObjectProperty(None,allownone=True)
 
 class StandaloneGameChooser(BoxLayout):
     managedby = ObjectProperty(None,allownone=True)
@@ -449,6 +477,11 @@ class GuiBoard(Widget):
     guesses = ListProperty([0,0])
     gameinfo = DictProperty({})
 
+    # Save state
+    user_saved = BooleanProperty(False)
+    temporary_filepath = StringProperty('')
+    permanent_filepath = StringProperty('')
+
     variations_exist = BooleanProperty(False)
 
     showcoords = BooleanProperty(False)
@@ -462,6 +495,8 @@ class GuiBoard(Widget):
 
     comment_pre_text = StringProperty('')
     comment_text = StringProperty('')
+
+    
     
 
     # Board flipping
@@ -503,12 +538,57 @@ class GuiBoard(Widget):
         except:
             pass
 
+    def set_game_info(self,info):
+        self.abstractboard.set_gameinfo(info)
+        self.get_game_info()
+
+    def get_game_info(self):
+        self.gameinfo = self.abstractboard.get_gameinfo()
+        if not self.user_saved:
+            if self.gameinfo.has_key('filepath'):
+                self.permanent_filepath = self.gameinfo['filepath']
+
     def view_game_info(self):
-        gi = GameInfo()
+        gi = GameInfo(board=self)
         gi.populate_from_gameinfo(self.gameinfo)
         popup = Popup(content=gi,title='Game info.',size_hint=(0.85,0.85))
         popup.content.popup = popup
         popup.open()
+
+    def save_sgf(self,autosave=True):
+        if autosave:
+            if self.permanent_filepath != '':
+                self.abstractboard.save_sgf(self.permanent_filepath)
+            elif self.temporary_filepath == '':
+                self.temporary_filepath = get_temp_filepath()
+                self.abstractboard.save_sgf(self.temporary_filepath)
+            else:
+                self.abstractboard.save_sgf(self.temporary_filepath)
+        else:
+            if self.user_saved:
+                self.abstractboard.save_sgf(self.permanent_filepath)
+            else:
+                self.ask_where_to_save()
+
+    def ask_where_to_save(self,force=True):
+        sq = SaveQuery(board=self)
+        popup = Popup(content=sq,title='Where to save?',size_hint=(0.85,0.85))
+        popup.content.popup = popup
+        fileh = open('game_collection_locations.json','r')
+        collection_folders = jsonload(fileh)
+        fileh.close()
+        collections_args_converter = get_collectioninfo_from_dir
+        list_adapter = ListAdapter(data=collection_folders,
+                                   args_converter=collections_args_converter,
+                                   selection_mode='single',
+                                   allow_empty_selection=True,
+                                   cls=CollectionChooserButton
+                                   )
+        sq.collections_list.adapter = list_adapter
+        popup.open()
+
+    def make_savefile_in_dir(self,dirn):
+        print 'Asked to make savefile in',dirn
 
     def back_to_varbranch(self):
         instructions = self.abstractboard.jump_to_varbranch()
@@ -1021,7 +1101,7 @@ class GuiBoard(Widget):
         instructions = self.abstractboard.reset_position()
         self.get_player_details()
         self.follow_instructions(instructions)
-        self.gameinfo = get_gameinfo_from_sgf(self.abstractboard.game)
+        self.gameinfo = self.abstractboard.get_gameinfo()
         
 
 

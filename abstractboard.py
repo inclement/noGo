@@ -58,6 +58,74 @@ def get_gameinfo_from_file(filen):
     info['filepath'] = filen
     return info
 
+def set_gameinfo_in_sgf(info,game):
+    print 'got to set_gameinfo_in_sgf'
+    root = game.get_root()
+    print 'root is', root, root.properties()
+    if 'bname' in info:
+        bname = info['bname']
+        print 'new bname will be'
+        root.set('PB',bname)
+    if 'wname' in info:
+        wname = info['wname']
+        root.set('PW',wname)
+    print 'did wname, bname'
+    if 'annotate' in info:
+        annotate = info['annotate']
+        root.set('AN',annotate)
+    if 'brank' in info:
+        brank = info['brank']
+        root.set('BR',brank)
+    print 'did wrank, brank'
+    if 'wrank' in info:
+        wrank = info['wrank']
+        root.set('WR',wrank)
+    if 'bteam' in info:
+        bteam = info['bteam']
+        root.set('BT',bteam)
+    if 'wteam' in info:
+        wteam = info['wteam']
+        root.set('WT',wteam)
+    if 'copyright' in info:
+        copyright = info['copyright']
+        root.set('CP',copyright)
+    if 'date' in info:
+        date = info['date']
+        root.set('DT',date)
+    if 'event' in info:
+        event = info['event']
+        root.set('EV',event)
+    if 'gname' in info:
+        gname = info['gname']
+        root.set('GN',gname)
+    if 'gamecomment' in info:
+        gamecomment = info['gamecomment']
+        root.set('GC',gamecomment)
+    if 'overtime' in info:
+        overtime = info['overtime']
+        root.set('OT',overtime)
+    if 'result' in info:
+        result = info['result']
+        root.set('RE',result)
+    if 'rules' in info:
+        rules = info['rules']
+        root.set('RU',rules)
+    if 'source' in info:
+        source = info['source']
+        root.set('SO',source)
+    if 'timelim' in info:
+        timelim = info['timelim']
+        root.set('TM',timelim)
+    if 'user' in info:
+        user = info['user']
+        root.set('US',user)
+    if 'komi' in info:
+        komi = info['komi']
+        root.set('KM',komi)
+    if 'handicap' in info:
+        handicap = info['handicap']
+        root.set('HA',handicap)
+
 def get_gameinfo_from_sgf(game):
     info = {}
     bname = game.get_player_name('b')
@@ -361,6 +429,7 @@ class AbstractBoard(object):
         board, instructions = apply_node_to_board(board,self.curnode)
         self.boards[self.curnode] = board
         self.varcache = {}
+        self.filepath = ''
 
     def load_sgf_from_file(self,filen):
         print 'asked to load from',filen
@@ -369,10 +438,28 @@ class AbstractBoard(object):
         fileh.close()
         try:
             self.game = sgf.Sgf_game.from_string(sgfdata)
+            self.filepath = filen
         except ValueError:
             self.game = sgf.Sgf_game(19)
         self.reset_position()
 
+    def get_gameinfo(self):
+        info = get_gameinfo_from_sgf(self.game)
+        if self.filepath != '':
+            info['filepath'] = self.filepath
+        return info
+
+    def set_gameinfo(self,info):
+        if 'filepath' in info:
+            self.filepath = info['filepath']
+        set_gameinfo_in_sgf(info,self.game)
+
+    def save_sgf(self,filen):
+        data = self.game.serialise()
+        fileh = open(filen,'w')
+        fileh.write(data)
+        fileh.close()
+        
 
     def load_sgf_from_text(self, sgftext):
         self.game = sgf.Sgf_game.from_string(sgftext)
