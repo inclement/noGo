@@ -31,7 +31,8 @@
         Button:
             size_hint: (0.5,1.)
             text: 'Save in selected collection'
-            on_release: root.board.make_savefile_in_dir(collections.adapter.selection[0].coldir)
+            on_press: root.board.make_savefile_in_dir(collections.adapter.selection[0].coldir)
+            on_release: root.popup.dismiss()
 
 <CollectionsIndex>:
     id: ci
@@ -616,7 +617,7 @@
         size_hint_y: None
         height: (50,'sp')
         text: 'Save as...'
-        on_press: root.board.save_sgf(False)
+        on_press: root.board.save_sgf(saveas=True)
         on_release: root.select('item3')
     
 <PickNewVarType>:

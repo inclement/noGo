@@ -555,17 +555,18 @@ class GuiBoard(Widget):
         popup.content.popup = popup
         popup.open()
 
-    def save_sgf(self,autosave=True):
+    def save_sgf(self,saveas=False,autosave=False):
         if autosave:
             if self.permanent_filepath != '':
                 self.abstractboard.save_sgf(self.permanent_filepath)
-            elif self.temporary_filepath == '':
-                self.temporary_filepath = get_temp_filepath()
-                self.abstractboard.save_sgf(self.temporary_filepath)
             else:
+                if self.temporary_filepath == '':
+                    self.temporary_filepath = get_temp_filepath()
                 self.abstractboard.save_sgf(self.temporary_filepath)
+        elif saveas:
+            self.ask_where_to_save()
         else:
-            if self.user_saved:
+            if self.permanent_filepath != '':
                 self.abstractboard.save_sgf(self.permanent_filepath)
             else:
                 self.ask_where_to_save()
@@ -588,7 +589,23 @@ class GuiBoard(Widget):
         popup.open()
 
     def make_savefile_in_dir(self,dirn):
-        print 'Asked to make savefile in',dirn
+        filen = ''.join((dirn,'/',asctime().replace(' ','_')))
+        if 'wname' in self.gameinfo:
+            filen += '_' + self.gameinfo['wname']
+        else:
+            filen += '_' + 'wunknown'
+        if 'bname' in self.gameinfo:
+            filen += '_' + self.gameinfo['bname']
+        else:
+            filen += '_' + 'bunknown'
+        if 'event' in self.gameinfo:
+            filen += '_' + self.gameinfo['event']
+        else:
+            filen += '_' + 'eunknown'
+        filen += '.sgf'
+        self.permanent_filepath = filen
+        self.user_saved = True
+        self.save_sgf()
 
     def back_to_varbranch(self):
         instructions = self.abstractboard.jump_to_varbranch()
@@ -681,6 +698,7 @@ class GuiBoard(Widget):
     def load_sgf_from_file(self,path,filen):
         print 'asked to load from',path,filen
         self.abstractboard.load_sgf_from_file(filen[0])
+        self.permanent_filepath = self.abstractboard.filepath
         self.reset_abstractboard()
 
     def get_new_comment(self,*args,**kwargs):
