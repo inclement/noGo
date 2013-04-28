@@ -1243,6 +1243,8 @@ class NogoManager(ScreenManager):
         self.transition = SlideTransition(direction='left')
     def go_back(self):
         self.transition = SlideTransition(direction='right')
+        if self.current == self.back_screen_name:
+            self.back_screen_name = 'Home'
         if self.has_screen(self.back_screen_name):
             self.current = self.back_screen_name
         else:
@@ -1283,6 +1285,8 @@ class NogoManager(ScreenManager):
         if len(filens) > 0:
             filen = filens[0].filepath
             self.new_board(filen,'Navigate')
+    def close_board(self,name):
+        pass
     def new_board(self,from_file='',mode='Play'):
         print 'from_file is',from_file
         self.back_screen_name = self.current
