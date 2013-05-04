@@ -459,6 +459,7 @@ class AbstractBoard(object):
         fileh = open(filen,'w')
         fileh.write(data)
         fileh.close()
+        return True
         
 
     def load_sgf_from_text(self, sgftext):
@@ -579,7 +580,9 @@ class AbstractBoard(object):
             newnode = self.curnode.new_child(0)
         newnode.set_move(colour,coord)
         if jump:
-            return self.jump_to_node(newnode)
+            instructions = self.jump_to_node(newnode)
+            instructions.update({'unsaved':True})
+            return instructions
         else:
             return {}
 

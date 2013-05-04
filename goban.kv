@@ -3,13 +3,128 @@
 #:import la kivy.adapters.listadapter
 #:import lv kivy.uix.listview
 
+<EditPanel>:
+    rows: 2
+    ToggleButton:
+        group: 'editbuttons'
+        on_press: root.current_mode = 'bwplay'
+        Image:
+            x: self.parent.x + 0.05*self.parent.width
+            y: self.parent.y + 0.05*self.parent.height
+            width: 0.9*self.parent.width
+            height: 0.9*self.parent.height
+            mipmap: True
+            source: './edit_bwstone-1.png'
+    ToggleButton:
+        group: 'editbuttons'
+        on_press: root.current_mode = 'triangle'
+        Image:
+            x: self.parent.x + 0.05*self.parent.width
+            y: self.parent.y + 0.05*self.parent.height
+            width: 0.9*self.parent.width
+            height: 0.9*self.parent.height
+            mipmap: True
+            source: './edit_triangle-1.png'
+    ToggleButton:
+        group: 'editbuttons'
+        on_press: root.current_mode = 'square'
+        Image:
+            x: self.parent.x + 0.05*self.parent.width
+            y: self.parent.y + 0.05*self.parent.height
+            width: 0.9*self.parent.width
+            height: 0.9*self.parent.height
+            mipmap: True
+            source: './edit_square-1.png'
+    ToggleButton:
+        group: 'editbuttons'
+        on_press: root.current_mode = 'bstone'
+        Image:
+            x: self.parent.x + 0.05*self.parent.width
+            y: self.parent.y + 0.05*self.parent.height
+            width: 0.9*self.parent.width
+            height: 0.9*self.parent.height
+            mipmap: True
+            source: './edit_bstone-1.png'
+    ToggleButton:
+        group: 'editbuttons'
+        on_press: root.current_mode = 'estone'
+        Image:
+            x: self.parent.x + 0.05*self.parent.width
+            y: self.parent.y + 0.05*self.parent.height
+            width: 0.9*self.parent.width
+            height: 0.9*self.parent.height
+            mipmap: True
+            source: './edit_estone-1.png'
+    ToggleButton:
+        group: 'editbuttons'
+        on_press: root.current_mode = 'wbplay'
+        Image:
+            x: self.parent.x + 0.05*self.parent.width
+            y: self.parent.y + 0.05*self.parent.height
+            width: 0.9*self.parent.width
+            height: 0.9*self.parent.height
+            mipmap: True
+            source: './edit_wbstone-1.png'
+    ToggleButton:
+        group: 'editbuttons'
+        on_press: root.current_mode = 'circle'
+        Image:
+            x: self.parent.x + 0.05*self.parent.width
+            y: self.parent.y + 0.05*self.parent.height
+            width: 0.9*self.parent.width
+            height: 0.9*self.parent.height
+            mipmap: True
+            source: './edit_circle-1.png'
+    ToggleButton:
+        group: 'editbuttons'
+        on_press: root.current_mode = 'cross'
+        Image:
+            x: self.parent.x + 0.05*self.parent.width
+            y: self.parent.y + 0.05*self.parent.height
+            width: 0.9*self.parent.width
+            height: 0.9*self.parent.height
+            mipmap: True
+            source: './edit_cross-1.png'
+    ToggleButton:
+        group: 'editbuttons'
+        on_press: root.current_mode = 'wstone'
+        Image:
+            x: self.parent.x + 0.05*self.parent.width
+            y: self.parent.y + 0.05*self.parent.height
+            width: 0.9*self.parent.width
+            height: 0.9*self.parent.height
+            mipmap: True
+            source: './edit_wstone-1.png'
+            
+
+<CollectionNameChooser>:
+    size_hint: (0.85,None)
+    height: (70,'sp')
+    orientation: 'vertical'
+    TextInput:
+        id: newname
+        text: ''
+        multiline: False
+        size_hint: (1.,None)
+        height: (30,'sp')
+    BoxLayout:
+        height: (50,'sp')
+        orientation: 'horizontal'
+        Button:
+            text: 'Cancel'
+            on_release: root.popup.dismiss()
+        Button:
+            text: 'Create collection'
+            on_press: root.manager.new_collection(newname.text)
+            on_release: root.popup.dismiss()
+
 <SaveQuery>
     orientation: 'vertical'
     collections_list: collections
     ListView:
         id: collections
-        scroll_distance: 5
-        scroll_timeout: 250
+        scroll_distance: 1
+        scroll_timeout: 1000
     
     Widget:
         size_hint:(1.,None)
@@ -41,8 +156,8 @@
 
     ListView:
         id: collections
-        scroll_distance: 5
-        scroll_timeout: 250
+        scroll_distance: 1
+        scroll_timeout: 1000
     
     Widget:
         size_hint:(1.,None)
@@ -63,8 +178,16 @@
             on_press: root.managedby.go_back()
             background_normal: 'black_pixel.png'
             background_down: 'blue_press_pixel.png'
+        VDividerLine
         Button:
-            size_hint: (0.75,1.)
+            size_hint: (0.25,1.)
+            text: 'New collection'
+            on_release: root.managedby.new_collection_query()
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
+        VDividerLine
+        Button:
+            size_hint: (0.5,1.)
             text: 'View selected collection'
             on_release: root.managedby.view_or_open_collection(collections.adapter.selection)
             background_normal: 'black_pixel.png'
@@ -197,8 +320,8 @@
                 cap: 'square'
     ListView:
         id: gl
-        scroll_distance: 5
-        scroll_timeout: 250
+        scroll_distance: 1
+        scroll_timeout: 1000
     Widget:
         size_hint:(1.,None)
         height: (2,'sp')
@@ -214,16 +337,32 @@
         size_hint: (1.,0.1)
         Button:
             size_hint: (0.25,1.)
-            text: 'Back'
+            text: 'Back\n(-> delete)'
             on_press: sgc.managedby.go_back()
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
+        VDividerLine
         Button:
-            size_hint: (0.75,1.)
+            size_hint: (0.25,1.)
+            text: 'New game here'
+            on_release: root.managedby.new_board(in_folder=root.dirn)
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
+        VDividerLine
+        Button:
+            size_hint: (0.5,1.)
             text: 'Open selected game'
             on_press: root.managedby.board_from_gamechooser(gl.adapter.selection)
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
 
 <CollectionChooserButton>:
     height: (50,'sp')
     size_hint: 1.,None
+    background_normal: './white_pixel.png'
+    background_color: [0,0,0,1]
+    deselected_color: [0,0,0,1]
+    selected_color: [ 0.03515625,  0.1171875 ,  0.1484375 ]
     BoxLayout:
         pos: self.parent.pos
         size: self.parent.size
@@ -253,6 +392,10 @@
 <OpenChooserButton>:
     size_hint_y: None
     height: (90,'sp')
+    background_normal: './white_pixel.png'
+    background_color: [0,0,0,1]
+    deselected_color: [0,0,0,1]
+    selected_color: [ 0.03515625,  0.1171875 ,  0.1484375 ]
     BoxLayout:
         size: self.parent.size
         pos: self.parent.pos
@@ -275,10 +418,16 @@
             text_size: self.size
             halign: 'left'
             valign: 'middle'
+        DividerLine:
+            linewidth: 1
     
 
 <GameChooserButton>:
     info: gamechooser
+    background_normal: './white_pixel.png'
+    background_color: [0,0,0,1]
+    deselected_color: [0,0,0,1]
+    selected_color: [ 0.03515625,  0.1171875 ,  0.1484375 ]
     GameChooserInfo:
         size: self.parent.size
         pos: self.parent.pos
@@ -438,7 +587,26 @@
             width: 2.
             cap: 'none'
         
+<VDividerLine>:
+    size_hint_x: None
+    width: 1
+    canvas:
+        Color:
+            rgb: self.colour
+        Line:
+            points: [self.x, self.y + 0.5*self.vgap*self.height, self.x, self.y + (1-0.5*self.vgap)*self.height]
+            width: self.linewidth
         
+<DividerLine>:
+    height: (2,'sp')
+    size_hint_y: None
+    canvas:
+        Color:
+            rgb: self.colour
+        Line:
+            points: [self.x + 0.5*self.hgap*self.width, self.y + 0.5*self.height, self.x + (1-0.5*self.hgap)*self.width, self.y + 0.5*self.height]
+            width: self.linewidth
+    
 
 <HomeScreen>:
     id: homeroot
@@ -450,8 +618,8 @@
         size_hint: ((1.,0.2))
         mipmap: True
         source: 'logo-1.png'
-
-    GridLayout:
+    BoxLayout:
+        orientation: 'horizontal'
         cols: 3
         size_hint: (1.,0.25)
         Button:
@@ -459,45 +627,46 @@
             on_press: homeroot.managedby.switch_and_set_back('Collections Index')
             background_normal: 'black_pixel.png'
             background_down: 'blue_press_pixel.png'
+        VDividerLine
         Button:
             text: 'New board'
             on_release: homeroot.managedby.new_board()
             background_normal: 'black_pixel.png'
             background_down: 'blue_press_pixel.png'
-                
+        VDividerLine
         Button:
             text: 'Open SGF from file'
             on_release: homeroot.managedby.open_sgf_dialog()
             background_normal: 'black_pixel.png'
             background_down: 'blue_press_pixel.png'
-    Widget:
-        size_hint_y: None
-        height: (2,'sp')
-        canvas:
-            Color:
-                rgb: (0.195,0.641,0.805)
-            Line:
-                points: [self.x + 0.05*self.width, self.y + 0.5*self.height, self.x + 0.95*self.width, self.y + 0.5*self.height]
-                width: 2
+    DividerLine
     Label:
         text: 'Currently open games:'
         size_hint: (1.,0.05)
+    DividerLine
     MyListView:
         id: opengames
-        scroll_distance: 5
-        scroll_timeout: 250
+        scroll_distance: 1
+        scroll_timeout: 1000
         size_hint: (1.,0.60)
         adapter: la.ListAdapter(data=root.managedby.boards,args_converter = lambda c,j: main.get_game_chooser_info_from_boardname(root.managedby,j), selection_mode='single', allow_empty_selection=True,cls=main.OpenChooserButton)
         selection: self.adapter.selection
+    DividerLine
     BoxLayout:
         size_hint: (1.,0.1)
         orientation: 'horizontal'
         Button:
             text: 'Close selected game.'
+            on_release: root.managedby.close_board_from_selection(opengames.adapter.selection)
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
+        VDividerLine
         PrintyButton:
             id: pb
             text: 'Switch to selected game.'
             on_release: root.managedby.set_current_from_opengameslist(opengames.adapter.selection)
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
 
 <PhoneBoardView>:
     boardcontainer: bc
@@ -550,10 +719,13 @@
 
         uielements: {'varbutton': [btn_nextvar]}
 
+    EditPanel:
+        size_hint: (1.0,0.18)
     CommentBox:
+        height: (1,'sp')
+        size_hint_y: None
         id: thecb
         text: bc.board.comment_pre_text + bc.board.comment_text
-        size_hint: (1.0,0.18)
         board: bc.board
 
     Widget:
@@ -575,23 +747,27 @@
             on_release: bc.board.back_to_varbranch()
             background_normal: 'black_pixel.png'
             background_down: 'blue_press_pixel.png'
+        VDividerLine
         PrevButton:
             id: btn_prevmove
             on_press: bc.board.retreat_one_move()
             background_normal: 'black_pixel.png'
             background_down: 'blue_press_pixel.png'
+        VDividerLine
         Button:
             id: btn_nextvar
             text: 'Next var\n (1 / 1)'
             on_press: bc.board.next_variation()
             background_normal: 'black_pixel.png'
             background_down: 'blue_press_pixel.png'
+        VDividerLine
         NextButton:
             board: bc.board
             id: btn_nextmove
             on_press: bc.board.advance_one_move()
             background_normal: 'black_pixel.png'
             background_down: 'blue_press_pixel.png'
+        VDividerLine
         GameOptionsButton:
             id: btn_options
             text: 'Options'
@@ -916,8 +1092,8 @@
 <CommentBox>:
     textbox: thetb
     do_scroll_x: False
-    scroll_distance: 5
-    scroll_timeout: 250
+    scroll_distance: 1
+    scroll_timeout: 1000
 
     on_text: self.scroll_y = 1; self.scroll_timeout=0; self.scroll_timeout = 55
 

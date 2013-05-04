@@ -4,6 +4,7 @@ from kivy.graphics import Color, Rectangle, Ellipse
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
@@ -15,7 +16,8 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.screenmanager import *
 from kivy.adapters.listadapter import ListAdapter
-from kivy.uix.listview import ListView, ListItemButton
+#from kivy.uix.listview import ListView, ListItemButton
+from mylistview import ListView, ListItemButton
 from kivy.utils import platform
 from kivy.animation import Animation
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
@@ -30,6 +32,7 @@ from math import sin
 from functools import partial
 from glob import glob
 from os.path import abspath
+from os import mkdir
 from json import dump as jsondump, load as jsonload
 import json
 from time import asctime
@@ -125,7 +128,31 @@ def get_game_chooser_info_from_boardname(sm,boardname):
 def get_temp_filepath():
     tempdir = './games/unsaved'
     return tempdir + '/' + asctime().replace(' ','_') + '.sgf'
-    
+
+class EditPanel(GridLayout):
+    current_mode = OptionProperty('bwplay',options=['bwplay',
+                                                    'wbplay',
+                                                    'triangle',
+                                                    'square',
+                                                    'circle',
+                                                    'cross',
+                                                    'bstone',
+                                                    'wstone',
+                                                    'estone'])
+
+class CollectionNameChooser(BoxLayout):
+    popup = ObjectProperty(None,allownone=True)
+    manager = ObjectProperty(None)
+
+class VDividerLine(Widget):
+    vgap = NumericProperty(0.2)
+    linewidth = NumericProperty(1)
+    colour = ListProperty([0.195,0.641,0.805])
+
+class DividerLine(Widget):
+    hgap = NumericProperty(0.1) 
+    linewidth = NumericProperty(2)
+    colour = ListProperty([0.195,0.641,0.805])
     
 class GameOptions(DropDown):
     board = ObjectProperty(None,allownone=True)
@@ -481,6 +508,7 @@ class GuiBoard(Widget):
     user_saved = BooleanProperty(False)
     temporary_filepath = StringProperty('')
     permanent_filepath = StringProperty('')
+    has_unsaved_data = BooleanProperty(False)
 
     variations_exist = BooleanProperty(False)
 
@@ -967,6 +995,11 @@ class GuiBoard(Widget):
             text = instructions['pre_text']
             self.comment_pre_text = text
 
+        if 'unsaved' in instructions:
+            self.has_unsaved_data = True
+        if 'saved' in instructions:
+            self.has_unsaved_data = False
+
     def get_player_details(self,*args,**kwargs):
         wname, bname = self.abstractboard.get_player_names()
         wrank, brank = self.abstractboard.get_player_ranks()
@@ -1285,9 +1318,22 @@ class NogoManager(ScreenManager):
         if len(filens) > 0:
             filen = filens[0].filepath
             self.new_board(filen,'Navigate')
+    def close_board_from_selection(self,sel):
+        print 'asked to close from sel',sel
+        if len(sel) > 0:
+            self.close_board(sel[0].boardname)
     def close_board(self,name):
-        pass
-    def new_board(self,from_file='',mode='Play'):
+        if self.has_screen(name):
+            pbvs = self.get_screen(name)
+            if pbvs.children[0].board.has_unsaved_data:
+                print 'Should ask to save, but am not going to...'
+            else:
+                print 'removing board'
+                print 'current boards',self.screens
+                self.remove_widget(pbvs)
+                self.boards.remove(name)
+                print 'new boards',self.screens
+    def new_board(self,from_file='',mode='Play',in_folder=''):
         print 'from_file is',from_file
         self.back_screen_name = self.current
 
@@ -1317,6 +1363,17 @@ class NogoManager(ScreenManager):
         pbv.spinner.text = mode
         pbv.board.touchoffset = self.touchoffset
         self.boards.append(name)
+        if in_folder != '':
+            try:
+                pbv.board.make_savefile_in_dir(in_folder)
+                self.refresh_collections_index()
+            except OSError:
+                print 'Savefile in given folder could not be created.'
+                print 'Should make error popup...'
+    def refresh_collections_index(self):
+        if 'Collections Index' in self.screen_names:
+            self.remove_widget(self.get_screen('Collections Index'))
+        self.create_collections_index()
     def create_collections_index(self):
         fileh = open('game_collection_locations.json','r')
         collection_folders = jsonload(fileh)
@@ -1349,6 +1406,23 @@ class NogoManager(ScreenManager):
             if name[:5] == 'Board':
                 curboard = self.get_screen(name)
                 curboard.children[0].board.touchoffset = newtouchoffset
+    def new_collection_query(self):
+        popup = Popup(content=CollectionNameChooser(manager=self),title='Pick a collection name...',size_hint_x=0.85,size_hint_y=None,height=(130,'sp'))
+        popup.content.popup = popup
+        popup.open()
+    def new_collection(self,newname):
+        fileh = open('game_collection_locations.json','r')
+        collection_folders = jsonload(fileh)
+        fileh.close()
+        try:
+            mkdir('./games/%s' % newname)
+        except OSError:
+            print 'File exists! Add an error popup.'
+        collection_folders.append('./games/%s' % newname)
+        fileh = open('game_collection_locations.json','w')
+        json.dump(collection_folders,fileh)
+        fileh.close()
+        self.refresh_collections_index()
 
 
 
