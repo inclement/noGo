@@ -5,32 +5,114 @@ game tree.
 
 '''
 
-from gomill import sgf, boards
+from gomill import sgf, boards, ascii_boards
 
-# class ScoreBoard:
-#     def __init__(self,size=19):
-#         self.scoringboard = boards.Board(size)
-#         self.board = [[] for i in range(size)]
-#         self.size = size
-#     def set_board(self,arr):
-#         self.board.board = arr
-#     def get_score(self):
-#         self.scoringboard.board = self.remove_dead()
-#         return self.board.area_score()
-#     def toggle_status_at(self,coord):
-#         cur = self.board[coord[0]][coord[1]]
-#         if cur == 'w':
-#             self.board[coord[0]][coord[1]] = 'dw'
-#         elif cur == 'b':
-#             self.board[coord[0]][coord[1]] = 'db'
-#         return self.get_score()
-#     def propagate_dead(self):
-#         board = self.board
-#         changing = True
-#         while changing:
-#             for x in range(self.size):
-#                 for y in range(self.size):
-#                     cur = board[x][y]
+adjacencies = [(-1,0),(0,-1),(1,0),(0,1)]
+
+class ScoreBoard:
+    def __init__(self,size=19):
+        self.scoringboard = boards.Board(size)
+        self.board = [[[] for j in range(size)] for i in range(size)]
+        self.size = size
+    def set_board(self,arr):
+        self.board.board = arr
+    def get_score(self):
+        self.scoringboard.board = self.remove_dead()
+        print ascii_boards.render_board(self.scoringboard)
+        return self.scoringboard.area_score()
+    def toggle_status_at(self,coord):
+        cur = self.board[coord[0]][coord[1]]
+        if cur == 'w':
+            self.board[coord[0]][coord[1]] = 'dw'
+        elif cur == 'b':
+            self.board[coord[0]][coord[1]] = 'db'
+        elif cur == 'dw':
+            self.board[coord[0]][coord[1]] = 'w'
+        elif cur == 'db':
+            self.board[coord[0]][coord[1]] = 'b'
+        if cur in ['b','w']:
+            changed = self.propagate_dead()
+        elif cur in ['db','dw']:
+            changed = self.propagate_alive()
+        elif cur is None:
+            return ([],self.get_score())
+        return (changed + [coord],self.get_score())
+    def propagate_dead(self):
+        board = self.board
+        changing = True
+        toggled = []
+        while changing:
+            changing = False
+            for x in range(self.size):
+                for y in range(self.size):
+                    cur = board[x][y]
+                    for dx,dy in adjacencies:
+                        if x+dx >= 0 and y+dy >= 0 and x+dx < self.size and y+dy < self.size and dx != dy:
+                            adj = board[x+dx][y+dy]
+                            if cur == 'b' and adj == 'db':
+                                board[x][y] = 'db'
+                                changing = True
+                                toggled.append((x,y))
+                            elif cur == 'w' and adj == 'dw':
+                                board[x][y] = 'dw'
+                                changing = True
+                                toggled.append((x,y))
+                            elif cur == 'db' and adj == 'b':
+                                board[x+dx][y+dy] = 'db'
+                                changing = True
+                                toggled.append((x+dx,y+dy))
+                            elif cur == 'dw' and adj == 'w':
+                                board[x+dx][y+dy] = 'dw'
+                                changing = True
+                                toggled.append((x+dx,y+dy))
+        return toggled
+    def propagate_alive(self):
+        board = self.board
+        changing = True
+        toggled = []
+        while changing:
+            changing = False
+            for x in range(self.size):
+                for y in range(self.size):
+                    cur = board[x][y]
+                    for dx,dy in adjacencies:
+                        if x+dx >= 0 and y+dy >= 0 and x+dx < self.size and y+dy < self.size and dx != dy:
+                            adj = board[x+dx][y+dy]
+                            if cur == 'b' and adj == 'db':
+                                board[x+dx][y+dy] = 'b'
+                                changing = True
+                                toggled.append((x+dx,y+dy))
+                            elif cur == 'w' and adj == 'dw':
+                                board[x+dx][y+dy] = 'w'
+                                changing = True
+                                toggled.append((x+dx,y+dy))
+                            elif cur == 'db' and adj == 'b':
+                                board[x][y] = 'b'
+                                changing = True
+                                toggled.append((x,y))
+                            elif cur == 'dw' and adj == 'w':
+                                board[x][y] = 'w'
+                                changing = True
+                                toggled.append((x,y))
+        return toggled
+    def remove_dead(self):
+        board = self.board
+        size = self.size
+        newboard = [[[] for j in range(size)] for i in range(size)]
+        for x in range(size):
+            for y in range(size):
+                cur = board[x][y]
+                if cur == 'b':
+                    newboard[x][y] = 'b'
+                elif cur == 'w':
+                    newboard[x][y] = 'w'
+                else:
+                    newboard[x][y] = None
+        return newboard
+            
+                                
+
+                                
                     
             
         
@@ -415,9 +497,10 @@ def get_comment_from_node(node):
     
 
 class AbstractBoard(object):
-    def __init__(self,game=None):
+    def __init__(self,game=None,gridsize=19):
         if game is None:
-            game = sgf.Sgf_game(19)
+            game = sgf.Sgf_game(gridsize)
+        print 'abstractboard initialised with size', game.size, gridsize
 
         self.game = game
         self.prisoners = [0,0]
@@ -430,6 +513,11 @@ class AbstractBoard(object):
         self.boards[self.curnode] = board
         self.varcache = {}
         self.filepath = ''
+
+    def get_current_boardpos(self):
+        curnode = self.curnode
+        newboard = [row[:] for row in self.boards[curnode].board]
+        return newboard
 
     def load_sgf_from_file(self,filen):
         print 'asked to load from',filen

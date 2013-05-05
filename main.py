@@ -6,6 +6,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
+from kivy.uix.togglebutton import ToggleButton
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.stencilview import StencilView
@@ -86,6 +87,14 @@ def get_move_marker_colour(col):
     else:
         return [0.5,0.5,0.5,0.5]
 
+def format_score(score):
+    if score == 0:
+        return '[color=#ff0000]j[/color][color=#00ff00]i[/color][color=#ff0000]g[/color][color=#00ff00]o[/color]'
+    elif score > 0:
+        return 'B+%.1f' % score
+    else:
+        return 'W+%.1f' % abs(score)
+
 trianglecodes = ['triangle','TR']
 squarecodes = ['square','SQ']
 circlecodes = ['circle','CR']
@@ -128,6 +137,22 @@ def get_game_chooser_info_from_boardname(sm,boardname):
 def get_temp_filepath():
     tempdir = './games/unsaved'
     return tempdir + '/' + asctime().replace(' ','_') + '.sgf'
+
+class LDMarker(Widget):
+    pass
+
+class BoardSizeButton(ToggleButton):
+    gridsize = NumericProperty(19)
+    def current_selected_size(self):
+        ws = self.get_widgets('sizebuttons')
+        for entry in ws:
+            if entry.state == 'down':
+                return entry.gridsize
+        return 19
+
+class NewBoardQuery(BoxLayout):
+    collections_list = ObjectProperty(None,allownone=True)
+    manager = ObjectProperty(None,allownone=True)
 
 class EditPanel(GridLayout):
     current_mode = OptionProperty('bwplay',options=['bwplay',
@@ -344,12 +369,21 @@ class HomeScreen(BoxLayout):
     gamesview = ObjectProperty(None,allownone=True)
     pb = ObjectProperty(None, allownone=True)
 
+class TabletBoardView(BoxLayout):
+    managedby = ObjectProperty(None,allownone=True)
+    screenname = StringProperty('')
+    boardcontainer = ObjectProperty(None,allownone=True)
+    board = ObjectProperty(None,allownone=True)
+    spinner = ObjectProperty(None,allownone=True)
+
 class PhoneBoardView(BoxLayout):
     managedby = ObjectProperty(None,allownone=True)
     screenname = StringProperty('')
     boardcontainer = ObjectProperty(None,allownone=True)
     board = ObjectProperty(None,allownone=True)
     spinner = ObjectProperty(None,allownone=True)
+    def rottest(self,num):
+        Window.rotation = num
 
 class MakeMoveMarker(Widget):
     coord = ListProperty((0,0))
@@ -492,7 +526,8 @@ class VarStone(Widget):
             # should raise exception
 
 starposs = {19:[(3,3),(3,9),(3,15),(9,3),(9,9),(9,15),(15,3),(15,9),(15,15)],
-            9:[(2,2),(5,2),(2,5),(5,5),(4,4)]}
+            13:[(3,3),(3,9),(9,3),(9,9),(6,6)],
+            9:[(2,2),(6,2),(2,6),(6,6),(4,4)]}
             
 class GuiBoard(Widget):
     gridsize = NumericProperty(19) # Board size
@@ -509,6 +544,10 @@ class GuiBoard(Widget):
     temporary_filepath = StringProperty('')
     permanent_filepath = StringProperty('')
     has_unsaved_data = BooleanProperty(False)
+
+    # Score mode 
+    ld_markers = DictProperty({})
+    scoreboard = ObjectProperty(None,allownone=True)
 
     variations_exist = BooleanProperty(False)
 
@@ -554,7 +593,8 @@ class GuiBoard(Widget):
 
     def __init__(self,*args,**kwargs):
         super(GuiBoard,self).__init__(*args,**kwargs)
-        instructions = self.abstractboard = AbstractBoard()
+        print 'GuiBoard init, making abstractboard with gridsize', self.gridsize
+        self.abstractboard = AbstractBoard(gridsize=self.gridsize)
         self.reset_abstractboard()
 
     def start_autoplay(self,*args,**kwargs):
@@ -742,7 +782,23 @@ class GuiBoard(Widget):
         self.comment_text = comment
         self.abstractboard.curnode.set('C',comment)
 
+    def clear_ld_markers(self):
+        for coords in self.ld_markers:
+            marker = self.ld_markers[coords]
+            self.remove_widget(marker)
+        self.ld_markers = {}
+        print 'new self.ld_markers', self.ld_markers
+
+    def make_scoreboard(self):
+        if self.scoreboard is not None:
+            self.scoreboard = None
+        sb = ScoreBoard(self.gridsize)
+        sb.board = self.abstractboard.get_current_boardpos()
+        self.scoreboard = sb
+
     def set_navmode(self,spinner,mode):
+        self.scoreboard = None
+        self.clear_ld_markers()
         if mode != 'Guess':
             self.remove_guess_popup()
         self.navmode = mode
@@ -751,6 +807,8 @@ class GuiBoard(Widget):
         elif mode == 'Play':
             self.comment_pre_text = play_text + '\n-----\n'
         elif mode == 'Score':
+            self.make_scoreboard()
+            score = self.scoreboard.get_score()
             self.comment_pre_text = score_text + '\n-----\n'
         elif mode == 'Guess':
             self.comment_pre_text = guess_text + '\n-----\n'
@@ -765,6 +823,14 @@ class GuiBoard(Widget):
         self.clear_variation_stones()
 
     ## Board markers
+    def toggle_ld_marker(self,coord):
+        if self.ld_markers.has_key(coord):
+            existingmarker = self.ld_markers.pop(coord)
+            self.remove_widget(existingmarker)
+        else:
+            newmarker = LDMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
+            self.add_widget(newmarker)
+            self.ld_markers[coord] = newmarker
     def add_marker(self,coord,mtype,other=[]):
         print 'adding marker:', coord, mtype
         if self.boardmarkers.has_key(coord):
@@ -1010,6 +1076,9 @@ class GuiBoard(Widget):
         
 
     def advance_one_move(self,*args,**kwargs):
+        if self.navmode == 'Score':
+            self.clear_ld_markers()
+            self.make_scoreboard()
         children_exist = self.abstractboard.do_children_exist()
         if children_exist:
             instructions = self.abstractboard.advance_position()
@@ -1017,6 +1086,9 @@ class GuiBoard(Widget):
 
 
     def retreat_one_move(self,*args,**kwargs):
+        if self.navmode == 'Score':
+            self.clear_ld_markers()
+            self.make_scoreboard()
         instructions = self.abstractboard.retreat_position()
         self.follow_instructions(instructions)
 
@@ -1153,8 +1225,13 @@ class GuiBoard(Widget):
         self.get_player_details()
         self.follow_instructions(instructions)
         self.gameinfo = self.abstractboard.get_gameinfo()
-        
 
+    def reset_gridsize(self,newsize):
+        self.gridsize = newsize
+        self.abstractboard = AbstractBoard(gridsize=newsize)
+        print 'New gridsize is', self.gridsize
+        print 'New abstractboard gridsize', self.abstractboard.game.size
+        
 
 class BoardContainer(StencilView):
     board = ObjectProperty(None,allownone=True)
@@ -1189,6 +1266,16 @@ class BoardContainer(StencilView):
                     self.remove_widget(self.makemovemarker)
                 self.makemovemarker = marker
                 self.add_widget(marker)
+            elif self.board.navmode == 'Score':
+                coord = self.board.pos_to_coord(touch.pos)
+                changed, newscore = self.board.scoreboard.toggle_status_at(coord)
+                print changed, newscore
+                for coords in changed:
+                    self.board.toggle_ld_marker(coords)
+                if self.board.gameinfo.has_key('komi'):
+                    komi = float(self.board.gameinfo['komi'])
+                newscore -= komi
+                self.board.comment_pre_text = 'Score: %s\n-----\n' % (format_score(newscore))
             elif self.board.navmode == 'Zoom':
                 ani = Animation(gobanpos=(self.board.gobanpos[0]-100,self.board.gobanpos[1]-100),t='in_out_quad',duration=2) + Animation(gobanpos=self.board.gobanpos,t='in_out_quad',duration=2)
                 ani.start(self.board)
@@ -1289,7 +1376,7 @@ class NogoManager(ScreenManager):
             screenname = l[0].boardname
             self.back_screen_name = self.current
             self.current = screenname
-    def view_or_open_collection(self,dirn):
+    def view_or_open_collection(self,dirn,goto=True):
         if len(dirn) > 0:
             dirn = dirn[0].coldir
             if self.has_screen('Collection ' + dirn):
@@ -1309,7 +1396,8 @@ class NogoManager(ScreenManager):
                 s = Screen(name=screenname)
                 s.add_widget(gc)
                 self.add_widget(s)
-                self.switch_and_set_back(s.name)
+                if goto:
+                    self.switch_and_set_back(s.name)
     def open_sgf_dialog(self):
         popup = Popup(content=OpenSgfDialog(manager=self),title='Open SGF',size_hint=(0.85,0.85))
         popup.content.popup = popup
@@ -1333,8 +1421,31 @@ class NogoManager(ScreenManager):
                 self.remove_widget(pbvs)
                 self.boards.remove(name)
                 print 'new boards',self.screens
-    def new_board(self,from_file='',mode='Play',in_folder=''):
+    def new_board_dialog(self):
+        dialog = NewBoardQuery(manager=self)
+        popup = Popup(content=dialog,title='Create new board...',size_hint=(0.85,0.85))
+        popup.content.popup = popup
+        fileh = open('game_collection_locations.json','r')
+        collection_folders = jsonload(fileh)
+        fileh.close()
+        collections_args_converter = get_collectioninfo_from_dir
+        list_adapter = ListAdapter(data=collection_folders,
+                                   args_converter=collections_args_converter,
+                                   selection_mode='single',
+                                   allow_empty_selection=True,
+                                   cls=CollectionChooserButton
+                                   )
+        dialog.collections_list.adapter = list_adapter
+        popup.open()
+    def new_board_from_selection(self,sel,gridsize=19):
+        if len(sel)>0:
+            dirn = sel[0].coldir
+        else:
+            dirn = './games/unsaved'
+        self.new_board(in_folder=dirn,gridsize=gridsize)
+    def new_board(self,from_file='',mode='Play',in_folder='',gridsize=19):
         print 'from_file is',from_file
+        print 'size is', gridsize
         self.back_screen_name = self.current
 
         i = 1
@@ -1357,6 +1468,8 @@ class NogoManager(ScreenManager):
                 popup = Popup(content=Label(text='Unable to open SGF. Please check the file exists and is a valid SGF.',title='Error opening file'),size_hint=(0.85,0.4),title='Error')
                 popup.open()
                 return False
+        else:
+            pbv.board.reset_gridsize(gridsize)
         s.add_widget(pbv)
         pbv.screenname = name
         pbv.managedby = self
@@ -1374,6 +1487,12 @@ class NogoManager(ScreenManager):
         if 'Collections Index' in self.screen_names:
             self.remove_widget(self.get_screen('Collections Index'))
         self.create_collections_index()
+    def refresh_collection(self,dirn):
+        sname = 'Collection ' + dirn
+        if self.has_screen(sname):
+            scr = self.get_screen(sname)
+            self.remove_widget(scr)
+            self.view_or_open_collection(dirn,goto=False)
     def create_collections_index(self):
         fileh = open('game_collection_locations.json','r')
         collection_folders = jsonload(fileh)
@@ -1406,6 +1525,13 @@ class NogoManager(ScreenManager):
             if name[:5] == 'Board':
                 curboard = self.get_screen(name)
                 curboard.children[0].board.touchoffset = newtouchoffset
+    def propagate_view_mode(self,val):
+        if val == 'phone':
+            Window.rotation = 0
+        elif val == 'tablet':
+            Window.rotation = 90
+        else:
+            Window.rotation = 0
     def new_collection_query(self):
         popup = Popup(content=CollectionNameChooser(manager=self),title='Pick a collection name...',size_hint_x=0.85,size_hint_y=None,height=(130,'sp'))
         popup.content.popup = popup
@@ -1473,13 +1599,19 @@ class GobanApp(App):
              "section": "Board",
              "key": "coordinates",
              "true": "auto"},
+            {"type": "options",
+             "title": "View mode",
+             "desc": "Use compact phone view or expanded tablet view.",
+             "section": "Board",
+             "key": "view_mode",
+             "options": ["phone","tablet"]},
             ])
         settings.add_json_panel('Board',
                                 self.config,
                                 data=jsondata)
 
     def build_config(self, config):
-        config.setdefaults('Board',{'input_mode':'phone','coordinates':False})
+        config.setdefaults('Board',{'input_mode':'phone','coordinates':False,'view_mode':'phone'})
 
     def on_pause(self,*args,**kwargs):
         return True
@@ -1487,6 +1619,10 @@ class GobanApp(App):
     def on_config_change(self, config, section, key, value):
         if key == 'input_mode':
             self.manager.propagate_input_mode(value)
+        elif key == 'view_mode':
+            self.manager.propagate_view_mode(value)
+        else:
+            super(GobanApp,self).on_config_change(config,section,key,value)
 
                 
 

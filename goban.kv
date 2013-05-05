@@ -3,6 +3,69 @@
 #:import la kivy.adapters.listadapter
 #:import lv kivy.uix.listview
 
+<LDMarker>:
+    canvas:
+        Color:
+            rgb: (1,0,0)
+        Line:
+            points: [self.pos[0]+0.2*self.width,self.pos[1]+0.2*self.height,self.pos[0]+0.8*self.width,self.pos[1]+0.8*self.height]
+            width: 0.04*self.size[0]
+        Line:
+            points: [self.pos[0]+0.2*self.width,self.pos[1]+0.8*self.height,self.pos[0]+0.8*self.width,self.pos[1]+0.2*self.height]
+            width: 0.04*self.size[0]
+
+<NewBoardQuery>
+    orientation: 'vertical'
+    collections_list: collections
+    Label:
+        height: (30,'sp')
+        size_hint_y: None
+        text: 'Where to save the game?'
+    DividerLine
+    ListView:
+        id: collections
+        scroll_distance: 1
+        scroll_timeout: 1000
+    DividerLine
+    Label:
+        height: (30,'sp')
+        size_hint_y: None
+        text: 'Board size?'
+    DividerLine
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint: (1.,0.1)
+        BoardSizeButton:
+            size_hint: (0.333,1.)
+            text: '9x9'
+            group: 'sizebuttons'
+            gridsize: 9
+        BoardSizeButton:
+            size_hint: (0.333,1.)
+            text: '13x13'
+            group: 'sizebuttons'
+            gridsize: 13
+        BoardSizeButton:
+            id: button19
+            size_hint: (0.333,1.)
+            text: '19x19'
+            group: 'sizebuttons'
+            gridsize: 19
+    DividerLine
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint: (1.,0.1)
+        Button:
+            size_hint: (0.5,1.)
+            text: 'Cancel'
+            on_press: root.popup.dismiss()
+        Button:
+            size_hint: (0.5,1.)
+            text: 'Create new board.'
+            on_press: root.manager.new_board_from_selection(collections.adapter.selection, button19.current_selected_size())
+            on_release: root.popup.dismiss()
+
+
 <EditPanel>:
     rows: 2
     ToggleButton:
@@ -630,7 +693,7 @@
         VDividerLine
         Button:
             text: 'New board'
-            on_release: homeroot.managedby.new_board()
+            on_release: homeroot.managedby.new_board_dialog()
             background_normal: 'black_pixel.png'
             background_down: 'blue_press_pixel.png'
         VDividerLine
@@ -672,6 +735,99 @@
     boardcontainer: bc
     board: bc.board
     spinner: navspinner
+    orientation: 'horizontal'
+
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint: (0.30, 1.)
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1.,0.1)
+
+            Button:
+                size_hint: (0.15,1.0)
+                on_release: self.parent.parent.managedby.go_home()
+                background_normal: 'black_pixel.png'
+                background_down: 'blue_press_pixel.png'
+                Image:
+                    width: self.parent.width
+                    y: self.parent.y + 0.05*self.parent.height
+                    height: 0.9*self.parent.height
+                    source: 'back-1.png'
+                    keep_ratio: True
+                    mipmap: True
+            PlayerDetails:
+                id: pd
+                board: bc.board
+                size_hint: (0.75,1.0)
+
+                wtext: bc.board.wname
+                wrank: bc.board.wrank
+                btext: bc.board.bname
+                brank: bc.board.brank
+                next_to_play: bc.board.next_to_play
+                on_next_to_play: self.set_to_play(self.next_to_play)
+
+            Spinner:
+                id: navspinner
+                text: 'Navigate'
+                values: ['Navigate','Play','Score','Guess']
+                size_hint: (0.25,1.0)
+                on_text: bc.board.set_navmode(self,self.text)
+                option_cls: main.MySpinnerOption
+        DividerLine
+        CommentBox:
+            size_hint: (1.0,0.9)
+            id: thecb
+            text: bc.board.comment_pre_text + bc.board.comment_text
+            board: bc.board
+
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint: (0.65, 1.)
+        BoardContainer:
+            id: bc
+            size_hint: (1.,0.65)
+
+            uielements: {'varbutton': [btn_nextvar]}
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint: (0.05, 1.)
+
+        Button:
+            id: btn_varbranch
+            text: 'Var branch'
+            on_release: bc.board.back_to_varbranch()
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
+        PrevButton:
+            id: btn_prevmove
+            on_press: bc.board.retreat_one_move()
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
+        Button:
+            id: btn_nextvar
+            text: 'Next var\n (1 / 1)'
+            on_press: bc.board.next_variation()
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
+        NextButton:
+            board: bc.board
+            id: btn_nextmove
+            on_press: bc.board.advance_one_move()
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
+        GameOptionsButton:
+            id: btn_options
+            text: 'Options'
+            board: root.board
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
+
+<TabletBoardView>:
+    boardcontainer: bc
+    board: bc.board
+    spinner: navspinner
 
     orientation: 'vertical'
 
@@ -708,7 +864,7 @@
         Spinner:
             id: navspinner
             text: 'Navigate'
-            values: ['Navigate','Play','Score','Guess','Zoom']
+            values: ['Navigate','Play','Score','Guess']
             size_hint: (0.25,1.0)
             on_text: bc.board.set_navmode(self,self.text)
             option_cls: main.MySpinnerOption
@@ -719,24 +875,13 @@
 
         uielements: {'varbutton': [btn_nextvar]}
 
-    EditPanel:
-        size_hint: (1.0,0.18)
     CommentBox:
-        height: (1,'sp')
-        size_hint_y: None
+        size_hint: (1.0,0.18)
         id: thecb
         text: bc.board.comment_pre_text + bc.board.comment_text
         board: bc.board
 
-    Widget:
-        size_hint_y: None
-        height: (2,'sp')
-        canvas:
-            Color:
-                rgb: (0.195,0.641,0.805)
-            Line:
-                points: [self.x + 0.05*self.width, self.y + 0.5*self.height, self.x + 0.95*self.width, self.y + 0.5*self.height]
-                width: 2
+    DividerLine
     BoxLayout:
         orientation: 'horizontal'
         size_hint: (1.0,0.09)
