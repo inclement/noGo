@@ -36,7 +36,7 @@ from os.path import abspath
 from os import mkdir
 from json import dump as jsondump, load as jsonload
 import json
-from time import asctime
+from time import asctime, time
 
 
 from gomill import sgf, boards
@@ -993,9 +993,13 @@ class GuiBoard(Widget):
     def follow_instructions(self,instructions,*args,**kwargs):
         print '### instructions are', instructions
 
+        t1 = time()
+        
         self.clear_transient_widgets()
         self.reset_uielements()
         self.remove_guess_popup()
+
+        t2 = time()
         
         if 'remove' in instructions:
             remove_stones = instructions['remove']
@@ -1009,6 +1013,8 @@ class GuiBoard(Widget):
             empty_stones = instructions['empty']
             for stone in empty_stones:
                 self.empty_stone(coord=stone[0])
+
+        t3 = time()
 
         if 'playmarker' in instructions:
             pm = instructions['playmarker']
@@ -1041,6 +1047,8 @@ class GuiBoard(Widget):
             for entry in vars:
                 colour,coord,number = entry
                 self.add_variation_stone(coord,colour,number)
+
+        t4 = time()
                 
         if 'comment' in instructions:
             commenttext = instructions['comment']
@@ -1066,6 +1074,16 @@ class GuiBoard(Widget):
         if 'saved' in instructions:
             self.has_unsaved_data = False
 
+        t5 = time()
+
+        tottime = t5-t1
+        print '## Follow instruction times'
+        print '## Total', t5-t1
+        print '## Reset', t2-t1, (t2-t1)/tottime
+        print '## Add remove empty', t3-t2, (t3-t2)/tottime
+        print '## Playmarker, positions etc.', t4-t3, (t4-t3)/tottime
+        print '## Comment and saved', t5-t4, (t5-t4)/tottime
+
     def get_player_details(self,*args,**kwargs):
         wname, bname = self.abstractboard.get_player_names()
         wrank, brank = self.abstractboard.get_player_ranks()
@@ -1076,13 +1094,22 @@ class GuiBoard(Widget):
         
 
     def advance_one_move(self,*args,**kwargs):
+        print '%% Advancing one move!', time()
         if self.navmode == 'Score':
             self.clear_ld_markers()
             self.make_scoreboard()
+        t1 = time()
         children_exist = self.abstractboard.do_children_exist()
+        t2 = time()
         if children_exist:
             instructions = self.abstractboard.advance_position()
             self.follow_instructions(instructions)
+        t3 = time()
+        print '%% Times taken:'
+        print '%% Total', t3-t1
+        print '%% Children exist', t2-t1
+        print '%% Follow instructions', t3-t2
+        print '%%'
 
 
     def retreat_one_move(self,*args,**kwargs):
@@ -1254,10 +1281,10 @@ class BoardContainer(StencilView):
         self.board.stop_autoplay()
         if self.collide_point(*touch.pos):
             if self.board.navmode == 'Navigate':
-                    if touch.x > self.x + 0.5*self.width:
-                        self.board.advance_one_move()
-                    else:
-                        self.board.retreat_one_move()
+                if touch.x > self.x + 0.5*self.width:
+                    self.board.advance_one_move()
+                else:
+                    self.board.retreat_one_move()
             elif self.board.navmode in ['Play','Guess']:
                 print 'Touch down at', self.board.pos_to_coord(touch.pos)
                 print 'next to play is',self.board.next_to_play

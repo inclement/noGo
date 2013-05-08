@@ -1097,12 +1097,14 @@
         Ellipse:
             size: self.size
             pos: self.pos
+            segments: 10
 
         Color:
             rgb: self.colour
         Ellipse:
             size: (0.9*self.size[0],0.9*self.size[1])
             pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
+            segments: 10
 
 <VarStone>:
     canvas:
