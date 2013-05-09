@@ -34,7 +34,7 @@ from functools import partial
 from glob import glob
 from os.path import abspath
 from os import mkdir
-from json import dump as jsondump, load as jsonload
+from json import dump as jsondump, load as jsonload, dump as jsondump
 import json
 from time import asctime, time
 
@@ -137,6 +137,10 @@ def get_game_chooser_info_from_boardname(sm,boardname):
 def get_temp_filepath():
     tempdir = './games/unsaved'
     return tempdir + '/' + asctime().replace(' ','_') + '.sgf'
+
+class DeleteCollectionQuestion(BoxLayout):
+    manager = ObjectProperty(None,allownone=True)
+    selection = ObjectProperty(None,allownone=True)
 
 class LDMarker(Widget):
     pass
@@ -501,14 +505,24 @@ class TextMarker(Widget):
 
 class Stone(Widget):
     colour = ListProperty([1,1,1])
+    imagepath = StringProperty('./black_stone.png')
     def set_colour(self,colour):
         if colour == 'black':
             self.colour = [0,0,0]
+            self.imagepath = './black_stone.png'
         elif colour == 'white':
             self.colour = [1,1,1]
+            self.imagepath = './white_stone.png'
         else:
             print 'colour doesn\'t exist'
             # should raise exception
+    # Image:
+    #     x: self.parent.pos[0]
+    #     y: self.parent.pos[1]
+    #     width: self.parent.width
+    #     height: self.parent.height
+    #     source: self.parent.imagepath
+    #     mipmap: True
 
 class VarStone(Widget):
     colour = ListProperty([1,1,1,0.5])
@@ -1156,12 +1170,20 @@ class GuiBoard(Widget):
 
     def add_stone(self,coord=(1,1),colour='black',*args,**kwargs):
         stonesize = self.stonesize
+        t1 = time()
         stone = Stone(size=stonesize, pos=self.coord_to_pos(coord))
         stone.set_colour(colour)
+        t2 = time()
         if self.stones.has_key(coord):
             self.remove_stone(coord)
         self.stones[coord] = stone
+        t3 = time()
         self.add_widget(stone)
+        t4 = time()
+        print '@@ total', t4-t1
+        print '@@ make stone', t2-t1, (t2-t1)/(t4-t1)
+        print '@@ add to dict', t3-t2, (t3-t2)/(t4-t1)
+        print '@@ add widget', t4-t3, (t4-t3)/(t4-t1)
 
     def remove_stone(self,coord=(1,1),*args,**kwargs):
         if self.stones.has_key(coord):
@@ -1381,22 +1403,25 @@ class NogoManager(ScreenManager):
     # Properties to keep an eye on
     touchoffset = ListProperty([0,0])
     def switch_and_set_back(self,newcurrent):
-        self.back_screen_name = self.current
-        self.current = newcurrent
+        if not self.transition.is_active:
+            self.back_screen_name = self.current
+            self.current = newcurrent
     def go_home(self):
-        self.transition = SlideTransition(direction='right')
-        self.current = 'Home'
-        self.back_screen_name = 'Home'
-        self.transition = SlideTransition(direction='left')
-    def go_back(self):
-        self.transition = SlideTransition(direction='right')
-        if self.current == self.back_screen_name:
-            self.back_screen_name = 'Home'
-        if self.has_screen(self.back_screen_name):
-            self.current = self.back_screen_name
-        else:
+        if not self.transition.is_active:
+            self.transition = SlideTransition(direction='right')
             self.current = 'Home'
-        self.transition = SlideTransition(direction='left')
+            self.back_screen_name = 'Home'
+            self.transition = SlideTransition(direction='left')
+    def go_back(self):
+        if not self.transition.is_active:
+            self.transition = SlideTransition(direction='right')
+            if self.current == self.back_screen_name or self.current[:5] == 'Board':
+                self.back_screen_name = 'Home'
+            if self.has_screen(self.back_screen_name):
+                self.current = self.back_screen_name
+            else:
+                self.current = 'Home'
+            self.transition = SlideTransition(direction='left')
     def set_current_from_opengameslist(self,l):
         print 'open games list is',l
         if len(l)>0:
@@ -1577,6 +1602,29 @@ class NogoManager(ScreenManager):
         fileh.close()
         self.refresh_collections_index()
 
+    def query_delete_collection(self,sel):
+        if len(sel)>0:
+            popup = Popup(content=DeleteCollectionQuestion(manager=self,selection=sel),height=(140,'sp'),size_hint=(0.85,None),title='Are you sure?')
+            popup.content.popup = popup
+            popup.open()
+    def delete_collection_from_selection(self,selection):
+        print 'asked to delete from selection',selection
+        if len(selection)>0:
+            self.delete_collection(selection[0].coldir)
+    def delete_collection(self,dirn):
+        fileh = open('game_collection_locations.json','r')
+        collection_folders = jsonload(fileh)
+        fileh.close()
+        if dirn in collection_folders:
+            collection_folders.remove(dirn)
+        fileh = open('game_collection_locations.json','w')
+        jsondump(collection_folders,fileh)
+        fileh.close()
+        self.refresh_collections_index()
+        self.current = 'Collections Index'
+
+
+
 
 
 class DataItem(object):
@@ -1610,7 +1658,27 @@ class GobanApp(App):
         config = self.config
         sm.propagate_input_mode(config.getdefault('Board','input_mode','phone'))
 
+        self.bind(on_start=self.post_build_init)
+
         return sm
+
+    def post_build_init(self,ev):
+        if platform() == 'android':
+            import android
+            android.vibrate(1)
+            android.map_key(android.KEYCODE_BACK,1001)
+            android.map_key(android.KEYCODE_SEARCH,1003)
+
+        win = Window
+        win.bind(on_keyboard=self._key_handler)
+        print 'self._key_handler is',self._key_handler
+
+    def _key_handler(self,window,keycode1,keycode2,text,modifiers):
+        print 'Key received:',keycode1,keycode2,text,modifiers
+        if keycode1 == 27 or keycode1 == 1001:
+            self.manager.go_back()
+            return True
+        return False
 
     def build_settings(self,settings):
         jsondata = json.dumps([

@@ -30,8 +30,10 @@ requirements = pil,kivy
 
 orientation = portrait
 
-presplash.filename = /home/asandy/noGo/logo-1.png
-icon.filename = /home/asandy/noGo/logo-1.png
+presplash.filename = /home/asandy/noGo/logo_small.png
+icon.filename = /home/asandy/noGo/logo_small.png
+
+fullscreen = 0
 
 #
 # Android specific

@@ -3,6 +3,15 @@
 #:import la kivy.adapters.listadapter
 #:import lv kivy.uix.listview
 
+<DeleteCollectionQuestion>
+    Button:
+        text: 'Cancel'
+        on_press: root.popup.dismiss()
+    Button:
+        text: 'Delete'
+        on_press: root.manager.delete_collection_from_selection(root.selection)
+        on_release: root.popup.dismiss()
+
 <LDMarker>:
     canvas:
         Color:
@@ -34,7 +43,8 @@
     DividerLine
     BoxLayout:
         orientation: 'horizontal'
-        size_hint: (1.,0.1)
+        size_hint: (1.,None)
+        height: (50,'sp')
         BoardSizeButton:
             size_hint: (0.333,1.)
             text: '9x9'
@@ -54,7 +64,8 @@
     DividerLine
     BoxLayout:
         orientation: 'horizontal'
-        size_hint: (1.,0.1)
+        size_hint: (1.,None)
+        height: (50,'sp')
         Button:
             size_hint: (0.5,1.)
             text: 'Cancel'
@@ -237,16 +248,20 @@
         size_hint: (1.,0.1)
         Button:
             size_hint: (0.25,1.)
-            text: 'Back'
-            on_press: root.managedby.go_back()
-            background_normal: 'black_pixel.png'
+            text: 'Delete\ncollection'
+            halign: 'center'
+            valign: 'middle'
+            on_press: root.managedby.query_delete_collection(collections.adapter.selection)
+            background_normal: 'red_pixel.png'
             background_down: 'blue_press_pixel.png'
         VDividerLine
         Button:
             size_hint: (0.25,1.)
-            text: 'New collection'
+            text: 'New\ncollection'
+            halign: 'center'
+            valign: 'middle'
             on_release: root.managedby.new_collection_query()
-            background_normal: 'black_pixel.png'
+            background_normal: 'green_pixel.png'
             background_down: 'blue_press_pixel.png'
         VDividerLine
         Button:
@@ -401,15 +416,19 @@
         Button:
             size_hint: (0.25,1.)
             text: 'Back\n(-> delete)'
+            halign: 'center'
+            valign: 'middle'
             on_press: sgc.managedby.go_back()
-            background_normal: 'black_pixel.png'
+            background_normal: 'red_pixel.png'
             background_down: 'blue_press_pixel.png'
         VDividerLine
         Button:
             size_hint: (0.25,1.)
             text: 'New game here'
             on_release: root.managedby.new_board(in_folder=root.dirn)
-            background_normal: 'black_pixel.png'
+            halign: 'center'
+            valign: 'middle'
+            background_normal: 'green_pixel.png'
             background_down: 'blue_press_pixel.png'
         VDividerLine
         Button:
@@ -1097,14 +1116,12 @@
         Ellipse:
             size: self.size
             pos: self.pos
-            segments: 10
 
         Color:
             rgb: self.colour
         Ellipse:
             size: (0.9*self.size[0],0.9*self.size[1])
             pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
-            segments: 10
 
 <VarStone>:
     canvas:
