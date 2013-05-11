@@ -6,7 +6,8 @@ noGo is a cross-platform sgf viewer and editor. It is written in Python, and use
 noGo is a work in progress, and any questions, bug reports, requests, suggestions or anything else are welcome! Please contact alexanderjohntaylor@gmail.com
 
 .. image:: media/board_alpha.png
-   :scale: 50%
+   :width: 200px 
+   :alt: Sample board screenshot
 
 
 Licensing
