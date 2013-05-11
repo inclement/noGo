@@ -29,11 +29,4 @@ Gomill is licensed under the MIT licence, see gomill/licence.rst for full text.
 
 Homepage: http://mjw.woodcraft.me.uk/gomill/doc/0.7.4/intro.html
 
-kivy
-----
 
-Kivy is licensed under the GNU LESSER GENERAL PUBLIC LICENSE, version 3. See LGPL3.rst for full text.
-
-Homepage: http://kivy.org/#home
-
-Github: https://github.com/kivy/kivy
