@@ -13,6 +13,7 @@ from kivy.uix.stencilview import StencilView
 from kivy.uix.dropdown import DropDown
 from kivy.uix.scatter import Scatter
 from kivy.uix.spinner import Spinner, SpinnerOption
+from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.screenmanager import *
