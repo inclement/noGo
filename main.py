@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle, Ellipse
@@ -139,9 +141,10 @@ def get_temp_filepath():
     tempdir = './games/unsaved'
     return tempdir + '/' + asctime().replace(' ','_') + '.sgf'
 
-nogo_infotext = 'noGo is an SGF viewer/creator/player/editor.'
+nogo_infotext = 'noGo is a free, open-source SGF viewer/creator/player/editor. It is distributed'
 class InfoPage(TabbedPanel):
     infotext = StringProperty(nogo_infotext)
+    licensetext = StringProperty('')
 
 class VarBranchButton(Button):
     pass
@@ -1442,7 +1445,19 @@ class NogoManager(ScreenManager):
             self.back_screen_name = self.current
             self.current = screenname
     def open_help(self):
-        pass
+        if self.has_screen('Info Page'):
+            self.switch_and_set_back('Info Page')
+        else:
+            fileh = open('gpl.txt','r')
+            gpl = fileh.read()
+            fileh.close()
+            fileh = open('README.rst','r')
+            readme = fileh.read()
+            fileh.close()
+            infoscreen = Screen(name='Info Page')
+            infoscreen.add_widget(InfoPage(infotext=readme,licensetext=gpl))
+            self.add_widget(infoscreen)
+            self.switch_and_set_back('Info Page')
     def view_or_open_collection(self,dirn,goto=True):
         if len(dirn) > 0:
             dirn = dirn[0].coldir
@@ -1753,4 +1768,3 @@ class GobanApp(App):
             
 if __name__ == '__main__':
     GobanApp().run()
-

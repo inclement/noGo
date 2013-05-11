@@ -1,22 +1,19 @@
 noGo
 ====
 
-noGo is a cross-platform sgf viewer and editor. It is written in
-Python, and uss the Gomill suite of Go utilities to read SGFs and keep
-track of board logic. The GUI is built using the kivy graphical
-framework.
+noGo is a cross-platform sgf viewer and editor. It is written in Python, and uses the Gomill suite of Go utilities to read SGFs and keep track of board logic. The GUI is built using the kivy graphical framework.
 
-
+noGo is a work in progress, and any questions, bug reports, requests, suggestions or anything else are welcome! Please contact alexanderjohntaylor@gmail.com
 
 Licensing
 =========
 
+noGo is distributed with the Gomill set of SGF utilities. The APK form is also bundled with a full set of python libraries and the kivy gui framework.
+
 noGo
 ----
 
-noGo is currently not published under any licence. No permission is
-given to use the software in any form, except for its components where
-they are individually licensed.
+noGo is published under the GNU General Public License version 3, which can be found in gpl.txt. 
 
 Gomill
 ------

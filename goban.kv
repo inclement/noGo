@@ -8,9 +8,15 @@
 
     TabbedPanelItem:
         text: 'Info'
+        RstDocument:
+            source: 'README.rst'
+    TabbedPanelItem:
+        text: 'GPL License'
         Label:
-            text_size: self.size
-            text: root.infotext
+            padding: -10,-10
+            text_size: (self.size[0]-20,self.size[1]-20)
+            valign: 'top'
+            text: root.licensetext
 
 <GameOptionsButton>:
     Image:
@@ -725,10 +731,28 @@
     gamesview: opengames
     pb: pb
 
-    Image:
+    BoxLayout:
         size_hint: ((1.,0.2))
-        mipmap: True
-        source: 'logo-1.png'
+        orientation: 'horizontal'
+        Image:
+            mipmap: True
+            source: 'logo-1.png'
+        Button:
+            height: self.parent.height
+            width: self.parent.height
+            size_hint: (None,None)
+            on_release: root.managedby.open_help()
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
+            Label:
+                pos: self.parent.pos
+                size: self.parent.size
+                font_size: (0.9*self.height,'px')
+                text_size: self.size
+                halign: 'center'
+                valign: 'middle'
+                text: '?'
+            
     DividerLine:
         height: (10,'sp')
     BoxLayout:
