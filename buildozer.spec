@@ -23,7 +23,7 @@ source.include_exts = py,png,jpg,sgf,json,kv
 # version.filename = %(source.dir)s/main.py
 
 # (str) Application versionning (method 2)
-version = 0.021
+version = 0.022
 
 # (list) Application requirements
 requirements = pil,kivy
@@ -40,7 +40,7 @@ fullscreen = 0
 #
 
 # (list) Permissions
-#android.permissions = INTERNET
+android.permissions = VIBRATE
 
 # (int) Android API to use
 #android.api = 14

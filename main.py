@@ -138,6 +138,13 @@ def get_temp_filepath():
     tempdir = './games/unsaved'
     return tempdir + '/' + asctime().replace(' ','_') + '.sgf'
 
+nogo_infotext = 'noGo is an SGF viewer/creator/player/editor.'
+class InfoPage(TabbedPanel):
+    infotext = StringProperty(nogo_infotext)
+
+class VarBranchButton(Button):
+    pass
+
 class DeleteCollectionQuestion(BoxLayout):
     manager = ObjectProperty(None,allownone=True)
     selection = ObjectProperty(None,allownone=True)
@@ -790,6 +797,8 @@ class GuiBoard(Widget):
         else:
             popup = Popup(content=CommentInput(board=self,comment=self.comment_text),title='Edit comment:',size_hint=(0.85,0.85))
         popup.content.popup = popup
+        if platform() == 'android':
+            android.vibrate(0.1)
         popup.open()
 
     def set_new_comment(self,comment):
@@ -1118,6 +1127,9 @@ class GuiBoard(Widget):
         if children_exist:
             instructions = self.abstractboard.advance_position()
             self.follow_instructions(instructions)
+        else:
+            if platform() == 'android':
+                android.vibrate(0.1)
         t3 = time()
         print '%% Times taken:'
         print '%% Total', t3-t1
@@ -1428,6 +1440,8 @@ class NogoManager(ScreenManager):
             screenname = l[0].boardname
             self.back_screen_name = self.current
             self.current = screenname
+    def open_help(self):
+        pass
     def view_or_open_collection(self,dirn,goto=True):
         if len(dirn) > 0:
             dirn = dirn[0].coldir
@@ -1665,15 +1679,12 @@ class GobanApp(App):
     def post_build_init(self,ev):
         if platform() == 'android':
             import android
-            android.vibrate(1)
             android.map_key(android.KEYCODE_BACK,1001)
-            android.map_key(android.KEYCODE_SEARCH,1003)
 
         win = Window
-        win.bind(on_keyboard=self._key_handler)
-        print 'self._key_handler is',self._key_handler
+        win.bind(on_keyboard=self.my_key_handler)
 
-    def _key_handler(self,window,keycode1,keycode2,text,modifiers):
+    def my_key_handler(self,window,keycode1,keycode2,text,modifiers):
         print 'Key received:',keycode1,keycode2,text,modifiers
         if keycode1 == 27 or keycode1 == 1001:
             self.manager.go_back()
@@ -1709,7 +1720,23 @@ class GobanApp(App):
         config.setdefaults('Board',{'input_mode':'phone','coordinates':False,'view_mode':'phone'})
 
     def on_pause(self,*args,**kwargs):
+        print 'App asked to pause'
+        names = self.screen_names
+        for name in names:
+            if name[:5] == 'Board':
+                board = self.get_screen(name)
+                board.children[0].board.save_sgf(autosave=True)
         return True
+
+    def on_stop(self,*args,**kwargs):
+        print 'App asked to stop'
+        names = self.screen_names
+        for name in names:
+            if name[:5] == 'Board':
+                board = self.get_screen(name)
+                board.children[0].board.save_sgf(autosave=True)
+        return True
+        
 
     def on_config_change(self, config, section, key, value):
         if key == 'input_mode':

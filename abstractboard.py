@@ -357,16 +357,14 @@ def apply_node_to_board(board, node):
             board.play(new_move_point[0],new_move_point[1],new_move_colour)
         except ValueError:
             print 'SGF played existing point'
+            board.board[new_move_point[0]][new_move_point[1]] = new_move_colour
     new_occupied_points = board.list_occupied_points()
-    if len(new_occupied_points) == len(current_occupied_points) + 1:
-        add_stones.append((new_move_point, new_move_colour))
-    else:
-        for point in new_occupied_points:
-            if point not in current_occupied_points:
-                add_stones.append((point[1],point[0]))
-        for point in current_occupied_points:
-            if point not in new_occupied_points:
-                remove_stones.append((point[1],point[0]))
+    for point in new_occupied_points:
+        if point not in current_occupied_points:
+            add_stones.append((point[1],point[0]))
+    for point in current_occupied_points:
+        if point not in new_occupied_points:
+            remove_stones.append((point[1],point[0]))
 
 
     instructions = {}
@@ -652,7 +650,7 @@ class AbstractBoard(object):
         self.build_varcache_to_node(node)
         return instructions
 
-    def add_new_node(self,coord,colour,newmainline=False,jump=True):
+    def add_new_node(self,coord,colour,newmainline=False,jump=True,disallowsuicide=False):
         curboard = self.boards[self.curnode]
         if curboard.board[coord[0]][coord[1]] is not None:
             print 'Addition denied, stone already exists!'
