@@ -1,0 +1,26 @@
+(;
+C[ 32nd Oza title, game 3
+ White: Kato Masao
+ Black: Yamashiro Hiroshi
+ Played on 19 Oct 1984
+ Commentary available in Go World #40, summer 1985
+ Black resigns after White 176]
+
+;B[pd];W[dc];B[pq];W[dp];B[qk];W[nc];B[pf];W[pb];B[qc];W[kc]
+;B[fq];W[dn];B[jp];W[de];B[cj];W[ch];B[bn];W[cm];B[cq];W[dq]
+;B[cp];W[dr];B[cr];W[bm];B[do];W[eo];B[co];W[fp];B[en];W[fn]
+;B[em];W[fm];B[el];W[dk];B[fl];W[dj];B[gm];W[gn];B[hn];W[gp]
+;B[hm];W[gq];B[fj];W[po];B[qp];W[op];B[oq];W[mp];B[nq];W[np]
+;B[nl];W[mq];B[rn];W[mm];B[nm];W[ll];B[go];W[fo];B[ho];W[iq]
+;B[lk];W[kk];B[ml];W[lm];B[kl];W[lj];B[mk];W[jq];B[kp];W[lr]
+;B[kj];W[jk];B[jj];W[ik];B[ij];W[hk];B[hj];W[jn];B[gk];W[km]
+;B[le];W[gi];B[fi];W[gh];B[gj];W[md];B[me];W[ne];B[nf];W[oe]
+;B[of];W[je];B[cd];W[ce];B[cc];W[dd];B[hg];W[jg];B[fg];W[qn]
+;B[qo];W[pn];B[rm];W[gg];B[gf];W[hf];B[dh];W[di];B[cg];W[bf]
+;B[jc];W[kd];B[he];W[if];B[ge];W[lg];B[hh];W[mh];B[nh];W[eh]
+;B[dg];W[eg];B[ef];W[ei];B[fh];W[df];B[hp];W[hq];B[ds];W[pl]
+;B[kh];W[kg];B[pk];W[qb];B[ip];W[es];B[cs];W[fr];B[db];W[eb]
+;B[da];W[ea];B[cb];W[bd];B[bc];W[ab];B[ec];W[fb];B[bg];W[ci]
+;B[ac];W[ba];B[bb];W[aa];B[gb];W[fc];B[ed];W[ad];B[ca];W[aa]
+;B[gc];W[fd];B[ee];W[ab];B[kb];W[lb];B[ib];W[rc];B[rd];W[pc]
+;B[qd];W[mf];B[mi];W[pe];B[qe];W[rb])

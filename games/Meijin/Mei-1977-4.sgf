@@ -1,0 +1,30 @@
+(;
+FF[3]
+ID[77/4]
+PB[Rin Kaiho]
+BR[9d]
+PW[Otake Hideo]
+WR[9d]
+RE[B+R]
+DT[1977-10-12]
+
+;B[pd];W[dc];B[qp];W[op];B[dp];W[qq];B[rq];W[pq];B[ro];W[kq]
+;B[ce];W[dh];B[fe];W[gc];B[hd];W[hc];B[id];W[ic];B[jd];W[kc]
+;B[ed];W[ec];B[dj];W[fh];B[hh];W[ej];B[ek];W[fj];B[di];W[eh]
+;B[dn];W[hj];B[ji];W[jk];B[pn];W[qf];B[le];W[qi];B[iq];W[on]
+;B[om];W[nn];B[nm];W[cq];B[dq];W[dr];B[er];W[bp];B[cr];W[cm]
+;B[bl];W[br];B[ds];W[cn];B[mn];W[mp];B[cl];W[dm];B[gk];W[fk]
+;B[el];W[en];B[fl];W[gl];B[hk];W[gm];B[il];W[gn];B[bh];W[bg]
+;B[bf];W[hi];B[ik];W[ih];B[hg];W[ii];B[jj];W[jh];B[lh];W[hf]
+;B[if];W[gf];B[ig];W[gd];B[ge];W[ch];B[bi];W[cf];B[ag];W[de]
+;B[cg];W[df];B[dd];W[cd];B[be];W[he];B[cc];W[ff];B[bd];W[kg]
+;B[ie];W[lg];B[lc];W[kb];B[pf];W[pg];B[nf];W[mh];B[og];W[lj]
+;B[ph];W[qg];B[kk];W[oh];B[nh];W[oi];B[ni];W[lk];B[mi];W[jl]
+;B[jm];W[kl];B[in];W[mg];B[ng];W[ij];B[do];W[ip];B[hp];W[hq]
+;B[jp];W[gp];B[io];W[em];B[gq];W[bs];B[cp];W[bq];B[ao];W[bm]
+;B[am];W[an];B[bn];W[fq];B[hr];W[bo];
+C[
+incorrect moves:
+B\[an\];W\[co\];B\[fo\];B\[an\];W\[bm\]
+]
+)

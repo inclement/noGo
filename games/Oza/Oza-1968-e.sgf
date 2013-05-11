@@ -1,0 +1,39 @@
+(;
+FF[4]
+PB[Fujusawa Hosai (9 dan)]
+PW[Nakagawa Shinji]
+AP[SGFC:1.13b]
+C[ 16th oza title
+ source: 1969 kido yearbook, p 119
+ komi: 5 1/2 points
+ white: Nakagawa Shinji
+ black: Fujusawa Hosai (9 dan)
+ result: black wins by 4 1/2 points]
+
+;B[qc];W[dp];B[pq];W[dc];B[qo];W[qi];B[ce];W[ci];B[dd];W[ec]
+;B[cc];W[cb];B[bc];W[hc];B[fq];W[jq];B[cq];W[dq];B[cp];W[do]
+;B[dr];W[er];B[cr];W[eq];B[cn];W[nq];B[fo];W[gq];B[qg];W[ql]
+;B[nc];W[cl];B[dn];W[fp];B[oo];W[od];B[pc];W[me];B[mc];W[og]
+;B[ph];W[mo];B[kp];W[no];B[om];W[ol];B[nl];W[ok];B[nm];W[ln]
+;B[jp];W[kq];B[gp];W[fr];B[en];W[bm];B[bn];W[rm];B[pi];W[qj]
+;B[cg];W[qf];B[rf];W[re];B[pf];W[qe];B[pg];W[pd];B[ni];W[rg]
+;B[rh];W[sf];B[qh];W[mj];B[mg];W[rc];B[rb];W[qd];B[kc];W[ld]
+;B[lc];W[lk];B[sc];W[sd];B[rd];W[ne];B[lf];W[kd];B[jd];W[ke]
+;B[jg];W[lh];B[li];W[mh];B[mi];W[kh];B[nh];W[jh];B[oe];W[of]
+;B[pe];W[nd];B[kk];W[kl];B[kj];W[ig];B[qn];W[ll];B[pj];W[rk]
+;B[ic];W[hd];B[ii];W[ih];B[ed];W[hb];B[hp];W[or];B[pr];W[ik]
+;B[nk];W[nj];B[oj];W[pm];B[lj];W[mk];B[pk];W[pl];B[pn];W[ri]
+;B[sh];W[qk];B[nf];W[mf];B[oh];W[lg];B[ng];W[iq];B[je];W[rc]
+;B[sb];W[jf];B[bk];W[ck];B[bj];W[cj];B[bi];W[ch];B[bh];W[dg]
+;B[df];W[eg];B[hn];W[bb];B[fk];W[ac];B[gi];W[ae];B[bf];W[ei]
+;B[ib];W[sn];B[rp];W[ps];B[qs];W[os];B[rr];W[gj];B[fj];W[fi]
+;B[gk];W[hj];B[hi];W[jl];B[gg];W[fh];B[hg];W[ej];B[fc];W[fb]
+;B[fd];W[ia];B[gb];W[eb];B[gc];W[ga];B[jb];W[ip];B[io];W[jo]
+;B[jn];W[ko];B[ab];W[aa];B[fa];W[ha];B[he];W[im];B[in];W[ek]
+;B[hl];W[fl];B[hm];W[eo];B[fn];W[an];B[ja];W[ea];B[id];W[ca]
+;B[dl];W[dk];B[el];W[hk];B[gl];W[ap];B[rn];W[sm];B[kn];W[lo]
+;B[gd];W[fa];B[bo];W[ao];B[if];W[kg];B[ef];W[fg];B[ff];W[oc]
+;B[ob];W[rd];B[oq];W[mr];B[cm];W[bl];B[bq];W[sp];B[sq];W[so]
+;B[sg];W[rf];B[si];W[sj];B[hq];W[hr];B[bd];W[ad];B[af];W[op]
+;B[pp];W[np];B[mm];W[lm];B[aq];W[ds];B[cs];W[es];B[il];W[jk]
+;B[jm];W[ak];B[aj];W[al])

@@ -1,0 +1,35 @@
+(;
+C[ 32nd Oza Title Game 1
+ White: Kato Masao
+ Black: Yamashiro Hiroshi
+ Played on Sept 21 1984
+ 
+ White wins by 7 1/2 points
+ 
+ Commentary in Go World #39, Spring 1985]
+
+;B[pd];W[dp];B[qp];W[dc];B[oq];W[qj];B[ce];W[ci];B[dd];W[cc]
+;B[ec];W[ed];B[eb];W[ee];B[cd];W[bc];B[df];W[ef];B[db];W[dg]
+;B[cg];W[dh];B[bd];W[jp];B[cq];W[cp];B[dq];W[eq];B[er];W[fq]
+;B[fr];W[gq];B[bp];W[bo];B[bq];W[cn];B[jj];W[qn];B[hj];W[oo]
+;B[lj];W[fc];B[fb];W[gc];B[mc];W[qf];B[fj];W[qc];B[pc];W[qd]
+;B[pe];W[qe];B[jc];W[pf];B[dj];W[fh];B[cj];W[bg];B[em];W[mq]
+;B[eo];W[ep];B[op];W[rp];B[rq];W[qo];B[ro];W[pp];B[qq];W[rn]
+;B[sp];W[gr];B[ge];W[ek];B[fi];W[dl];B[ei];W[gf];B[he];W[bf]
+;B[cf];W[bj];B[ch];W[di];B[bh];W[bi];B[ah];W[hf];B[ie];W[fk]
+;B[ej];W[gk];B[gh];W[bk];B[fg];W[eg];B[il];W[hm];B[im];W[hn]
+;B[fd];W[fe];B[gd];W[if];B[eh];W[je];B[id];W[kg];B[nj];W[nd]
+;B[nc];W[pb];B[ob];W[qb];B[md];W[oe];B[ne];W[od];B[oc];W[of]
+;B[mg];W[ng];B[lg];W[le];B[me];W[jh];B[no];W[lo];B[nr];W[mr]
+;B[hl];W[gl];B[jn];W[hk];B[ik];W[ii];B[ij];W[nn];B[io];W[jo]
+;B[in];W[hp];B[mn];W[mo];B[np];W[nm];B[pk];W[pj];B[ok];W[qk]
+;B[ln];W[lm];B[kn];W[mm];B[nh];W[oh];B[nf];W[og];B[mp];W[lp]
+;B[kr];W[jr];B[ip];W[iq];B[hh];W[ff];B[lf];W[jd];B[ic];W[ki]
+;B[kf];W[jf];B[mk];W[mh];B[lh];W[ni];B[li];W[gj];B[hi];W[fs]
+;B[dr];W[pl];B[lq];W[kq];B[ko];W[lr];B[kp];W[sn];B[lq];W[lp]
+;B[jq];W[jp];B[ol];W[om];B[ld];W[ap];B[br];W[ji];B[pq];W[po]
+;B[ll];W[km];B[ai];W[oj];B[mi];W[kk];B[nh];W[ml];B[nk];W[lk]
+;B[oi];W[pi];B[ck];W[cl];B[kj];W[ni];B[ho];W[go];B[oi];W[so]
+;B[rp];W[ni];B[aq];W[ao];B[oi];W[kd];B[kc];W[ni];B[kh];W[jg]
+;B[oi];W[oa];B[na];W[pa];B[ni];W[ns];B[os];W[ms];B[es];W[gs]
+;B[lo];W[lq];B[aj];W[nq];B[or];W[ke];B[ak];W[al])

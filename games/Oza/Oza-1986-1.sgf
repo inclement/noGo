@@ -1,0 +1,39 @@
+(;
+C[ 34th Oza Game 1
+ White: Kato Masao
+ Black: Rin Kaiho
+ 
+ Played on 26 September 1986
+ 
+ Black wins by 1/2 point
+ 
+ Commentary available in Go World #48, Summer 1987]
+
+;B[pd];W[dp];B[qp];W[dd];B[fq];W[dn];B[kq];W[nc];B[pf];W[kd]
+;B[pk];W[iq];B[dq];W[cq];B[cr];W[eq];B[dr];W[ep];B[er];W[fp]
+;B[gq];W[gp];B[cp];W[op];B[hp];W[kp];B[lp];W[ko];B[lq];W[hq]
+;B[ho];W[ip];B[co];W[hn];B[no];W[do];B[cn];W[oo];B[dm];W[io]
+;B[on];W[np];B[pn];W[mo];B[nn];W[qq];B[rq];W[pq];B[lo];W[rr]
+;B[rp];W[mp];B[ln];W[mn];B[mm];W[lm];B[km];W[ll];B[kn];W[mr]
+;B[im];W[em];B[el];W[dl];B[cm];W[fl];B[ek];W[fk];B[mq];W[nr]
+;B[nq];W[or];B[sr];W[ps];B[fm];W[en];B[po];W[pp];B[kj];W[nm]
+;B[ml];W[lk];B[nl];W[nk];B[ol];W[lj];B[ki];W[mh];B[kk];W[ej]
+;B[dk];W[pg];B[of];W[lg];B[jg];W[dj];B[ck];W[gi];B[je];W[ke]
+;B[gg];W[qg];B[oc];W[nd];B[re];W[ii];B[li];W[mi];B[kg];W[jd]
+;B[he];W[ig];B[if];W[hg];B[id];W[kf];B[jf];W[gd];B[ge];W[ic]
+;B[fd];W[hc];B[gh];W[ff];B[hi];W[hj];B[hh];W[ih];B[gj];W[ik]
+;B[gf];W[gk];B[fi];W[dg];B[fj];W[hm];B[di];W[fe];B[cc];W[cd]
+;B[gc];W[hd];B[dc];W[cj];B[ci];W[bk];B[cl];W[bi];B[ed];W[ee]
+;B[fb];W[gb];B[fc];W[bh];B[fg];W[df];B[ei];W[bj];B[bd];W[be]
+;B[eg];W[bc];B[bb];W[ad];B[nb];W[mb];B[ob];W[hb];B[ab];W[pj]
+;B[qj];W[qk];B[oj];W[nj];B[jk];W[pi];B[rk];W[ql];B[rj];W[rl]
+;B[qm];W[rm];B[rn];W[pm];B[qn];W[qi];B[pl];W[an];B[ao];W[fa]
+;B[eb];W[ma];B[mf];W[ok];B[il];W[mk];B[om];W[hl];B[ri];W[rh]
+;B[rf];W[hr];B[fs];W[gs];B[fr];W[si];B[sm];W[am];B[og];W[bo]
+;B[bp];W[ap];B[aq];W[oh];B[ea];W[od];B[qc];W[me];B[lf];W[mg]
+;B[nf];W[kl];B[jl];W[ie];B[hf];W[ga];B[mc];W[lb];B[rs];W[qr]
+;B[le];W[ld];B[bn];W[bl];B[ao];W[qf];B[qe];W[rg];B[bm];W[al]
+;B[ac];W[bd];B[ch];W[cg];B[ef];W[de];B[ng];W[nh];B[lr];W[jr]
+;B[in];W[na];B[oa];W[jn];B[gr];W[dh];B[eh];W[jo];B[jm];W[hs]
+;B[ms];W[ns];B[ls];W[sf];B[se];W[jq];B[sl];W[sj];B[js];W[is]
+;B[ks];W[sg];B[sq];W[id])

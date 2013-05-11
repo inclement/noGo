@@ -1,0 +1,21 @@
+(;
+C[ 1974 Pro Best Ten tournament
+ White: Ishida Yoshio, Honinbo
+ Black: Takemiya Masaki, 7-dan
+ Komi: 5 1/2
+ Black wins by resignation.]
+
+;B[pd];W[dp];B[pp];W[cc];B[pj];W[nc];B[jp];W[qc];B[qd];W[pc]
+;B[od];W[oc];B[me];W[ld];B[le];W[kd];B[ke];W[je];B[md];W[mc]
+;B[jd];W[ie];B[hd];W[id];B[jc];W[kb];B[jb];W[kc];B[hc];W[he]
+;B[dd];W[fd];B[dc];W[fb];B[cd];W[cf];B[db];W[ge];B[fq];W[fp]
+;B[gp];W[fo];B[eq];W[dq];B[cl];W[cj];B[co];W[do];B[cn];W[cp]
+;B[el];W[og];B[ph];W[nd];B[ne];W[oe];B[of];W[pe];B[pf];W[qe]
+;B[rd];W[rf];B[qf];W[re];B[rg];W[rc];B[qq];W[mo];B[nn];W[oo]
+;B[no];W[op];B[np];W[oq];B[nq];W[po];B[qo];W[qn];B[ro];W[om]
+;B[nm];W[pq];B[qr];W[nr];B[pr];W[or];B[lq];W[rn];B[sr];W[mr]
+;B[lr];W[sp];B[rq];W[so];B[rs];W[pk];B[ok];W[ol];B[qk];W[pl]
+;B[ql];W[qj];B[rj];W[oj];B[pi];W[on];B[mk];W[nk];B[mj];W[qm]
+;B[rl];W[nl];B[nj];W[ml];B[ll];W[lm];B[km];W[kl];B[lk];W[mm]
+;B[lp];W[kn];B[jm];W[jn];B[im];W[in];B[ln];W[hn];B[hq];W[kk]
+;B[kj];W[jk];B[hm];W[oi];B[mh];W[nh];B[ni])
