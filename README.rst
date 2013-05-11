@@ -8,7 +8,9 @@ noGo is a work in progress, and any questions, bug reports, requests, suggestion
 Licensing
 =========
 
-noGo is distributed with the Gomill set of SGF utilities. The APK form is also bundled with a full set of python libraries and the kivy gui framework.
+noGo is distributed with the Gomill set of SGF utilities.
+
+The APK form is also bundled with a full set of python libraries and the kivy gui framework.
 
 noGo
 ----

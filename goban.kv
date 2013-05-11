@@ -12,11 +12,18 @@
             source: 'README.rst'
     TabbedPanelItem:
         text: 'GPL License'
-        Label:
-            padding: -10,-10
-            text_size: (self.size[0]-20,self.size[1]-20)
-            valign: 'top'
-            text: root.licensetext
+        ScrollView:
+            do_scroll_x: False
+            scroll_distance: 1
+            scroll_timeout: 1000
+            Label:
+                size_hint_y: None
+                height: 8000
+                padding: -10,-10
+                font_size: (8,'sp')
+                text_size: (self.size[0]-20,self.size[1]-20)
+                valign: 'top'
+                text: root.licensetext
 
 <GameOptionsButton>:
     Image:
@@ -734,6 +741,21 @@
     BoxLayout:
         size_hint: ((1.,0.2))
         orientation: 'horizontal'
+        Button:
+            height: self.parent.height
+            width: self.parent.height
+            size_hint: (None,None)
+            on_release: root.managedby.app.open_settings()
+            background_normal: 'black_pixel.png'
+            background_down: 'blue_press_pixel.png'
+            Label:
+                pos: self.parent.pos
+                size: self.parent.size
+                font_size: (0.9*self.height,'px')
+                text_size: self.size
+                halign: 'center'
+                valign: 'middle'
+                text: '#'
         Image:
             mipmap: True
             source: 'logo-1.png'
