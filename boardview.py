@@ -1155,3 +1155,17 @@ class EditPanel(GridLayout):
                                                     'bstone',
                                                     'wstone',
                                                     'estone'])
+
+class CommentInput(BoxLayout):
+    board = ObjectProperty(None)
+    popup = ObjectProperty(None)
+    comment = StringProperty('')
+
+class SaveQuery(BoxLayout):
+    collections_list = ObjectProperty(None,allownone=True)
+    board = ObjectProperty(None,allownone=True)
+
+def get_collectioninfo_from_dir(row_index,dirn):
+    sgfs = glob(dirn + '/*.sgf')
+    colname = dirn.split('/')[-1]
+    return {'colname': colname, 'coldir': dirn, 'numentries': len(sgfs)}

@@ -44,9 +44,10 @@ from time import asctime, time
 
 from gomill import sgf, boards
 from abstractboard import *
-from boardview import GuiBoard, BoardContainer, PhoneBoardView, GuessPopup
+from boardview import GuiBoard, BoardContainer, PhoneBoardView, GuessPopup, SaveQuery
 from miscwidgets import VDividerLine, DividerLine, WhiteStoneImage, BlackStoneImage
 from info import InfoPage
+from homepage import HomeScreen, OpenSgfDialog
 
 import sys
 
@@ -150,15 +151,7 @@ class GameOptionsButton(Button):
         return super(GameOptionsButton,self).on_touch_up(touch)
         
 
-class MyListView(ListView):
-    selection = ListProperty()
 
-class PrintyButton(Button):
-    def getselchan(self,*args,**kwargs):
-        print args
-        print kwargs
-        self.text = str(args) + str(kwargs)
-        print args[0][0].text
 
 
 class MySpinnerOption(SpinnerOption):
@@ -175,9 +168,6 @@ class CollectionsIndex(BoxLayout):
     collections_list = ObjectProperty(None,allownone=True)
     managedby = ObjectProperty(None,allownone=True)
 
-class SaveQuery(BoxLayout):
-    collections_list = ObjectProperty(None,allownone=True)
-    board = ObjectProperty(None,allownone=True)
 
 class StandaloneGameChooser(BoxLayout):
     managedby = ObjectProperty(None,allownone=True)
@@ -280,20 +270,9 @@ class NextButton(Button):
 class PrevButton(Button):
     pass
 
-class CommentInput(BoxLayout):
-    board = ObjectProperty(None)
-    popup = ObjectProperty(None)
-    comment = StringProperty('')
-
-class HomeScreen(BoxLayout):
-    managedby = ObjectProperty(None,allownone=True)
-    gamesview = ObjectProperty(None,allownone=True)
-    pb = ObjectProperty(None, allownone=True)
 
 
-class OpenSgfDialog(FloatLayout):
-    manager = ObjectProperty(None)
-    popup = ObjectProperty(None)
+
 
 
 
@@ -630,10 +609,10 @@ class GobanApp(App):
 
     def on_pause(self,*args,**kwargs):
         print 'App asked to pause'
-        names = self.screen_names
+        names = self.manager.screen_names
         for name in names:
             if name[:5] == 'Board':
-                board = self.get_screen(name)
+                board = self.manager.get_screen(name)
                 board.children[0].board.save_sgf(autosave=True)
         return True
 
