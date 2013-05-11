@@ -1746,10 +1746,10 @@ class GobanApp(App):
 
     def on_stop(self,*args,**kwargs):
         print 'App asked to stop'
-        names = self.screen_names
+        names = self.manager.screen_names
         for name in names:
             if name[:5] == 'Board':
-                board = self.get_screen(name)
+                board = self.manager.get_screen(name)
                 board.children[0].board.save_sgf(autosave=True)
         return True
         
