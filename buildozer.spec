@@ -13,7 +13,7 @@ package.domain = org.kivy
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,sgf,json,kv
+source.include_exts = py,png,jpg,sgf,json,kv,txt,rst
 
 # (list) Source files to exclude (let empty to not excluding anything)
 #source.exclude_exts = spec
@@ -26,7 +26,7 @@ source.include_exts = py,png,jpg,sgf,json,kv
 version = 0.022
 
 # (list) Application requirements
-requirements = pil,kivy
+requirements = pil,docutils,kivy
 
 orientation = portrait
 

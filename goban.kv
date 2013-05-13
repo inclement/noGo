@@ -10,20 +10,6 @@
         text: 'Info'
         RstDocument:
             source: 'README.rst'
-    TabbedPanelItem:
-        text: 'GPL License'
-        ScrollView:
-            do_scroll_x: False
-            scroll_distance: 1
-            scroll_timeout: 1000
-            Label:
-                size_hint_y: None
-                height: 8000
-                padding: -10,-10
-                font_size: (8,'sp')
-                text_size: (self.size[0]-20,self.size[1]-20)
-                valign: 'top'
-                text: root.licensetext
 
 <GameOptionsButton>:
     Image:

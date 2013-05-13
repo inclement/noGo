@@ -48,6 +48,7 @@ from boardview import GuiBoard, BoardContainer, PhoneBoardView, GuessPopup, Save
 from miscwidgets import VDividerLine, DividerLine, WhiteStoneImage, BlackStoneImage
 from info import InfoPage
 from homepage import HomeScreen, OpenSgfDialog
+from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir 
 
 import sys
 
@@ -111,9 +112,6 @@ def get_temp_filepath():
 
 
 
-class DeleteCollectionQuestion(BoxLayout):
-    manager = ObjectProperty(None,allownone=True)
-    selection = ObjectProperty(None,allownone=True)
 
 
 class BoardSizeButton(ToggleButton):
@@ -128,11 +126,6 @@ class BoardSizeButton(ToggleButton):
 class NewBoardQuery(BoxLayout):
     collections_list = ObjectProperty(None,allownone=True)
     manager = ObjectProperty(None,allownone=True)
-
-
-class CollectionNameChooser(BoxLayout):
-    popup = ObjectProperty(None,allownone=True)
-    manager = ObjectProperty(None)
 
     
 class GameOptions(DropDown):
@@ -150,105 +143,6 @@ class GameOptionsButton(Button):
             self.ddn.open(self)
         return super(GameOptionsButton,self).on_touch_up(touch)
         
-
-
-
-
-class MySpinnerOption(SpinnerOption):
-    pass
-
-
-
-def get_collectioninfo_from_dir(row_index,dirn):
-    sgfs = glob(dirn + '/*.sgf')
-    colname = dirn.split('/')[-1]
-    return {'colname': colname, 'coldir': dirn, 'numentries': len(sgfs)}
-
-class CollectionsIndex(BoxLayout):
-    collections_list = ObjectProperty(None,allownone=True)
-    managedby = ObjectProperty(None,allownone=True)
-
-
-class StandaloneGameChooser(BoxLayout):
-    managedby = ObjectProperty(None,allownone=True)
-    gameslist = ObjectProperty()
-    name = StringProperty('')
-    dirn = StringProperty('')
-    def populate_from_directory(self,dir):
-        sgfs = glob(''.join((dir,'/*.sgf')))
-        print 'sgfs found in directory: ',sgfs
-        for sgfpath in sgfs:
-            sgfpath = abspath(sgfpath)
-            info = get_gameinfo_from_file(sgfpath)
-            info['filepath'] = sgfpath
-            print info
-            pathwidget = GameChooserButton(owner=self)
-            pathwidget.construct_from_sgfinfo(info)
-            self.gameslist.add_widget(pathwidget)
-
-class CollectionChooserButton(ListItemButton):
-    colname = StringProperty('')
-    coldir = StringProperty('')
-    numentries = NumericProperty(0)
-
-class OpenChooserButton(ListItemButton):
-    wname = StringProperty('')
-    bname = StringProperty('')
-    date = StringProperty('')
-    filepath = StringProperty('')
-    boardname = StringProperty('')
-
-class GameChooserButton(ListItemButton):
-    info = ObjectProperty()
-    owner = ObjectProperty(None,allownone=True)
-    filepath = StringProperty('')
-    bname = StringProperty('')
-    wname = StringProperty('')
-    brank = StringProperty('')
-    wrank = StringProperty('')
-    result = StringProperty('')
-    date = StringProperty('')
-    def construct_from_sgfinfo(self,info):
-        self.info.construct_from_sgfinfo(info)
-
-class GameChooserInfo(BoxLayout):
-    owner = ObjectProperty('')
-    filepath = StringProperty('')
-    bname = StringProperty('')
-    wname = StringProperty('')
-    brank = StringProperty('')
-    wrank = StringProperty('')
-    result = StringProperty('')
-    date = StringProperty('')
-    def construct_from_sgfinfo(self,info):
-        if 'bname' in info:
-            self.bname = info['bname']
-        else:
-            self.bname = 'Unknown'
-        if 'wname' in info:
-            self.wname = info['wname']
-        else:
-            self.wname = 'Unknown'
-        if 'brank' in info:
-            self.brank = '(' + info['brank'] + ')'
-        if 'wrank' in info:
-            self.wrank = '(' + info['wrank'] + ')'
-        if 'result' in info:
-            result = info['result']
-            if result[0] in ['w','W']:
-                self.wname = ''.join(('[b]',self.wname,'[/b]'))
-            elif result[0] in ['b','B']:
-                self.bname = ''.join(('[b]',self.bname,'[/b]'))
-            self.result = info['result']
-        else:
-            self.result = '?'
-        if 'date' in info:
-            self.date = info['date']
-        else:
-            self.date = '---'
-        if 'filepath' in info:
-            self.filepath = info['filepath']
-        return self
 
 class NextButton(Button):
     board = ObjectProperty(None,allownone=True)
@@ -300,6 +194,11 @@ class NogoManager(ScreenManager):
             self.current = 'Home'
             self.back_screen_name = 'Home'
             self.transition = SlideTransition(direction='left')
+    def handle_android_back(self):
+        if platform() == 'android':
+            import android
+            res = android.hide_keyboard()
+        self.go_back()
     def go_back(self):
         if not self.transition.is_active:
             self.transition = SlideTransition(direction='right')
@@ -575,7 +474,7 @@ class GobanApp(App):
     def my_key_handler(self,window,keycode1,keycode2,text,modifiers):
         print 'Key received:',keycode1,keycode2,text,modifiers
         if keycode1 == 27 or keycode1 == 1001:
-            self.manager.go_back()
+            self.manager.handle_android_back()
             return True
         return False
 
@@ -639,4 +538,5 @@ class GobanApp(App):
 
             
 if __name__ == '__main__':
-    GobanApp().run()
+    app = GobanApp()
+    app.run()

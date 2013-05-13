@@ -537,6 +537,7 @@ class GuiBoard(Widget):
             popup = Popup(content=CommentInput(board=self,comment=self.comment_text),title='Edit comment:',size_hint=(0.85,0.85))
         popup.content.popup = popup
         if platform() == 'android':
+            import android
             android.vibrate(0.1)
         popup.open()
 
@@ -868,6 +869,7 @@ class GuiBoard(Widget):
             self.follow_instructions(instructions)
         else:
             if platform() == 'android':
+                import android
                 android.vibrate(0.1)
         t3 = time()
         print '%% Times taken:'
@@ -1169,3 +1171,6 @@ def get_collectioninfo_from_dir(row_index,dirn):
     sgfs = glob(dirn + '/*.sgf')
     colname = dirn.split('/')[-1]
     return {'colname': colname, 'coldir': dirn, 'numentries': len(sgfs)}
+
+class MySpinnerOption(SpinnerOption):
+    pass
