@@ -48,7 +48,7 @@ from boardview import GuiBoard, BoardContainer, PhoneBoardView, GuessPopup, Save
 from miscwidgets import VDividerLine, DividerLine, WhiteStoneImage, BlackStoneImage
 from info import InfoPage
 from homepage import HomeScreen, OpenSgfDialog
-from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton
+from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton, GameChooserButton
 
 
 import sys

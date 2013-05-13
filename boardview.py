@@ -373,6 +373,7 @@ class GuiBoard(Widget):
 
     def get_game_info(self):
         self.gameinfo = self.abstractboard.get_gameinfo()
+        self.get_player_details()
         if not self.user_saved:
             if self.gameinfo.has_key('filepath'):
                 self.permanent_filepath = self.gameinfo['filepath']
@@ -384,7 +385,12 @@ class GuiBoard(Widget):
         popup.content.popup = popup
         popup.open()
 
-    def save_sgf(self,saveas=False,autosave=False):
+    def save_sgf(self,saveas=False,autosave=False,refresh=True):
+        # if refresh and self.permanent_filepath != '':
+        #     newn = self.build_savefile_name()
+        #     newns = newn.split('_')
+        #     curn = self.permanent_filepath
+        #     curns = curn.split('_')
         if autosave:
             if self.permanent_filepath != '':
                 self.abstractboard.save_sgf(self.permanent_filepath)
@@ -418,6 +424,11 @@ class GuiBoard(Widget):
         popup.open()
 
     def make_savefile_in_dir(self,dirn):
+        filen = self.build_savefile_name(dirn)
+        self.permanent_filepath = filen
+        self.user_saved = True
+        self.save_sgf()
+    def build_savefile_name(self,dirn):
         filen = ''.join((dirn,'/',asctime().replace(' ','_')))
         if 'wname' in self.gameinfo:
             filen += '_' + self.gameinfo['wname']
@@ -432,9 +443,8 @@ class GuiBoard(Widget):
         else:
             filen += '_' + 'eunknown'
         filen += '.sgf'
-        self.permanent_filepath = filen
-        self.user_saved = True
-        self.save_sgf()
+        return filen
+        
 
     def back_to_varbranch(self):
         instructions = self.abstractboard.jump_to_varbranch()
@@ -535,7 +545,7 @@ class GuiBoard(Widget):
         if self.comment_text == '[color=444444]Long press to add comment.[/color]':
             popup = Popup(content=CommentInput(board=self,comment=''),title='Edit comment:',size_hint=(0.85,0.85))
         else:
-            popup = Popup(content=CommentInput(board=self,comment=self.comment_text),title='Edit comment:',size_hint=(0.85,0.85))
+            popup = Popup(content=CommentInput(board=self,comment=self.comment_text),title='Edit comment:',size_hint=(0.85,0.55),pos=(0.075*Window.width, 0.95*Window.height))
         popup.content.popup = popup
         if platform() == 'android':
             import android
