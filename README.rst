@@ -3,9 +3,7 @@ noGo
 
 noGo is a cross-platform sgf viewer and editor. It is written in Python, and uses the Gomill suite of Go utilities to read SGFs and keep track of board logic. The GUI is built using the kivy graphical framework. noGo includes ~1100 games covering mostly Japanese title matches over the last few decades, from Andries Brouwer's public domain collection (http://homepages.cwi.nl/~aeb/go/games/index.html).
 
-Source is hosted at https://github.com/inclement/noGo
-
-noGo is a work in progress, and any questions, bug reports, requests, suggestions or anything else are welcome! Please contact alexanderjohntaylor@gmail.com
+noGo is a work in progress, and any questions, bug reports, requests, suggestions or anything else are welcome! Please contact alexanderjohntaylor@gmail.com or submit an issue at https://github.com/inclement/noGo.
 
 .. image:: media/board_alpha_small.png
    :width: 200px 
