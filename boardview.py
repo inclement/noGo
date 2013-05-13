@@ -367,6 +367,7 @@ class GuiBoard(Widget):
             pass
 
     def set_game_info(self,info):
+        print 'asked to set with info',info
         self.abstractboard.set_gameinfo(info)
         self.get_game_info()
 

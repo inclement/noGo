@@ -44,11 +44,12 @@ from time import asctime, time
 
 from gomill import sgf, boards
 from abstractboard import *
-from boardview import GuiBoard, BoardContainer, PhoneBoardView, GuessPopup, SaveQuery
+from boardview import GuiBoard, BoardContainer, PhoneBoardView, GuessPopup, SaveQuery, MySpinnerOption
 from miscwidgets import VDividerLine, DividerLine, WhiteStoneImage, BlackStoneImage
 from info import InfoPage
 from homepage import HomeScreen, OpenSgfDialog
-from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir 
+from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton
+
 
 import sys
 

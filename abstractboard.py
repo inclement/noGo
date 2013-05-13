@@ -141,7 +141,7 @@ def get_gameinfo_from_file(filen):
     return info
 
 def set_gameinfo_in_sgf(info,game):
-    print 'got to set_gameinfo_in_sgf'
+    print 'got to set_gameinfo_in_sgf', info
     root = game.get_root()
     print 'root is', root, root.properties()
     if 'bname' in info:
@@ -158,10 +158,10 @@ def set_gameinfo_in_sgf(info,game):
     if 'brank' in info:
         brank = info['brank']
         root.set('BR',brank)
-    print 'did wrank, brank'
     if 'wrank' in info:
         wrank = info['wrank']
         root.set('WR',wrank)
+    print 'did wrank, brank'
     if 'bteam' in info:
         bteam = info['bteam']
         root.set('BT',bteam)

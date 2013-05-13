@@ -2,6 +2,8 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.listview import ListItemButton
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
 
+from glob import glob
+
 
 def get_collectioninfo_from_dir(row_index,dirn):
     sgfs = glob(dirn + '/*.sgf')

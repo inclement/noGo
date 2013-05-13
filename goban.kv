@@ -389,7 +389,7 @@
         Button:
             text: 'Submit'
             on_release: root.popup.dismiss()
-            on_press: root.board.set_game_info({'wname':wname_text.text,'wrank':wrank_text.text,'bname':bname_text.text,'brank':brank_text.text,'komi':komi_text.text,'result':result_text.text,'event':event_text.text})
+            on_press: root.board.set_game_info({'wname':str(wname_text.text),'wrank':str(wrank_text.text),'bname':str(bname_text.text),'brank':str(brank_text.text),'komi':str(komi_text.text),'result':str(result_text.text),'event':str(event_text.text)})
      
         
         
