@@ -9,7 +9,7 @@ from gomill import sgf, boards, ascii_boards
 
 adjacencies = [(-1,0),(0,-1),(1,0),(0,1)]
 
-class ScoreBoard:
+class ScoreBoard(object):
     def __init__(self,size=19):
         self.scoringboard = boards.Board(size)
         self.board = [[[] for j in range(size)] for i in range(size)]

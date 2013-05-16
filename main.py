@@ -301,6 +301,7 @@ class NogoManager(ScreenManager):
     def new_board(self,from_file='',mode='Play',in_folder='',gridsize=19):
         print 'from_file is',from_file
         print 'size is', gridsize
+        print 'self.coordinates is', self.coordinates
         self.back_screen_name = self.current
 
         i = 1
@@ -383,11 +384,12 @@ class NogoManager(ScreenManager):
                 curboard.children[0].board.touchoffset = newtouchoffset
 
     def propagate_coordinates_mode(self,val):
-        self.coordinates = val
+        val = int(val)
+        self.coordinates = bool(val)
         for name in self.screen_names:
             if name[:5] == 'Board':
                 curboard = self.get_screen(name)
-                curboard.children[0].board.coordinates = val
+                curboard.children[0].board.coordinates = bool(val)
             
     def propagate_view_mode(self,val):
         if val == 'phone':
@@ -483,6 +485,7 @@ class GobanApp(App):
         # Get initial settings from config panel
         config = self.config
         sm.propagate_input_mode(config.getdefault('Board','input_mode','phone'))
+        sm.propagate_coordinates_mode(config.getdefault('Board','coordinates','1'))
 
         self.bind(on_start=self.post_build_init)
 
@@ -551,12 +554,14 @@ class GobanApp(App):
         
 
     def on_config_change(self, config, section, key, value):
+        print '%%% config change',config,section,key,value
         if key == 'input_mode':
             self.manager.propagate_input_mode(value)
         elif key == 'view_mode':
             self.manager.propagate_view_mode(value)
         elif key == 'coordinates':
-            self.manager.propagate_coordinates_mode(value)
+            print 'coordinates key pressed',config,section,key,value
+            self.manager.propagate_coordinates_mode(int(value))
         else:
             super(GobanApp,self).on_config_change(config,section,key,value)
 

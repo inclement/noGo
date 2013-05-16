@@ -355,8 +355,10 @@ class GuiBoard(Widget):
     def on_coordinates(self,obj,val):
         print 'on_coordinates',obj,val
         if val:
+            print 'adding coordinates'
             self.add_coordinates()
         else:
+            print 'removing coordinates'
             self.remove_coordinates()
 
     stones = DictProperty({})
@@ -708,6 +710,7 @@ class GuiBoard(Widget):
         self.update_stones()
         self.update_playmarker()
         self.update_markers()
+        self.update_coordinates()
 
     def on_pos(self,*args,**kwargs):
         self.on_size()
@@ -720,17 +723,18 @@ class GuiBoard(Widget):
         self.update_playmarker()
         self.update_markers()
 
-    def coord_to_pos(self, coord):
+    def coord_to_pos(self, coord,dotransformations=True):
         gridspacing = self.gridspacing
         realcoord = [coord[0],coord[1]]
-        if self.flip_horiz:
-            realcoord[0] = self.game.size - 1 - realcoord[0]
-        if self.flip_vert:
-            realcoord[1] = self.game.size - 1 - realcoord[1]
-        if self.flip_forwardslash:
-            realcoord = realcoord[::-1]
-        if self.flip_backslash:
-            realcoord = realcoord[self.game.size - 1 - realcoord[0],self.game.size - 1 - realcoord[1]][::-1]
+        if dotransformations:
+            if self.flip_horiz:
+                realcoord[0] = self.game.size - 1 - realcoord[0]
+            if self.flip_vert:
+                realcoord[1] = self.game.size - 1 - realcoord[1]
+            if self.flip_forwardslash:
+                realcoord = realcoord[::-1]
+            if self.flip_backslash:
+                realcoord = realcoord[self.game.size - 1 - realcoord[0],self.game.size - 1 - realcoord[1]][::-1]
 
         coord = realcoord
         
@@ -959,7 +963,7 @@ class GuiBoard(Widget):
         for i in range(self.gridsize):
             label = Label(text=self.coordinate_letter[i],
                           size=stonesize,
-                          pos=self.coord_to_pos((i,-0.75)),
+                          pos=self.coord_to_pos((i,-0.75),dotransformations=False),
                           font_size=(0.4*stonesize[1],'px'),
                           color=(0,0,0,1))
             self.add_widget(label)
@@ -967,7 +971,7 @@ class GuiBoard(Widget):
         for j in range(self.gridsize):
             label = Label(text=self.coordinate_number[j],
                           size=stonesize,
-                          pos=self.coord_to_pos((-0.75,j)),
+                          pos=self.coord_to_pos((-0.75,j),dotransformations=False),
                           font_size=(0.4*stonesize[1],'px'),
                           color=(0,0,0,1))
             self.add_widget(label)
@@ -978,7 +982,8 @@ class GuiBoard(Widget):
         self.coordinate_labels = []
     def update_coordinates(self):
         self.remove_coordinates()
-        self.add_coordinates()
+        if self.coordinates:
+            self.add_coordinates()
 
     def add_stone(self,coord=(1,1),colour='black',*args,**kwargs):
         stonesize = self.stonesize
