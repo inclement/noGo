@@ -103,6 +103,9 @@ class GameInfo(BoxLayout):
     komi = StringProperty('')
     result = StringProperty('')
     event = StringProperty('')
+    gname = StringProperty('')
+    ruleset = StringProperty('')
+    source = StringProperty('')
     def populate_from_gameinfo(self,gi):
         if 'bname' in gi:
             self.bname = gi['bname']
@@ -118,6 +121,12 @@ class GameInfo(BoxLayout):
             self.result = gi['result']
         if 'event' in gi:
             self.event = gi['event']
+        if 'gname' in gi:
+            self.gname = gi['gname']
+        if 'rules' in gi:
+            self.ruleset = gi['rules']
+        if 'source' in gi:
+            self.source = gi['source']
 
 class GuessPopup(Widget):
     alpha = NumericProperty(1)
@@ -337,6 +346,18 @@ class GuiBoard(Widget):
     boardmarkers = DictProperty({})
     guesspopup = ObjectProperty(None,allownone=True)
     varstones = DictProperty({})
+
+    # Coordinates widget
+    coordinate_letter = 'abcdefghjklmnopqrstuv'
+    coordinate_number = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19']
+    coordinates = BooleanProperty(False)
+    coordinate_labels = ListProperty([])
+    def on_coordinates(self,obj,val):
+        print 'on_coordinates',obj,val
+        if val:
+            self.add_coordinates()
+        else:
+            self.remove_coordinates()
 
     stones = DictProperty({})
     starpoints = DictProperty()
@@ -931,6 +952,33 @@ class GuiBoard(Widget):
         for coord in self.varstones.keys():
             stone = self.varstones.pop(coord)
             self.remove_widget(stone)
+
+    def add_coordinates(self):
+        self.remove_coordinates()
+        stonesize = self.stonesize
+        for i in range(self.gridsize):
+            label = Label(text=self.coordinate_letter[i],
+                          size=stonesize,
+                          pos=self.coord_to_pos((i,-0.75)),
+                          font_size=(0.4*stonesize[1],'px'),
+                          color=(0,0,0,1))
+            self.add_widget(label)
+            self.coordinate_labels.append(label)
+        for j in range(self.gridsize):
+            label = Label(text=self.coordinate_number[j],
+                          size=stonesize,
+                          pos=self.coord_to_pos((-0.75,j)),
+                          font_size=(0.4*stonesize[1],'px'),
+                          color=(0,0,0,1))
+            self.add_widget(label)
+            self.coordinate_labels.append(label)
+    def remove_coordinates(self):
+        for widget in self.coordinate_labels:
+            self.remove_widget(widget)
+        self.coordinate_labels = []
+    def update_coordinates(self):
+        self.remove_coordinates()
+        self.add_coordinates()
 
     def add_stone(self,coord=(1,1),colour='black',*args,**kwargs):
         stonesize = self.stonesize

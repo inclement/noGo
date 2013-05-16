@@ -36,7 +36,7 @@ from math import sin
 from functools import partial
 from glob import glob
 from os.path import abspath
-from os import mkdir
+from os import mkdir, rename
 from json import dump as jsondump, load as jsonload, dump as jsondump
 import json
 from time import asctime, time
@@ -48,8 +48,7 @@ from boardview import GuiBoard, BoardContainer, PhoneBoardView, GuessPopup, Save
 from miscwidgets import VDividerLine, DividerLine, WhiteStoneImage, BlackStoneImage
 from info import InfoPage
 from homepage import HomeScreen, OpenSgfDialog
-from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton, GameChooserButton
-
+from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton, GameChooserButton, DeleteSgfQuestion
 
 import sys
 
@@ -185,6 +184,8 @@ class NogoManager(ScreenManager):
 
     # Properties to keep an eye on
     touchoffset = ListProperty([0,0])
+    coordinates = BooleanProperty(False)
+
     def switch_and_set_back(self,newcurrent):
         if not self.transition.is_active:
             self.back_screen_name = self.current
@@ -329,6 +330,7 @@ class NogoManager(ScreenManager):
         pbv.managedby = self
         pbv.spinner.text = mode
         pbv.board.touchoffset = self.touchoffset
+        pbv.board.coordinates = self.coordinates
         self.boards.append(name)
         if in_folder != '':
             try:
@@ -379,6 +381,14 @@ class NogoManager(ScreenManager):
             if name[:5] == 'Board':
                 curboard = self.get_screen(name)
                 curboard.children[0].board.touchoffset = newtouchoffset
+
+    def propagate_coordinates_mode(self,val):
+        self.coordinates = val
+        for name in self.screen_names:
+            if name[:5] == 'Board':
+                curboard = self.get_screen(name)
+                curboard.children[0].board.coordinates = val
+            
     def propagate_view_mode(self,val):
         if val == 'phone':
             Window.rotation = 0
@@ -409,6 +419,20 @@ class NogoManager(ScreenManager):
             popup = Popup(content=DeleteCollectionQuestion(manager=self,selection=sel),height=(140,'sp'),size_hint=(0.85,None),title='Are you sure?')
             popup.content.popup = popup
             popup.open()
+    def query_delete_sgf(self,sel):
+        if len(sel)>0:
+            popup = Popup(content=DeleteSgfQuestion(manager=self,selection=sel),height=(140,'sp'),size_hint=(0.85,None),title='Are you sure?')
+            popup.content.popup = popup
+            popup.open()
+    def delete_sgf_from_selection(self,selection):
+        if len(selection)>0:
+            self.delete_sgf(selection[0].filepath)
+    def delete_sgf(self,filen):
+        name = filen.split('/')[-1]
+        try:
+            os.rename(filen,'./games/deleted'+name)
+        except:
+            print 'Couldn\'t delete sgf...should raise exception?'
     def delete_collection_from_selection(self,selection):
         print 'asked to delete from selection',selection
         if len(selection)>0:
@@ -531,6 +555,8 @@ class GobanApp(App):
             self.manager.propagate_input_mode(value)
         elif key == 'view_mode':
             self.manager.propagate_view_mode(value)
+        elif key == 'coordinates':
+            self.manager.propagate_coordinates_mode(value)
         else:
             super(GobanApp,self).on_config_change(config,section,key,value)
 

@@ -35,6 +35,15 @@
         source: './media/var_branch_logo_white-1.png'
         mipmap: True
 
+<DeleteSgfQuestion>:
+    Button:
+        text: 'Cancel'
+        on_press: root.popup.dismiss()
+    Button:
+        text: 'Delete'
+        on_press: root.manager.delete_sgf_from_selection(root.selection)
+        on_release: root.popup.dismiss()
+
 <DeleteCollectionQuestion>:
     Button:
         text: 'Cancel'
@@ -314,6 +323,8 @@
     do_scroll_x: False
 
     ScrollView:
+        scroll_distance: 1
+        scroll_timeout: 1000
         BoxLayout:
             orientation: 'vertical'
             size_hint_y: None
@@ -373,7 +384,7 @@
                     id: komi_text
                     text: root.komi
                     multiline: False
-                TextInput:
+                Label:
                     id: result_text
                     text: root.result
                     multiline: False
@@ -383,6 +394,35 @@
                 id: event_text
                 text: root.event
                 multiline: False
+            Label:
+                text: 'Game name:'
+            TextInput:
+                id: gname_text
+                text: root.gname
+                multiline: False
+            BoxLayout:
+                orientation: 'horizontal'
+                Label:
+                    text: 'Ruleset:'
+                    textsize: self.size
+                    halign: 'left'
+                    valign: 'middle'
+                    size_hint: (0.5,1.)
+                Label:
+                    text: 'Source:'
+                    size_hint: (0.5,1.)
+            BoxLayout:
+                orientation: 'horizontal'
+                TextInput:
+                    id: ruleset_text
+                    text: root.ruleset
+                    multiline: False
+                    size_hint: (0.5,1.)
+                TextInput:
+                    id: source_text
+                    text: root.source
+                    multiline: False
+                    size_hint: (0.5,1.)
     BoxLayout:
         orientation: 'horizontal'
         size_hint_y: None
@@ -393,7 +433,7 @@
         Button:
             text: 'Submit'
             on_release: root.popup.dismiss()
-            on_press: root.board.set_game_info({'wname':str(wname_text.text),'wrank':str(wrank_text.text),'bname':str(bname_text.text),'brank':str(brank_text.text),'komi':str(komi_text.text),'result':str(result_text.text),'event':str(event_text.text)})
+            on_press: root.board.set_game_info({'wname':str(wname_text.text),'wrank':str(wrank_text.text),'bname':str(bname_text.text),'brank':str(brank_text.text),'komi':str(komi_text.text),'result':str(result_text.text),'event':str(event_text.text),'gname':str(gname_text.text),'rules':str(ruleset_text.text),'source':str(source_text.text)})
      
         
         
@@ -447,10 +487,10 @@
         size_hint: (1.,0.1)
         Button:
             size_hint: (0.25,1.)
-            text: 'Back\n(-> delete)'
+            text: 'Delete'
             halign: 'center'
             valign: 'middle'
-            on_press: sgc.managedby.go_back()
+            on_press: root.managedby.query_delete_sgf(gl.adapter.selection)
             background_normal: 'media/red_pixel.png'
             background_down: 'media/blue_press_pixel.png'
         VDividerLine

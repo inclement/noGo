@@ -14,6 +14,10 @@ class CollectionsIndex(BoxLayout):
     collections_list = ObjectProperty(None,allownone=True)
     managedby = ObjectProperty(None,allownone=True)
 
+class DeleteSgfQuestion(BoxLayout):
+    manager = ObjectProperty(None,allownone=True)
+    selection = ObjectProperty(None,allownone=True)
+
 class DeleteCollectionQuestion(BoxLayout):
     manager = ObjectProperty(None,allownone=True)
     selection = ObjectProperty(None,allownone=True)

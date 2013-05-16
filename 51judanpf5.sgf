@@ -1,27 +1,15 @@
-(;
-EV[51st Judan the last prelminary tournament final]
-KM[6.5]
-FF[3]
-SZ[19]
-GM[1]
-PW[Uchida Shuhei]
-WR[7d]
-DT[2012-07-19]
-BR[25th Honinbo]
-RE[B+R]
-PB[Cho Chikun]
-;B[pd];W[dp];B[qp];W[dd];B[fq];W[cn];B[lq];W[qj];B[qf];W[qm];B[pn]
-;W[ro];B[rp];W[pm];B[om];W[on];B[qn];W[nn];B[ol];W[rn];B[op];W[pk]
-;B[ok];W[oj];B[nj];W[oi];B[ln];W[mm];B[mk];W[lm];B[jn];W[kl];B[mh]
-;W[gp];B[fp];W[go];B[fo];W[gn];B[fn];W[gm];B[cq];W[dq];B[dr];W[cp]
-;B[cr];W[gq];B[fr];W[ck];B[dm];W[cm];B[jl];W[ko];B[kn];W[jk];B[il]
-;W[np];B[nq];W[oq];B[pp];W[mq];B[nr];W[mp];B[mr];W[kq];B[lp];W[lo]
-;B[mo];W[no];B[kp];W[jo];B[jp];W[io];B[mn];W[nm];B[in];W[kj];B[ip]
-;W[ho];B[gk];W[ik];B[hl];W[fm];B[gi];W[dl];B[mf];W[jg];B[el];W[em]
-;B[dk];W[cl];B[gg];W[je];B[ge];W[gc];B[lc];W[ei];B[fi];W[eh];B[ef]
-;W[df];B[ee];W[de];B[fc];W[jc];B[kf];W[jf];B[lk];W[kk];B[ri];W[qi]
-;B[rk];W[qk];B[rl];W[rh];B[rm];W[rj];B[kd];W[hf];B[eg];W[dg];B[gb]
-;W[gf];B[fg];W[lg];B[kg];W[kh];B[lf];W[hc];B[eb];W[dc];B[fd];W[fj]
-;B[gj];W[ii];B[km];W[ll];B[rg];W[pg];B[jd];W[id];B[he];W[ie];B[qh]
-;W[db];B[fk];W[ej];B[hb];W[ib];B[hg];W[li];B[nh];W[ih];B[ha];W[si]
-;B[kb])
+(;FF[3]BR[25th Honinbo]DT[2012-07-19]
+EV[51st Judan the last prelminary tournament final]GM[1]KM[6.5]PB[Cho Chikun]
+PW[Uchida Shuhei]RE[B+R]SZ[19]WR[7d];B[pd];W[dp];B[qp];W[dd];B[fq];W[cn];B[lq];
+W[qj];B[qf];W[qm];B[pn];W[ro];B[rp];W[pm];B[om];W[on];B[qn];W[nn];B[ol];W[rn];
+B[op];W[pk];B[ok];W[oj];B[nj];W[oi];B[ln];W[mm];B[mk];W[lm];B[jn];W[kl];B[mh];
+W[gp];B[fp];W[go];B[fo];W[gn];B[fn];W[gm];B[cq];W[dq];B[dr];W[cp];B[cr];W[gq];
+B[fr];W[ck];B[dm];W[cm];B[jl];W[ko];B[kn];W[jk];B[il];W[np];B[nq];W[oq];B[pp];
+W[mq];B[nr];W[mp];B[mr];W[kq];B[lp];W[lo];B[mo];W[no];B[kp];W[jo];B[jp];W[io];
+B[mn];W[nm];B[in];W[kj];B[ip];W[ho];B[gk];W[ik];B[hl];W[fm];B[gi];W[dl];B[mf];
+W[jg];B[el];W[em];B[dk];W[cl];B[gg];W[je];B[ge];W[gc];B[lc];W[ei];B[fi];W[eh];
+B[ef];W[df];B[ee];W[de];B[fc];W[jc];B[kf];W[jf];B[lk];W[kk];B[ri];W[qi];B[rk];
+W[qk];B[rl];W[rh];B[rm];W[rj];B[kd];W[hf];B[eg];W[dg];B[gb];W[gf];B[fg];W[lg];
+B[kg];W[kh];B[lf];W[hc];B[eb];W[dc];B[fd];W[fj];B[gj];W[ii];B[km];W[ll];B[rg];
+W[pg];B[jd];W[id];B[he];W[ie];B[qh];W[db];B[fk];W[ej];B[hb];W[ib];B[hg];W[li];
+B[nh];W[ih];B[ha];W[si];B[kb])
