@@ -7,7 +7,7 @@ title = noGo
 package.name = nogo
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.kivy
+package.domain = net.inclem
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -23,7 +23,7 @@ source.include_exts = py,png,jpg,sgf,json,kv,txt,rst
 # version.filename = %(source.dir)s/main.py
 
 # (str) Application versionning (method 2)
-version = 0.022
+version = 0.1.1
 
 # (list) Application requirements
 requirements = pil,docutils,kivy
