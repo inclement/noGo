@@ -1015,7 +1015,8 @@
         NextButton:
             board: bc.board
             id: btn_nextmove
-            on_press: bc.board.advance_one_move()
+            on_press: bc.board.time_start();bc.board.advance_one_move()
+            on_release: bc.board.time_stop()
             background_normal: 'media/black_pixel.png'
             background_down: 'media/blue_press_pixel.png'
         GameOptionsButton:
@@ -1092,7 +1093,8 @@
         NextButton:
             board: bc.board
             id: btn_nextmove
-            on_press: bc.board.advance_one_move()
+            on_press: bc.board.time_start();bc.board.advance_one_move()
+            on_release: bc.board.time_stop()
             background_normal: 'media/black_pixel.png'
             background_down: 'media/blue_press_pixel.png'
         VDividerLine

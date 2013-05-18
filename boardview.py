@@ -960,6 +960,14 @@ class GuiBoard(Widget):
         print '%% Follow instructions', t3-t2
         print '%%'
 
+    def time_start(self):
+        print 'time_start called'
+        t = time()
+        self.timestart = t
+    def time_stop(self):
+        t = time()
+        t0 = self.timestart
+        print '``` Time between press and release:',t-t0
 
     def retreat_one_move(self,*args,**kwargs):
         if self.navmode == 'Score':

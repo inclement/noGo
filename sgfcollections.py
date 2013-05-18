@@ -106,3 +106,7 @@ class GameChooserInfo(BoxLayout):
         if 'filepath' in info:
             self.filepath = info['filepath']
         return self
+
+
+class CollectionsList(object):
+    collections = ListProperty([])

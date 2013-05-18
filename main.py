@@ -1,6 +1,5 @@
 #!/usr/bin/env python2
 
-
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle, Ellipse
@@ -200,6 +199,7 @@ class NogoManager(ScreenManager):
     coordinates = BooleanProperty(False)
 
     def switch_and_set_back(self,newcurrent):
+        print 'Asked to switch and set back',self.transition.is_active
         if not self.transition.is_active:
             self.back_screen_name = self.current
             self.current = newcurrent
@@ -579,10 +579,8 @@ class GobanApp(App):
         else:
             super(GobanApp,self).on_config_change(config,section,key,value)
 
-                
-
-
             
 if __name__ == '__main__':
+
     app = GobanApp()
     app.run()
