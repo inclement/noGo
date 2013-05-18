@@ -3,6 +3,35 @@
 #:import la kivy.adapters.listadapter
 #:import lv kivy.uix.listview
 
+<NumberChooser>:
+    orientation: 'horizontal'
+    Button:
+        size_hint_x: None
+        width: self.parent.height
+        on_press: root.decrement()
+        canvas:
+            Line:
+                points: [self.x + 0.15*self.width,self.y+0.5*self.height,self.x+0.85*self.width,self.y+0.5*self.height]
+                width: 2
+                cap: 'square'
+    Label:
+        font_size: (0.9*self.height,'px')
+        text: str(root.number)
+    Button:
+        size_hint_x: None
+        width: self.parent.height
+        on_press: root.increment()
+        canvas:
+            Line:
+                points: [self.x + 0.15*self.width,self.y+0.5*self.height,self.x+0.85*self.width,self.y+0.5*self.height]
+                width: 2
+                cap: 'square'
+            Line:
+                points: [self.x + 0.5*self.width,self.y+0.15*self.height,self.x+0.5*self.width,self.y+0.85*self.height]
+                width: 2
+                cap: 'square'
+            
+
 <InfoPage>:
     do_default_tab: False
 
@@ -77,11 +106,19 @@
         scroll_distance: 1
         scroll_timeout: 1000
     DividerLine
+    BoxLayout:
+        size_hint_y: None
+        height: (40,'sp')
+        orientation: 'horizontal'
+        Label:
+            text: 'Handicap:'
+        NumberChooser:
+            id: handicap
+    DividerLine
     Label:
         height: (30,'sp')
         size_hint_y: None
         text: 'Board size?'
-    DividerLine
     BoxLayout:
         orientation: 'horizontal'
         size_hint: (1.,None)
@@ -114,7 +151,7 @@
         Button:
             size_hint: (0.5,1.)
             text: 'Create new board.'
-            on_press: root.manager.new_board_from_selection(collections.adapter.selection, button19.current_selected_size())
+            on_press: root.manager.new_board_from_selection(collections.adapter.selection, button19.current_selected_size(),handicap.number)
             on_release: root.popup.dismiss()
 
 
@@ -775,24 +812,6 @@
             height: self.parent.height
             width: self.parent.height
             size_hint: (None,None)
-            on_release: root.managedby.app.open_settings()
-            background_normal: 'media/black_pixel.png'
-            background_down: 'media/blue_press_pixel.png'
-            Label:
-                pos: self.parent.pos
-                size: self.parent.size
-                font_size: (0.9*self.height,'px')
-                text_size: self.size
-                halign: 'center'
-                valign: 'middle'
-                text: '#'
-        Image:
-            mipmap: True
-            source: 'media/logo-1.png'
-        Button:
-            height: self.parent.height
-            width: self.parent.height
-            size_hint: (None,None)
             on_release: root.managedby.open_help()
             background_normal: 'media/black_pixel.png'
             background_down: 'media/blue_press_pixel.png'
@@ -804,6 +823,23 @@
                 halign: 'center'
                 valign: 'middle'
                 text: '?'
+        Image:
+            mipmap: True
+            source: 'media/logo-1.png'
+        Button:
+            height: self.parent.height
+            width: self.parent.height
+            size_hint: (None,None)
+            on_release: root.managedby.app.open_settings()
+            background_normal: 'media/black_pixel.png'
+            background_down: 'media/blue_press_pixel.png'
+            Image:
+                x: self.parent.x
+                y: self.parent.y+0.2*self.parent.height
+                height: 0.6*self.parent.height
+                width: self.parent.width
+                source: 'media/options_button_white-1.png'
+                mipmap: True
             
     DividerLine:
         height: (10,'sp')

@@ -1,4 +1,5 @@
 from kivy.uix.widget import Widget
+from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
 
 class VDividerLine(Widget):
@@ -15,3 +16,14 @@ class WhiteStoneImage(Widget):
     pass
 class BlackStoneImage(Widget):
     pass
+
+class NumberChooser(BoxLayout):
+    number = NumericProperty(0)
+    number_max = NumericProperty(9)
+    number_min = NumericProperty(0)
+    def increment(self):
+        if self.number < self.number_max:
+            self.number += 1
+    def decrement(self):
+        if self.number > self.number_min:
+            self.number -= 1

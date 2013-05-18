@@ -42,6 +42,7 @@ from time import asctime, time
 
 from gomill import sgf, boards
 from abstractboard import *
+from sgfcollections import CollectionChooserButton
 
 import sys
 
@@ -54,6 +55,35 @@ zoom_text = '[b]Zoom mode[/b] selected. Experimental.'
 
 blacknames = ['black','b','B','Black']
 whitenames = ['white','w','W','White']
+
+handicap_positions = {19: {2: [(3,3),(15,15)],
+                           3: [(3,3),(15,15),(3,15)],
+                           4: [(3,3),(3,15),(15,15),(15,3)],
+                           5: [(3,3),(3,15),(15,15),(15,3),(9,9)],
+                           6: [(3,3),(3,15),(15,15),(15,3),(9,3),(9,15)],
+                           7: [(3,3),(3,15),(15,15),(15,3),(9,3),(9,15),(9,9)],
+                           8: [(3,3),(3,15),(15,15),(15,3),(9,3),(9,15),(3,9),(15,9)],
+                           9: [(3,3),(3,15),(15,15),(15,3),(9,3),(9,15),(3,9),(15,9),(9,9)]
+                           },
+                      13: {2: [(3,3),(9,9)],
+                           3: [(3,3),(9,9),(3,9)],
+                           4: [(3,3),(3,9),(9,9),(9,3)],
+                           5: [(3,3),(3,9),(9,9),(9,3),(6,6)],
+                           6: [(3,3),(3,9),(9,9),(9,3),(9,3),(9,9)],
+                           7: [(3,3),(3,9),(9,9),(9,3),(9,3),(9,9),(6,6)],
+                           8: [(3,3),(3,9),(9,9),(9,3),(9,3),(9,9),(3,9),(9,9)],
+                           9: [(3,3),(3,9),(9,9),(9,3),(9,3),(9,9),(3,9),(9,9),(6,6)]
+                           },
+                      9:  {2: [(2,2),(6,6)],
+                           3: [(2,2),(6,6),(2,6)],
+                           4: [(2,2),(2,6),(6,6),(6,2)],
+                           5: [(2,2),(2,6),(6,6),(6,2),(4,4)],
+                           6: [(2,2),(2,6),(6,6),(6,2),(2,4),(6,4)],
+                           7: [(2,2),(2,6),(6,6),(6,2),(2,4),(6,4),(4,4)],
+                           8: [(2,2),(2,6),(6,6),(6,2),(2,4),(6,4),(4,2),(4,6)],
+                           9: [(2,2),(2,6),(6,6),(6,2),(2,4),(6,4),(4,2),(4,6),(4,4)],
+                           }
+                      }
 
 def format_score(score):
     if score == 0:
@@ -380,6 +410,16 @@ class GuiBoard(Widget):
         self.abstractboard = AbstractBoard(gridsize=self.gridsize)
         self.reset_abstractboard()
 
+    def add_handicap_stones(self,num):
+        print 'asked to add handicap stones',num
+        if handicap_positions.has_key(self.gridsize):
+            stone_positions = handicap_positions[self.gridsize]
+            if stone_positions.has_key(num):
+                stone_coords = stone_positions[num]
+                print 'handicap positions are',stone_coords
+                for coord in stone_coords:
+                    self.toggle_background_stone(coord,'b')
+
     def start_autoplay(self,*args,**kwargs):
         Clock.schedule_interval(self.advance_one_move,0.25)
         self.pre_text = '[b]Autoplay[/b] activated. Tap on the navigation buttons (or the board in navigation mode) to stop autoplaying.'
@@ -534,6 +574,11 @@ class GuiBoard(Widget):
         if self.guesspopup is not None:
             self.remove_widget(self.guesspopup)
             self.guesspopup = None
+
+    def toggle_background_stone(self,coords,colour='b',force='toggle'):
+        instructions = self.abstractboard.toggle_background_stone(coords,colour,force)
+        print 'toggle background got instructions',instructions
+        self.follow_instructions(instructions)
 
     def add_new_stone(self,coords,newtype='newvar'):
         print 'Called add_new_stone', coords, newtype

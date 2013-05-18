@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 
+
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle, Ellipse
@@ -111,6 +112,18 @@ def get_temp_filepath():
     return tempdir + '/' + asctime().replace(' ','_') + '.sgf'
 
 
+class BoardSizeButton(ToggleButton):
+    gridsize = NumericProperty(19)
+    def current_selected_size(self):
+        ws = self.get_widgets('sizebuttons')
+        for entry in ws:
+            if entry.state == 'down':
+                return entry.gridsize
+        return 19
+
+class NewBoardQuery(BoxLayout):
+    collections_list = ObjectProperty(None,allownone=True)
+    manager = ObjectProperty(None,allownone=True)
 
 
 
@@ -292,13 +305,13 @@ class NogoManager(ScreenManager):
                                    )
         dialog.collections_list.adapter = list_adapter
         popup.open()
-    def new_board_from_selection(self,sel,gridsize=19):
+    def new_board_from_selection(self,sel,gridsize=19,handicap=0):
         if len(sel)>0:
             dirn = sel[0].coldir
         else:
             dirn = './games/unsaved'
-        self.new_board(in_folder=dirn,gridsize=gridsize)
-    def new_board(self,from_file='',mode='Play',in_folder='',gridsize=19):
+        self.new_board(in_folder=dirn,gridsize=gridsize,handicap=handicap)
+    def new_board(self,from_file='',mode='Play',in_folder='',gridsize=19,handicap=0):
         print 'from_file is',from_file
         print 'size is', gridsize
         print 'self.coordinates is', self.coordinates
@@ -326,6 +339,7 @@ class NogoManager(ScreenManager):
                 return False
         else:
             pbv.board.reset_gridsize(gridsize)
+            pbv.board.add_handicap_stones(handicap)
         s.add_widget(pbv)
         pbv.screenname = name
         pbv.managedby = self
@@ -550,10 +564,10 @@ class GobanApp(App):
             if name[:5] == 'Board':
                 board = self.manager.get_screen(name)
                 board.children[0].board.save_sgf(autosave=True)
-        return super(NogoManager,self).on_stop()
-        
+        return super(GobanApp,self).on_stop()
 
     def on_config_change(self, config, section, key, value):
+        super(GobanApp,self).on_config_change(config,section,key,value)
         print '%%% config change',config,section,key,value
         if key == 'input_mode':
             self.manager.propagate_input_mode(value)

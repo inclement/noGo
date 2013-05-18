@@ -650,6 +650,68 @@ class AbstractBoard(object):
         self.build_varcache_to_node(node)
         return instructions
 
+    def toggle_background_stone(self,coords,colour='b',force='toggle'):
+        curnode = self.curnode
+
+        curmove = curnode.get_move()
+        if curmove[0] is not None:
+            curnode = self.curnode.new_child()
+            instructions = self.jump_to_node(curnode)
+        else:
+            instructions = {}
+        instructions['add'] = []
+        instructions['remove'] = []
+
+        curboard = self.boards[self.curnode]
+
+        curstone = curboard.board[coords[0]][coords[1]]
+        if curstone == None:
+            self.add_add_stone(coords,colour)
+            instructions['add'].append((coords,colour))
+        elif curstone == 'b':
+            self.remove_add_stone(coords,'b')
+            self.add_add_stone(coords,'e')
+            instructions['remove'].append(coords)
+        elif curstone == 'w':
+            self.remove_add_stone(coords,'w')
+            self.add_add_stone(coords,'e')
+            instructions['remove'].append(coords)
+
+        return instructions
+            
+                
+    def remove_add_stone(self,coords,colour='b'):
+        curnode = self.curnode
+        ab,aw,ae = curnode.get_setup_stones()
+        if colour == 'b':
+            if coords in ab:
+                ab.remove(coords)
+        elif colour == 'w':
+            if coords in aw:
+                aw.remove(coords)
+        else:
+            if coords in ae:
+                ae.remove(coords)
+        curnode.set_setup_stones(ab,aw,ae)
+    def add_add_stone(self,coords,colour='b'):
+        curnode = self.curnode
+        ab,aw,ae = curnode.get_setup_stones()
+        if colour == 'b':
+            if coords not in ab:
+                ab.add(coords)
+        elif colour == 'w':
+            if coords not in aw:
+                aw.add(coords)
+        else:
+            if coords not in ae:
+                ae.add(coords)
+        curnode.set_setup_stones(ab,aw,ae)
+        
+            
+                
+                
+        
+
     def add_new_node(self,coord,colour,newmainline=False,jump=True,disallowsuicide=False):
         curboard = self.boards[self.curnode]
         if curboard.board[coord[0]][coord[1]] is not None:
