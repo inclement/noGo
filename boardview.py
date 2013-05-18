@@ -419,6 +419,7 @@ class GuiBoard(Widget):
                 print 'handicap positions are',stone_coords
                 for coord in stone_coords:
                     self.toggle_background_stone(coord,'b')
+        self.next_to_play = 'w'
 
     def start_autoplay(self,*args,**kwargs):
         Clock.schedule_interval(self.advance_one_move,0.25)
