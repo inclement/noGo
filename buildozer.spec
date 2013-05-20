@@ -30,7 +30,7 @@ requirements = pil,docutils,kivy
 
 orientation = portrait
 
-presplash.filename = /home/asandy/noGo/media/logo_small.png
+presplash.filename = /home/asandy/noGo/media/logo_big.png
 icon.filename = /home/asandy/noGo/media/logo_small.png
 
 fullscreen = 0
