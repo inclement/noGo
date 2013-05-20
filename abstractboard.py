@@ -6,6 +6,7 @@ game tree.
 '''
 
 from gomill import sgf, boards, ascii_boards
+from random import randint
 
 adjacencies = [(-1,0),(0,-1),(1,0),(0,1)]
 
@@ -576,6 +577,7 @@ class AbstractBoard(object):
             
 
     def advance_position(self,*args,**kwargs):
+        print 'advance_position called'
         curnode = self.curnode
         curboard = self.boards[curnode]
         if len(curnode) > 0:
@@ -586,9 +588,9 @@ class AbstractBoard(object):
 
         self.curnode = newnode
         newboard = curboard.copy()
-
         
         newboard, instructions = apply_node_to_board(newboard, newnode)
+#        instructions = {'add':[((randint(0,18),randint(0,18)),['w','b'][randint(0,1)])],'playmarker': (randint(0,18),randint(0,18)), 'nextplayer': ['w','b'][randint(0,1)]}
 
         self.boards[newnode] = newboard
 
@@ -619,6 +621,8 @@ class AbstractBoard(object):
         return instructions
 
     def increment_variation(self):
+        #instructions = {'add':[((randint(0,18),randint(0,18)),['w','b'][randint(0,1)])],'playmarker': (randint(0,18),randint(0,18))}#, 'nextplayer': ['w','b'][randint(0,1)]}
+        #return instructions
         if self.curnode.parent is not None:
             parentnode = self.curnode.parent
             newind = (parentnode.index(self.curnode)+1) % len(parentnode)
@@ -637,10 +641,10 @@ class AbstractBoard(object):
             return self.jump_to_node(newnode)
         else:
             return {}
-            
-            
 
     def jump_to_node(self,node):
+        #return {'add':[((randint(0,18),randint(0,18)),['w','b'][randint(0,1)])]}
+        print 'passed return'
         oldboard = self.boards[self.curnode]
         self.curnode = node
         newboard = self.get_or_build_board(node)
@@ -652,7 +656,7 @@ class AbstractBoard(object):
 
     def toggle_background_stone(self,coords,colour='b',force='toggle'):
         curnode = self.curnode
-
+ 
         curmove = curnode.get_move()
         if curmove[0] is not None:
             curnode = self.curnode.new_child()
@@ -760,13 +764,14 @@ class AbstractBoard(object):
         for child in node:
             self.recursively_destroy_boards_from(child)
 
-    def build_varcache_to_node(self,node):
-        while node.parent is not None:
+    def build_varcache_to_node(self,node,height=1):
+        while node.parent is not None and height > 0:
             newnode = node.parent
             if len(newnode) > 1:
                 nodeind = newnode.index(node)
                 self.varcache[newnode] = nodeind
             node = newnode
+            height -= 1
 
 
     def get_next_coords(self):
@@ -785,6 +790,7 @@ class AbstractBoard(object):
         return self.boards[node]
 
     def build_boards_to_node(self, node, replace=False):
+        print 'build_boards_to_node called'
         precursor_nodes = self.game.get_sequence_above(node)
         board = boards.Board(self.game.size)
         board, instructions = apply_node_to_board(board,precursor_nodes[0])

@@ -127,7 +127,7 @@
             size_hint: (0.333,1.)
             text: '9x9'
             group: 'sizebuttons'
-            gridsize: 9
+            gridsize: 9 
         BoardSizeButton:
             size_hint: (0.333,1.)
             text: '13x13'
@@ -533,7 +533,7 @@
         VDividerLine
         Button:
             size_hint: (0.25,1.)
-            text: 'New game here'
+            text: 'New game'
             on_release: root.managedby.new_board(in_folder=root.dirn)
             halign: 'center'
             valign: 'middle'
@@ -1009,7 +1009,8 @@
         Button:
             id: btn_nextvar
             text: 'Next var\n (1 / 1)'
-            on_press: bc.board.next_variation()
+            on_press: bc.board.time_start();bc.board.next_variation()
+            on_release: bc.board.time_stop()
             background_normal: 'media/black_pixel.png'
             background_down: 'media/blue_press_pixel.png'
         NextButton:
@@ -1079,14 +1080,16 @@
         VDividerLine
         PrevButton:
             id: btn_prevmove
-            on_press: bc.board.retreat_one_move()
+            on_press: bc.board.time_start();bc.board.retreat_one_move()
+            on_release: bc.board.time_stop()
             background_normal: 'media/black_pixel.png'
             background_down: 'media/blue_press_pixel.png'
         VDividerLine
         Button:
             id: btn_nextvar
             text: 'Next var\n (1 / 1)'
-            on_press: bc.board.next_variation()
+            on_press: bc.board.time_start();bc.board.next_variation()
+            on_release: bc.board.time_stop()
             background_normal: 'media/black_pixel.png'
             background_down: 'media/blue_press_pixel.png'
         VDividerLine
@@ -1269,10 +1272,6 @@
         halign: 'center'
         valign: 'middle'
         font_size: (0.7*self.height,'px')
-
-        
-
-            
 
 <Stone>:
     canvas:

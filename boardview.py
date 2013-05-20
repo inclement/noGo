@@ -237,6 +237,7 @@ class StarPoint(Widget):
 
 class PlayMarker(Widget):
     markercolour = ListProperty([0,0,0])
+    coord = ListProperty([])
     pass
 
 class KoMarker(Widget):
@@ -390,6 +391,10 @@ class GuiBoard(Widget):
         else:
             print 'removing coordinates'
             self.remove_coordinates()
+
+    def add_widget(self,*args,**kwargs):
+        print 'board add_widget called with...',args
+        super(GuiBoard,self).add_widget(*args)
 
     stones = DictProperty({})
     starpoints = DictProperty()
@@ -660,7 +665,7 @@ class GuiBoard(Widget):
 
 
     def clear_transient_widgets(self):
-        self.remove_playmarker()
+        #self.remove_playmarker()
         # self.remove_komarker()
         self.clear_markers()
         self.clear_variation_stones()
@@ -732,16 +737,30 @@ class GuiBoard(Widget):
 
     ## Playmarker
     def set_playmarker(self,coord):
-        self.remove_widget(self.playmarker)
-        marker = PlayMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
+        print 'set_playmarker called'
+        #self.remove_playmarker()
+        #marker = Stone(size=self.stonesize,pos=self.coord_to_pos(coord))
+        #marker = Label(size=self.stonesize, pos=self.coord_to_pos(coord),text='m')
+        #marker = Label(text='m')
+        if self.playmarker is not None:
+            print 'playmarker exists',self.playmarker
+            marker = self.playmarker
+            print 'marker pos is',marker.pos
+            marker.pos = self.coord_to_pos(coord)
+            self.remove_widget(marker)
+            self.add_widget(marker)
+            print 'new marker pos is',marker.pos
+        else:
+            marker = PlayMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
+            self.playmarker = marker
+            self.add_widget(marker)
         self.colour_marker_for_contrast(coord,marker)
         marker.coord = coord
-        self.add_widget(marker)
-        self.playmarker = marker
 
     def remove_playmarker(self):
-        self.remove_widget(self.playmarker)
-        self.playmarker = None
+        if self.playmarker is not None:
+            self.remove_widget(self.playmarker)
+            self.playmarker = None
 
     def update_playmarker(self):
         if self.playmarker is not None:
@@ -749,6 +768,7 @@ class GuiBoard(Widget):
         self.set_playmarker
 
     def on_size(self,*args,**kwargs):
+        print '%%% ON_SIZE %%%'
         self.gobanpos = self.pos
         self.gridlines = self.get_gridlines()
 
@@ -866,6 +886,8 @@ class GuiBoard(Widget):
             print 'Asked to draw pm at', pm
             if pm is not None:
                 self.set_playmarker(pm)
+        else:
+            self.remove_playmarker()
         if 'markers' in instructions:
             markers = instructions['markers']
             print 'received markers:', markers
@@ -922,12 +944,12 @@ class GuiBoard(Widget):
         t5 = time()
 
         tottime = t5-t1
-        print '## Follow instruction times'
-        print '## Total', t5-t1
-        print '## Reset', t2-t1, (t2-t1)/tottime
-        print '## Add remove empty', t3-t2, (t3-t2)/tottime
-        print '## Playmarker, positions etc.', t4-t3, (t4-t3)/tottime
-        print '## Comment and saved', t5-t4, (t5-t4)/tottime
+        # print '## Follow instruction times'
+        # print '## Total', t5-t1
+        # print '## Reset', t2-t1, (t2-t1)/tottime
+        # print '## Add remove empty', t3-t2, (t3-t2)/tottime
+        # print '## Playmarker, positions etc.', t4-t3, (t4-t3)/tottime
+        # print '## Comment and saved', t5-t4, (t5-t4)/tottime
 
     def get_player_details(self,*args,**kwargs):
         wname, bname = self.abstractboard.get_player_names()
@@ -954,11 +976,15 @@ class GuiBoard(Widget):
                 import android
                 android.vibrate(0.1)
         t3 = time()
+        # for i in range(500000):
+        #     i += 1
+        t4 = time()
         print '%% Times taken:'
-        print '%% Total', t3-t1
-        print '%% Children exist', t2-t1
-        print '%% Follow instructions', t3-t2
-        print '%%'
+        print '%% Total without i', t3-t1
+        print '%% Total', t4-t1
+        # print '%% Children exist', t2-t1
+        # print '%% Follow instructions', t3-t2
+        # print '%%'
 
     def time_start(self):
         print 'time_start called'
@@ -1051,10 +1077,10 @@ class GuiBoard(Widget):
         t3 = time()
         self.add_widget(stone)
         t4 = time()
-        print '@@ total', t4-t1
-        print '@@ make stone', t2-t1, (t2-t1)/(t4-t1)
-        print '@@ add to dict', t3-t2, (t3-t2)/(t4-t1)
-        print '@@ add widget', t4-t3, (t4-t3)/(t4-t1)
+        # print '@@ total', t4-t1
+        # print '@@ make stone', t2-t1, (t2-t1)/(t4-t1)
+        # print '@@ add to dict', t3-t2, (t3-t2)/(t4-t1)
+        # print '@@ add widget', t4-t3, (t4-t3)/(t4-t1)
 
     def remove_stone(self,coord=(1,1),*args,**kwargs):
         if self.stones.has_key(coord):
@@ -1069,11 +1095,13 @@ class GuiBoard(Widget):
             self.remove_widget(stone)
 
     def update_stones(self):
+        print '%% UPDATE_STONES %%'
         for coord in self.stones.keys():
             self.stones[coord].pos = self.coord_to_pos(coord)
             self.stones[coord].size = self.stonesize
 
     def redraw_stones(self):
+        print '%% REDRAW_STONES %%'
         for coord in self.stones.keys():
             stone = self.stones[coord]
             self.remove_widget(stone)
@@ -1129,6 +1157,7 @@ class GuiBoard(Widget):
 
     # Variation handling
     def next_variation(self,*args,**kwargs):
+        print 'next variation called'
         instructions = self.abstractboard.increment_variation()
         self.follow_instructions(instructions)
 

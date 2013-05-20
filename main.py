@@ -123,7 +123,7 @@ class BoardSizeButton(ToggleButton):
 class NewBoardQuery(BoxLayout):
     collections_list = ObjectProperty(None,allownone=True)
     manager = ObjectProperty(None,allownone=True)
-
+ 
 
 
 class BoardSizeButton(ToggleButton):
@@ -340,6 +340,7 @@ class NogoManager(ScreenManager):
         else:
             pbv.board.reset_gridsize(gridsize)
             pbv.board.add_handicap_stones(handicap)
+        pbv.board.time_start()
         s.add_widget(pbv)
         pbv.screenname = name
         pbv.managedby = self
@@ -514,7 +515,6 @@ class GobanApp(App):
         win.bind(on_keyboard=self.my_key_handler)
 
     def my_key_handler(self,window,keycode1,keycode2,text,modifiers):
-        print 'Key received:',keycode1,keycode2,text,modifiers
         if keycode1 == 27 or keycode1 == 1001:
             self.manager.handle_android_back()
             return True

@@ -27,3 +27,4 @@ class NumberChooser(BoxLayout):
     def decrement(self):
         if self.number > self.number_min:
             self.number -= 1
+

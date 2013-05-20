@@ -42,7 +42,7 @@ class StandaloneGameChooser(BoxLayout):
             pathwidget = GameChooserButton(owner=self)
             pathwidget.construct_from_sgfinfo(info)
             self.gameslist.add_widget(pathwidget)
-
+ 
 class CollectionChooserButton(ListItemButton):
     colname = StringProperty('')
     coldir = StringProperty('')
@@ -110,3 +110,8 @@ class GameChooserInfo(BoxLayout):
 
 class CollectionsList(object):
     collections = ListProperty([])
+#    def new_collection(self,newname): 
+        
+
+class Collection(object):
+    pass
