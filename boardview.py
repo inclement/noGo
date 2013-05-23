@@ -43,6 +43,8 @@ from time import asctime, time
 from gomill import sgf, boards
 from abstractboard import *
 from sgfcollections import CollectionChooserButton
+from widgetcache import WidgetCache
+from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone
 
 import sys
 
@@ -240,71 +242,6 @@ class PlayMarker(Widget):
     coord = ListProperty([])
     pass
 
-class KoMarker(Widget):
-    markercolour = ListProperty([0,0,0])
-    pass
-
-class TriangleMarker(Widget):
-    markercolour = ListProperty([0,0,0])
-    pass
-
-class SquareMarker(Widget):
-    markercolour = ListProperty([0,0,0])
-    
-class CircleMarker(Widget):
-    markercolour = ListProperty([0,0,0])
-
-class CrossMarker(Widget):
-    markercolour = ListProperty([0,0,0])
-
-class TextMarker(Widget):
-    markercolour = ListProperty([0,0,0])
-    text = StringProperty('')
-    def printinfo(self):
-        print '##############'
-        print self.markercolour
-        print self.text
-        print self.pos
-        print self.size
-        return 0.7
-        
-
-class Stone(Widget):
-    colour = ListProperty([1,1,1])
-    imagepath = StringProperty('./black_stone.png')
-    def set_colour(self,colour):
-        if colour == 'black':
-            self.colour = [0,0,0]
-            self.imagepath = './black_stone.png'
-        elif colour == 'white':
-            self.colour = [1,1,1]
-            self.imagepath = './white_stone.png'
-        else:
-            print 'colour doesn\'t exist'
-            # should raise exception
-    # Image:
-    #     x: self.parent.pos[0]
-    #     y: self.parent.pos[1]
-    #     width: self.parent.width
-    #     height: self.parent.height
-    #     source: self.parent.imagepath
-    #     mipmap: True
-
-class VarStone(Widget):
-    colour = ListProperty([1,1,1,0.5])
-    textcolour = ListProperty([0,0,0.5])
-    text = StringProperty('')
-    def set_colour(self,colour):
-        if colour in ['black','b']:
-            self.colour = [0,0,0,0.3]
-            self.textcolour = [1,1,1,0.8]
-        elif colour in ['white','w']:
-            self.colour = [1,1,1,0.6]
-            self.textcolour = [0,0,0,0.8]
-        else:
-            print 'colour doesn\'t exist:', colour
-            # should raise exception
-
 starposs = {19:[(3,3),(3,9),(3,15),(9,3),(9,9),(9,15),(15,3),(15,9),(15,15)],
             13:[(3,3),(3,9),(9,3),(9,9),(6,6)],
             9:[(2,2),(6,2),(2,6),(6,6),(4,4)]}
@@ -339,6 +276,8 @@ class GuiBoard(Widget):
     guesses = ListProperty([0,0])
     gameinfo = DictProperty({})
 
+    cache = ObjectProperty(WidgetCache())
+
     # Save state
     user_saved = BooleanProperty(False)
     temporary_filepath = StringProperty('')
@@ -362,9 +301,6 @@ class GuiBoard(Widget):
 
     comment_pre_text = StringProperty('')
     comment_text = StringProperty('')
-
-    
-    
 
     # Board flipping
     flip_horiz = BooleanProperty(False)
@@ -681,23 +617,27 @@ class GuiBoard(Widget):
             self.ld_markers[coord] = newmarker
     def add_marker(self,coord,mtype,other=[]):
         print 'adding marker:', coord, mtype
+        cache = self.cache
         if self.boardmarkers.has_key(coord):
             existingmarker = self.boardmarkers.pop(coord)
             self.remove_widget(existingmarker)
+            cache.cache_shape_marker(existingmarker)
             
         if mtype == 'triangle':
-            newmarker = TriangleMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
+            newmarker = cache.get_shape_marker('triangle')
         elif mtype == 'square':
-            newmarker = SquareMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
+            newmarker = cache.get_shape_marker('square')
         elif mtype == 'circle':
-            newmarker = CircleMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
+            newmarker = cache.get_shape_marker('circle')
         elif mtype == 'cross':
-            newmarker = CrossMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
+            newmarker = cache.get_shape_marker('cross')
         elif mtype == 'text':
-            newmarker = TextMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
-            newmarker.text = other[0]
+            newmarker = cache.get_label(other[0])
         else:
             return None
+
+        newmarker.size = self.stonesize
+        newmarker.pos = self.coord_to_pos(coord)
             
         self.colour_marker_for_contrast(coord,newmarker)
         self.add_widget(newmarker)
@@ -707,11 +647,14 @@ class GuiBoard(Widget):
         if self.boardmarkers.has_key(coord):
             marker = self.boardmarkers.pop(coord)
             self.remove_widget(marker)            
+            self.cache.cache_marker(marker)
 
     def clear_markers(self):
         for coord in self.boardmarkers.keys():
             marker = self.boardmarkers.pop(coord)
             self.remove_widget(marker)
+            print 'clearing',marker
+            self.cache.cache_marker(marker)
 
     def update_markers(self):
         for coord in self.boardmarkers.keys():
@@ -1068,8 +1011,13 @@ class GuiBoard(Widget):
     def add_stone(self,coord=(1,1),colour='black',*args,**kwargs):
         stonesize = self.stonesize
         t1 = time()
-        stone = Stone(size=stonesize, pos=self.coord_to_pos(coord))
-        stone.set_colour(colour)
+        try:
+            stone = self.cache.get_stone(colour[0])
+        except AttributeError:
+            stone = Stone() #size=stonesize, pos=self.coord_to_pos(coord))
+            stone.set_colour(colour)
+        stone.size = stonesize
+        stone.pos = self.coord_to_pos(coord)
         t2 = time()
         if self.stones.has_key(coord):
             self.remove_stone(coord)
@@ -1086,6 +1034,7 @@ class GuiBoard(Widget):
         if self.stones.has_key(coord):
             stone = self.stones.pop(coord)
             self.remove_widget(stone)
+            self.cache.cache_stone(stone,stone.colourname)
         else:
             print 'Tried to remove stone that doesn\'t exist'
 

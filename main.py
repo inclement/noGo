@@ -41,14 +41,15 @@ from json import dump as jsondump, load as jsonload, dump as jsondump
 import json
 from time import asctime, time
 
-
 from gomill import sgf, boards
 from abstractboard import *
 from boardview import GuiBoard, BoardContainer, PhoneBoardView, GuessPopup, SaveQuery, MySpinnerOption
+from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone
 from miscwidgets import VDividerLine, DividerLine, WhiteStoneImage, BlackStoneImage
 from info import InfoPage
 from homepage import HomeScreen, OpenSgfDialog
 from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton, GameChooserButton, DeleteSgfQuestion
+from widgetcache import WidgetCache
 
 import sys
 
@@ -194,7 +195,7 @@ class NogoManager(ScreenManager):
     boards = ListProperty([])
     back_screen_name = StringProperty('')
 
-    # Properties to keep an eye on
+    # Settings properties to keep an eye on
     touchoffset = ListProperty([0,0])
     coordinates = BooleanProperty(False)
 
@@ -483,6 +484,7 @@ def printargs(*args,**kwargs):
 
 class GobanApp(App):
     manager = ObjectProperty(None,allownone=True)
+    cache = ObjectProperty(WidgetCache())
     def build(self):
         config = self.config
         print 'my config is',config
