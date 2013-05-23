@@ -3,6 +3,7 @@ from kivy.uix.listview import ListView
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import ObjectProperty, ListProperty
+from kivy.utils import platform
 
 class HomeScreen(BoxLayout):
     managedby = ObjectProperty(None,allownone=True)
@@ -22,3 +23,9 @@ class PrintyButton(Button):
 class OpenSgfDialog(FloatLayout):
     manager = ObjectProperty(None)
     popup = ObjectProperty(None)
+    def get_dir(self):
+        if platform() == 'android':
+            return '/sdcard'
+        else:
+            return '.'
+        

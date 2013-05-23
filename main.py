@@ -199,6 +199,7 @@ class NogoManager(ScreenManager):
     touchoffset = ListProperty([0,0])
     coordinates = BooleanProperty(False)
 
+
     def switch_and_set_back(self,newcurrent):
         print 'Asked to switch and set back',self.transition.is_active
         if not self.transition.is_active:
@@ -400,7 +401,12 @@ class NogoManager(ScreenManager):
                 curboard.children[0].board.touchoffset = newtouchoffset
 
     def propagate_coordinates_mode(self,val):
-        val = int(val)
+        if val == 'False':
+            val = False
+        elif val == 'True':
+            val = True
+        else:
+            val = int(val)
         self.coordinates = bool(val)
         for name in self.screen_names:
             if name[:5] == 'Board':
@@ -485,7 +491,14 @@ def printargs(*args,**kwargs):
 class GobanApp(App):
     manager = ObjectProperty(None,allownone=True)
     cache = ObjectProperty(WidgetCache())
+
+    use_kivy_settings = False
+
+    title = 'noGo'
+    name = 'noGo'
+
     def build(self):
+        print 'user data dir is', self.user_data_dir
         config = self.config
         print 'my config is',config
         sm = NogoManager(transition=SlideTransition(direction='left'))
@@ -507,6 +520,13 @@ class GobanApp(App):
         self.bind(on_start=self.post_build_init)
 
         return sm
+
+
+    def get_application_config(self):
+        if platform() == 'android':
+            dirn = self.user_data_dir + '/nogo.ini'
+            return dirn
+        return super(GobanApp,self).get_application_config()
 
     def post_build_init(self,ev):
         if platform() == 'android':

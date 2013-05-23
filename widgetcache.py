@@ -52,11 +52,12 @@ class WidgetCache(object):
                 lc.pop(text)
             return label
         if len(lc) > 0:
-            alttext = lc.keys[0]
+            alttext = lc.keys()[0]
             labels = lc[alttext]
             label = labels.pop(0)
-            if len(lc[alttext]==0):
+            if len(labels)==0:
                 lc.pop(alttext)
+            label.text = text
             return label
         label = TextMarker(text=text)
         return label

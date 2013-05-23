@@ -1176,7 +1176,8 @@
         FileChooserListView:
             id: filechooser
             filters: ['*.sgf']
-            path: '.'
+            path: root.get_dir()
+            sort_func: lambda j: sorted(j,key=lambda s: s.lower())
         BoxLayout:
             size_hint_y: None
             height: (50,'dp')
