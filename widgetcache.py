@@ -72,8 +72,9 @@ class WidgetCache(object):
             varstone = vsc.pop(0)
         else:
             varstone = VarStone()
+        return varstone
     def cache_var_stone(self,varstone):
-        self.vsc.append(varstone)
+        self.varstonecache.append(varstone)
     def get_shape_marker(self, shape):
         sc = self.shapecache
         print 'asked for shape marker',shape,sc

@@ -328,9 +328,9 @@ class GuiBoard(Widget):
             print 'removing coordinates'
             self.remove_coordinates()
 
-    def add_widget(self,*args,**kwargs):
-        print 'board add_widget called with...',args
-        super(GuiBoard,self).add_widget(*args)
+    # def add_widget(self,*args,**kwargs):
+    #     print 'board add_widget called with...',args
+    #     super(GuiBoard,self).add_widget(*args)
 
     stones = DictProperty({})
     starpoints = DictProperty()
@@ -968,10 +968,17 @@ class GuiBoard(Widget):
 
     def add_variation_stone(self,coord=(1,1),colour='black',num=1,*args,**kwargs):
         stonesize = self.stonesize
-        stone = VarStone(size=stonesize, pos=self.coord_to_pos(coord), text=str(num))
+
+        stone = self.cache.get_var_stone()
+        stone.size = stonesize
+        stone.pos = self.coord_to_pos(coord)
+        stone.text = str(num)
         stone.set_colour(colour)
+
         if self.varstones.has_key(coord):
-            self.remove_stone(coord)
+            stone = self.varstones.pop(coord)
+            self.remove_widget(stone)
+            self.cache.cache_var_stone(stone)
         self.varstones[coord] = stone
         self.add_widget(stone)
 
@@ -979,6 +986,7 @@ class GuiBoard(Widget):
         for coord in self.varstones.keys():
             stone = self.varstones.pop(coord)
             self.remove_widget(stone)
+            self.cache.cache_var_stone(stone)
 
     def add_coordinates(self):
         self.remove_coordinates()
