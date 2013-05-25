@@ -82,7 +82,10 @@ class WidgetCache(object):
         if sc.has_key(shape):
             markers = sc[shape]
             marker = markers.pop(0)
+            if len(markers) == 0:
+                sc.pop(shape)
             return marker
+            
         if shape == 'triangle':
             return TriangleMarker()
         elif shape == 'square':

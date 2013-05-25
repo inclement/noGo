@@ -79,7 +79,7 @@
         on_press: root.popup.dismiss()
     Button:
         text: 'Delete'
-        on_press: root.manager.delete_collection_from_selection(root.selection)
+        on_press: root.manager.delete_collection(root.selection)
         on_release: root.popup.dismiss()
 
 <LDMarker>:
@@ -267,7 +267,7 @@
             on_release: root.popup.dismiss()
         Button:
             text: 'Create collection'
-            on_press: root.manager.new_collection(newname.text)
+            on_press: app.new_collection(newname.text)
             on_release: root.popup.dismiss()
 
 <SaveQuery>
@@ -329,7 +329,7 @@
             text: 'Delete\ncollection'
             halign: 'center'
             valign: 'middle'
-            on_press: root.managedby.query_delete_collection(collections.adapter.selection)
+            on_press: app.query_delete_collection(collections.adapter.selection)
             background_normal: 'media/red_pixel.png'
             background_down: 'media/blue_press_pixel.png'
         VDividerLine
@@ -338,7 +338,7 @@
             text: 'New\ncollection'
             halign: 'center'
             valign: 'middle'
-            on_release: root.managedby.new_collection_query()
+            on_release: app.new_collection_query()
             background_normal: 'media/green_pixel.png'
             background_down: 'media/blue_press_pixel.png'
         VDividerLine
@@ -560,11 +560,6 @@
         orientation: 'vertical'
         Label:
             text: '%s (%d games)' % (root.colname, root.numentries)
-            textsize: self.size
-            halign: 'left'
-            valign: 'middle'
-        Label:
-            text: root.coldir
             textsize: self.size
             halign: 'left'
             valign: 'middle'

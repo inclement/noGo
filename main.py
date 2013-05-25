@@ -48,7 +48,7 @@ from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, Circle
 from miscwidgets import VDividerLine, DividerLine, WhiteStoneImage, BlackStoneImage
 from info import InfoPage
 from homepage import HomeScreen, OpenSgfDialog
-from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton, GameChooserButton, DeleteSgfQuestion
+from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton, GameChooserButton, DeleteSgfQuestion, CollectionsList, Collection, CollectionSgf, get_collectioninfo_from_collection
 from widgetcache import WidgetCache
 
 import sys
@@ -358,9 +358,20 @@ class NogoManager(ScreenManager):
                 print 'Savefile in given folder could not be created.'
                 print 'Should make error popup...'
     def refresh_collections_index(self):
-        if 'Collections Index' in self.screen_names:
-            self.remove_widget(self.get_screen('Collections Index'))
-        self.create_collections_index()
+        if 'Collections Index' not in self.screen_names:
+            self.create_collections_index()
+            return False
+        collections_index = self.get_screen('Collections Index').children[0]
+        collections_list = App.get_running_app().collections.collections
+        collections_args_converter = get_collectioninfo_from_collection
+        list_adapter = ListAdapter(data=collections_list,
+                                   args_converter = collections_args_converter,
+                                   selection_mode = 'single',
+                                   allow_empty_selection=True,
+                                   cls=CollectionChooserButton,
+                                   )
+        collections_index.collections_list.adapter = list_adapter
+
     def refresh_collection(self,dirn):
         sname = 'Collection ' + dirn
         if self.has_screen(sname):
@@ -368,21 +379,16 @@ class NogoManager(ScreenManager):
             self.remove_widget(scr)
             self.view_or_open_collection(dirn,goto=False)
     def create_collections_index(self):
-        fileh = open('game_collection_locations.json','r')
-        collection_folders = jsonload(fileh)
-        fileh.close()
+        collections_list = App.get_running_app().collections.collections
         collections_index = CollectionsIndex(managedby=self)
-        collections_args_converter = get_collectioninfo_from_dir
-        list_adapter = ListAdapter(data=collection_folders,
-                                   args_converter=collections_args_converter,
-                                   selection_mode='single',
+        collections_args_converter = get_collectioninfo_from_collection
+        list_adapter = ListAdapter(data=collections_list,
+                                   args_converter = collections_args_converter,
+                                   selection_mode = 'single',
                                    allow_empty_selection=True,
-                                   cls=CollectionChooserButton
+                                   cls=CollectionChooserButton,
                                    )
         collections_index.collections_list.adapter = list_adapter
-        
-
-        
         collections_screen = Screen(name='Collections Index')
         collections_screen.add_widget(collections_index)
         self.add_widget(collections_screen)
@@ -420,29 +426,7 @@ class NogoManager(ScreenManager):
             Window.rotation = 90
         else:
             Window.rotation = 0
-    def new_collection_query(self):
-        popup = Popup(content=CollectionNameChooser(manager=self),title='Pick a collection name...',size_hint_x=0.85,size_hint_y=None,height=(130,'sp'))
-        popup.content.popup = popup
-        popup.open()
-    def new_collection(self,newname):
-        fileh = open('game_collection_locations.json','r')
-        collection_folders = jsonload(fileh)
-        fileh.close()
-        try:
-            mkdir('./games/%s' % newname)
-        except OSError:
-            print 'File exists! Add an error popup.'
-        collection_folders.append('./games/%s' % newname)
-        fileh = open('game_collection_locations.json','w')
-        json.dump(collection_folders,fileh)
-        fileh.close()
-        self.refresh_collections_index()
 
-    def query_delete_collection(self,sel):
-        if len(sel)>0:
-            popup = Popup(content=DeleteCollectionQuestion(manager=self,selection=sel),height=(140,'sp'),size_hint=(0.85,None),title='Are you sure?')
-            popup.content.popup = popup
-            popup.open()
     def query_delete_sgf(self,sel):
         if len(sel)>0:
             popup = Popup(content=DeleteSgfQuestion(manager=self,selection=sel),height=(140,'sp'),size_hint=(0.85,None),title='Are you sure?')
@@ -457,21 +441,6 @@ class NogoManager(ScreenManager):
             os.rename(filen,'./games/deleted'+name)
         except:
             print 'Couldn\'t delete sgf...should raise exception?'
-    def delete_collection_from_selection(self,selection):
-        print 'asked to delete from selection',selection
-        if len(selection)>0:
-            self.delete_collection(selection[0].coldir)
-    def delete_collection(self,dirn):
-        fileh = open('game_collection_locations.json','r')
-        collection_folders = jsonload(fileh)
-        fileh.close()
-        if dirn in collection_folders:
-            collection_folders.remove(dirn)
-        fileh = open('game_collection_locations.json','w')
-        jsondump(collection_folders,fileh)
-        fileh.close()
-        self.refresh_collections_index()
-        self.current = 'Collections Index'
 
 
 
@@ -491,6 +460,7 @@ def printargs(*args,**kwargs):
 class GobanApp(App):
     manager = ObjectProperty(None,allownone=True)
     cache = ObjectProperty(WidgetCache())
+    collections = ObjectProperty(CollectionsList())
 
     use_kivy_settings = False
 
@@ -498,9 +468,15 @@ class GobanApp(App):
     name = 'noGo'
 
     def build(self):
+        # Load config
         print 'user data dir is', self.user_data_dir
         config = self.config
         print 'my config is',config
+
+        # Load collections
+        self.collections = CollectionsList().from_file()
+        
+        # Construct GUI
         sm = NogoManager(transition=SlideTransition(direction='left'))
         self.manager = sm
         sm.app = self
@@ -600,6 +576,24 @@ class GobanApp(App):
             self.manager.propagate_coordinates_mode(int(value))
         else:
             super(GobanApp,self).on_config_change(config,section,key,value)
+
+    def new_collection_query(self):
+        popup = Popup(content=CollectionNameChooser(manager=self),title='Pick a collection name...',size_hint_x=0.85,size_hint_y=None,height=(130,'sp'))
+        popup.content.popup = popup
+        popup.open()
+    def new_collection(self,newname):
+        self.collections.new_collection(newname)
+        self.collections.save()
+        self.manager.refresh_collections_index()
+    def query_delete_collection(self,sel):
+        if len(sel)>0:
+            popup = Popup(content=DeleteCollectionQuestion(manager=self,selection=sel),height=(140,'sp'),size_hint=(0.85,None),title='Are you sure?')
+            popup.content.popup = popup
+            popup.open()
+    def delete_collection(self,selection):
+        print 'asked to delete collection using',selection,type(selection)
+        self.collections.delete_collection(selection[0].colname)
+        self.manager.refresh_collections_index()
 
             
 if __name__ == '__main__':
