@@ -442,10 +442,6 @@ class NogoManager(ScreenManager):
         except:
             print 'Couldn\'t delete sgf...should raise exception?'
 
-
-
-
-
 class DataItem(object):
     def __init__(self, text='', is_selected=False):
         self.text = text
