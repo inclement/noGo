@@ -35,8 +35,7 @@ class CollectionNameChooser(BoxLayout):
 class StandaloneGameChooser(BoxLayout):
     managedby = ObjectProperty(None,allownone=True)
     gameslist = ObjectProperty()
-    name = StringProperty('')
-    dirn = StringProperty('')
+    collection = ObjectProperty(None,allownone=True)
     def populate_from_directory(self,dir):
         sgfs = glob(''.join((dir,'/*.sgf')))
         print 'sgfs found in directory: ',sgfs

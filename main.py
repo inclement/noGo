@@ -246,28 +246,47 @@ class NogoManager(ScreenManager):
             infoscreen.add_widget(InfoPage(infotext=readme,licensetext=gpl))
             self.add_widget(infoscreen)
             self.switch_and_set_back('Info Page')
-    def view_or_open_collection(self,dirn,goto=True):
-        if len(dirn) > 0:
-            dirn = dirn[0].coldir
-            if self.has_screen('Collection ' + dirn):
-                self.current = 'Collection ' + dirn
-            else:
-                files = map(abspath,glob(dirn + '/*.sgf'))
-                screenname = 'Collection ' + dirn
-                args_converter = argsconverter_get_gameinfo_from_file
-                list_adapter = ListAdapter(data=files,
+    def view_or_open_collection(self,selection,goto=True):
+        if len(selection) == 0:
+            return False
+        collection_name = selection[0].colname
+        if self.has_screen('Collection ' + collection_name):
+            self.current = 'Collection ' + collection_name
+        else:
+            collections = App.get_running_app().collections
+            matching_collections = filter(lambda j: j.name == collection_name,collections.collections)
+            if len(matching_collections) > 0:
+                collection = matching_collections[0]
+                screenname = 'Collection ' + collection.name
+                games = collection.games
+                args_converter = lambda j: j.gameinfo
+                list_adapter = ListAdapter(data=games,
                                            args_converter = args_converter,
-                                           selection_mode='single',
+                                           selection_mode = 'single',
                                            allow_empty_selection=True,
-                                           cls=GameChooserButton
+                                           cls=GameChooserButton,
                                            )
-                gc = StandaloneGameChooser(managedby=self,name=dirn.split('/')[-1],dirn=dirn)
+                gc = StandaloneGameChooser(managedby=self,collection=collection)
                 gc.gameslist.adapter = list_adapter
                 s = Screen(name=screenname)
                 s.add_widget(gc)
                 self.add_widget(s)
                 if goto:
                     self.switch_and_set_back(s.name)
+    def refresh_collection(self,collection):
+        matching_screens = filter(lambda j: j.name == 'Collection ' + collection.name,self.screen_names)
+        if len(matching_screens) > 0:
+            scr = matching_screens[0]
+            gc = scr.children[0]
+            games = collection.games
+            args_converter = lambda j: j.gameinfo
+            list_adapter = ListAdapter(data=games,
+                                       args_converter = args_converter,
+                                       selection_mode = 'single',
+                                       allow_empty_selection=True,
+                                       cls=GameChooserButton,
+                                       )
+            gc.gameslist.adapter = list_adapter
     def open_sgf_dialog(self):
         popup = Popup(content=OpenSgfDialog(manager=self),title='Open SGF',size_hint=(0.85,0.85))
         popup.content.popup = popup
