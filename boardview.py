@@ -1,3 +1,13 @@
+# Copyright 2013 Alexander Taylor
+
+# This file is part of noGo.
+
+# noGo is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+# noGo is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License along with noGo. If not, see http://www.gnu.org/licenses/gpl-3.0.txt
+
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle, Ellipse
@@ -231,6 +241,7 @@ class PhoneBoardView(BoxLayout):
     boardcontainer = ObjectProperty(None,allownone=True)
     board = ObjectProperty(None,allownone=True)
     spinner = ObjectProperty(None,allownone=True)
+    collectionsgf = ObjectProperty(None,allownone=True)
     def rottest(self,num):
         Window.rotation = num
 
@@ -275,6 +286,7 @@ class GuiBoard(Widget):
     touchoffset = ListProperty([0,0])
     guesses = ListProperty([0,0])
     gameinfo = DictProperty({})
+    collectionsgf = ObjectProperty(None,allownone=True)
 
     cache = ObjectProperty(WidgetCache())
 
@@ -377,11 +389,16 @@ class GuiBoard(Widget):
         self.get_game_info()
 
     def get_game_info(self):
-        self.gameinfo = self.abstractboard.get_gameinfo()
+        gi = self.abstractboard.get_gameinfo()
+        self.gameinfo = gi
         self.get_player_details()
         if not self.user_saved:
             if self.gameinfo.has_key('filepath'):
                 self.permanent_filepath = self.gameinfo['filepath']
+        try:
+            self.collectionsgf.set_gameinfo(gi)
+        except AttributeError:
+            print 'Tried to set collectionsgf info when it doesn\'t exist yet.'
 
     def view_game_info(self):
         gi = GameInfo(board=self)
@@ -390,26 +407,16 @@ class GuiBoard(Widget):
         popup.content.popup = popup
         popup.open()
 
-    def save_sgf(self,saveas=False,autosave=False,refresh=True):
-        # if refresh and self.permanent_filepath != '':
-        #     newn = self.build_savefile_name()
-        #     newns = newn.split('_')
-        #     curn = self.permanent_filepath
-        #     curns = curn.split('_')
-        if autosave:
-            if self.permanent_filepath != '':
-                self.abstractboard.save_sgf(self.permanent_filepath)
-            else:
-                if self.temporary_filepath == '':
-                    self.temporary_filepath = get_temp_filepath()
-                self.abstractboard.save_sgf(self.temporary_filepath)
-        elif saveas:
+    def save_sgf(self,mode='quiet'):
+                #saveas=False,autosave=False,refresh=True):
+        filen = self.collectionsgf.filen
+        if filen == '':
+            filen = self.collectionsgf.set_filen()
+        print 'filen from collectionsgf is',filen
+        if mode == 'quiet':
+            self.abstractboard.save_sgf(filen)
+        elif mode == 'saveas':
             self.ask_where_to_save()
-        else:
-            if self.permanent_filepath != '':
-                self.abstractboard.save_sgf(self.permanent_filepath)
-            else:
-                self.ask_where_to_save()
 
     def ask_where_to_save(self,force=True):
         sq = SaveQuery(board=self)
@@ -1130,7 +1137,7 @@ class GuiBoard(Widget):
         instructions = self.abstractboard.reset_position()
         self.get_player_details()
         self.follow_instructions(instructions)
-        self.gameinfo = self.abstractboard.get_gameinfo()
+        self.get_game_info()
 
     def reset_gridsize(self,newsize):
         self.gridsize = newsize

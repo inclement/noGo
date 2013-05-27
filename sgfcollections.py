@@ -1,3 +1,13 @@
+# Copyright 2013 Alexander Taylor
+
+# This file is part of noGo.
+
+# noGo is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+# noGo is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License along with noGo. If not, see http://www.gnu.org/licenses/gpl-3.0.txt
+
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.listview import ListItemButton
@@ -7,8 +17,10 @@ from kivy.event import EventDispatcher
 
 from glob import glob
 from os import mkdir
+import os
 import json
 import time
+import shutil
 
 
 def get_collectioninfo_from_dir(row_index,dirn):
@@ -152,6 +164,7 @@ class CollectionsList(EventDispatcher):
             print 'File exists! Add an error popup.'
         col = Collection(name=newname,defaultdir=dirn)
         self.collections.append(col)
+        return col
     def delete_collection(self,name):
         matching_collections = filter(lambda j: j.name == name,self.collections)
         for col in matching_collections:
@@ -179,25 +192,66 @@ class Collection(EventDispatcher):
     def as_list(self):
         return [self.name, self.defaultdir, map(lambda j: j.to_dict(),self.games)]
     def add_game(self):
-        pass
+        game = CollectionSgf(collection=self)
+        game.filen = game.get_default_filen() + '.sgf'
+        self.games.append(game)
+        return game
 
 
 
 class CollectionSgf(object):
-    def __init__(self,collection=None):
+    def __init__(self,collection=None, from_file=True, filen=''):
         self.gameinfo = {}
-        self.collection = None
-        self.filen = ''
+        self.collection = collection
+        self.from_file = from_file
+        self.filen = filen
     def get_default_filen(self):
+        print 'asked for default filen',self.collection
         if self.collection is not None:
-            return self.collection.defaultdir + time.asctime().replace(' ','_')
+            return self.collection.defaultdir + '/' + time.asctime().replace(' ','_')
     def from_dict(self,info,collection=None):
         self.gameinfo = info
         self.collection = collection
         return self
     def to_dict(self):
         return self.gameinfo
-    # def set_gameinfo(self,info):
-    #     if 'bname' in info:
+    def set_gameinfo(self,info,resave=True):
+        self.gameinfo = info
+        if not self.from_file:
+            oldn = self.filen
+            gamestr = ''
+            if 'bname' in info:
+                gamestr += '_' + info['bname']
+            if 'wname' in info:
+                gamestr += '_' + info['wname']
+            if 'event' in info:
+                gamestr += '_' + info['event']
+            if gamestr not in self.filen:
+                newn = self.get_default_filen() + gamestr + '.sgf'
+                self.filen = newn
+
+                if resave:
+                    shutil.copyfile(oldn,newn)
+                    os.remove(oldn)
+    def set_filen(self,filen=''):
+        if filen == '':
+            info = self.gameinfo
+            if not self.from_file:
+                oldn = self.filen
+                gamestr = ''
+                if 'bname' in info:
+                    gamestr += '_' + info['bname']
+                if 'wname' in info:
+                    gamestr += '_' + info['wname']
+                if 'event' in info:
+                    gamestr += '_' + info['event']
+                if gamestr not in self.filen:
+                    newn = self.get_default_filen + gamestr + '.sgf'
+                    self.filen = newn
+        else:
+            self.filen = filen
+        return self.filen
+        
+
         
     

@@ -1,5 +1,15 @@
 #!/usr/bin/env python2
 
+# Copyright 2013 Alexander Taylor
+
+# This file is part of noGo.
+
+# noGo is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+# noGo is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License along with noGo. If not, see http://www.gnu.org/licenses/gpl-3.0.txt
+
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle, Ellipse
@@ -328,12 +338,14 @@ class NogoManager(ScreenManager):
         popup.open()
     def new_board_from_selection(self,sel,gridsize=19,handicap=0):
         if len(sel)>0:
-            dirn = sel[0].coldir
+            collection = sel[0].collection
         else:
             dirn = './games/unsaved'
-        self.new_board(in_folder=dirn,gridsize=gridsize,handicap=handicap)
-    def new_board(self,from_file='',mode='Play',in_folder='',gridsize=19,handicap=0):
-        print 'from_file is',from_file
+        self.new_board(in_collection=collection,gridsize=gridsize,handicap=handicap)
+    def new_board(self,in_collection=None,mode='Play',from_file='',gridsize=19,handicap=0):
+        if in_collection is None:
+            in_collection = App.get_running_app().get_default_collection()
+        print 'in_collection is',in_collection
         print 'size is', gridsize
         print 'self.coordinates is', self.coordinates
         self.back_screen_name = self.current
@@ -348,11 +360,14 @@ class NogoManager(ScreenManager):
         self.add_widget(s)
         self.current = name
 
-        pbv = PhoneBoardView()
+        collectionsgf = in_collection.add_game()
+        pbv = PhoneBoardView(collectionsgf=collectionsgf)
+        pbv.board.collectionsgf = collectionsgf
         if from_file != '':
             try:
                 print 'loading from file'
                 pbv.board.load_sgf_from_file('',[from_file])
+                collectionsgf.from_file = True
                 print 'done loading'
             except:
                 popup = Popup(content=Label(text='Unable to open SGF. Please check the file exists and is a valid SGF.',title='Error opening file'),size_hint=(0.85,0.4),title='Error')
@@ -361,6 +376,7 @@ class NogoManager(ScreenManager):
         else:
             pbv.board.reset_gridsize(gridsize)
             pbv.board.add_handicap_stones(handicap)
+            collectionsgf.from_file = False
         pbv.board.time_start()
         s.add_widget(pbv)
         pbv.screenname = name
@@ -369,13 +385,7 @@ class NogoManager(ScreenManager):
         pbv.board.touchoffset = self.touchoffset
         pbv.board.coordinates = self.coordinates
         self.boards.append(name)
-        if in_folder != '':
-            try:
-                pbv.board.make_savefile_in_dir(in_folder)
-                self.refresh_collections_index()
-            except OSError:
-                print 'Savefile in given folder could not be created.'
-                print 'Should make error popup...'
+        App.get_running_app().collections.save()
     def refresh_collections_index(self):
         if 'Collections Index' not in self.screen_names:
             self.create_collections_index()
@@ -609,6 +619,16 @@ class GobanApp(App):
         print 'asked to delete collection using',selection,type(selection)
         self.collections.delete_collection(selection[0].colname)
         self.manager.refresh_collections_index()
+    def get_default_collection(self):
+        collections = self.collections
+        unsaved = filter(lambda j: j.name == 'unsaved',collections)
+        if len(unsaved) > 0:
+            unsaved = unsaved[0]
+        else:
+            unsaved = collections.new_collection('unsaved')
+            self.manager.refresh_collections_index()
+        return unsaved
+        
 
             
 if __name__ == '__main__':
