@@ -258,6 +258,7 @@ class NogoManager(ScreenManager):
             self.add_widget(infoscreen)
             self.switch_and_set_back('Info Page')
     def view_or_open_collection(self,selection,goto=True):
+        print 'asked to view_or_open',selection
         if len(selection) == 0:
             return False
         collection_name = selection[0].colname
@@ -268,9 +269,12 @@ class NogoManager(ScreenManager):
             matching_collections = filter(lambda j: j.name == collection_name,collections.collections)
             if len(matching_collections) > 0:
                 collection = matching_collections[0]
+                print 'Established opening',collection
                 screenname = 'Collection ' + collection.name
                 games = collection.games
-                args_converter = lambda k,j: j.gameinfo
+                args_converter = lambda k,j: j.info_for_button()
+                print 'made args converter',games
+                print args_converter('yay',games[0])
                 list_adapter = ListAdapter(data=games,
                                            args_converter = args_converter,
                                            selection_mode = 'single',
@@ -279,6 +283,8 @@ class NogoManager(ScreenManager):
                                            )
                 gc = StandaloneGameChooser(managedby=self,collection=collection)
                 gc.gameslist.adapter = list_adapter
+                print 'made gc and set adapter'
+                print 'games are',games
                 s = Screen(name=screenname)
                 s.add_widget(gc)
                 self.add_widget(s)
@@ -303,8 +309,8 @@ class NogoManager(ScreenManager):
         popup = Popup(content=OpenSgfDialog(manager=self),title='Open SGF',size_hint=(0.85,0.85))
         popup.content.popup = popup
         popup.open()
-    def board_from_gamechooser(self,filens):
-        if len(filens) > 0:
+    def board_from_gamechooser(self,selection):
+        if len(selection) > 0:
             filen = filens[0].filepath
             self.new_board(filen,'Navigate')
     def close_board_from_selection(self,sel):

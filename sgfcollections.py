@@ -81,6 +81,7 @@ class GameChooserButton(ListItemButton):
     wrank = StringProperty('')
     result = StringProperty('')
     date = StringProperty('')
+    collection = ObjectProperty(None,allownone=True)
     def construct_from_sgfinfo(self,info):
         self.info.construct_from_sgfinfo(info)
 
@@ -147,6 +148,7 @@ class CollectionsList(EventDispatcher):
         with open(filen,'r') as fileh:
             colstr = fileh.read()
         colpy = json.loads(colstr)
+        colpy = jsonconvert(colpy)
         for entry in colpy:
             col = Collection()
             col.name = entry[0]
@@ -210,11 +212,14 @@ class CollectionSgf(object):
         if self.collection is not None:
             return self.collection.defaultdir + '/' + time.asctime().replace(' ','_')
     def from_dict(self,info,collection=None):
-        self.gameinfo = info
+        filen,from_file,gameinfo = info
+        self.filen = filen
+        self.from_file = from_file
+        self.gameinfo = gameinfo
         self.collection = collection
         return self
     def to_dict(self):
-        return self.gameinfo
+        return [self.filen,self.from_file,self.gameinfo]
     def set_gameinfo(self,info,resave=True):
         self.gameinfo = info
         if not self.from_file:
@@ -231,8 +236,11 @@ class CollectionSgf(object):
                 self.filen = newn
 
                 if resave:
-                    shutil.copyfile(oldn,newn)
-                    os.remove(oldn)
+                    try:
+                        shutil.copyfile(oldn,newn)
+                        os.remove(oldn)
+                    except IOError:
+                        print 'Tried to copy file that doesn\'t exist',oldn,newn
     def set_filen(self,filen=''):
         if filen == '':
             info = self.gameinfo
@@ -251,7 +259,18 @@ class CollectionSgf(object):
         else:
             self.filen = filen
         return self.filen
+    def info_for_button(self):
+        info = self.gameinfo
+        info['collection'] = self.collection
+        info['filen'] = self.filen
+        return info
         
-
-        
-    
+def jsonconvert(input):
+    if isinstance(input, dict):
+        return {jsonconvert(key): jsonconvert(value) for key, value in input.iteritems()}
+    elif isinstance(input, list):
+        return [jsonconvert(element) for element in input]
+    elif isinstance(input, unicode):
+        return input.encode('utf-8')
+    else:
+        return input
