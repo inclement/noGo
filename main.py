@@ -215,6 +215,7 @@ class NogoManager(ScreenManager):
         if not self.transition.is_active:
             self.back_screen_name = self.current
             self.current = newcurrent
+        print 'Finished switching'
     def go_home(self):
         if not self.transition.is_active:
             self.transition = SlideTransition(direction='right')
@@ -269,7 +270,7 @@ class NogoManager(ScreenManager):
                 collection = matching_collections[0]
                 screenname = 'Collection ' + collection.name
                 games = collection.games
-                args_converter = lambda j: j.gameinfo
+                args_converter = lambda k,j: j.gameinfo
                 list_adapter = ListAdapter(data=games,
                                            args_converter = args_converter,
                                            selection_mode = 'single',
@@ -289,7 +290,8 @@ class NogoManager(ScreenManager):
             scr = matching_screens[0]
             gc = scr.children[0]
             games = collection.games
-            args_converter = lambda j: j.gameinfo
+            args_converter = lambda k,j: j.gameinfo
+            #args_converter = testconverter
             list_adapter = ListAdapter(data=games,
                                        args_converter = args_converter,
                                        selection_mode = 'single',
@@ -629,9 +631,15 @@ class GobanApp(App):
             self.manager.refresh_collections_index()
         return unsaved
         
+def testconverter(j,*args):
+    print 'converter got j',j,args
+    info = j.gameinfo
+    print 'info is',info
+    return info
 
             
 if __name__ == '__main__':
 
     app = GobanApp()
     app.run()
+
