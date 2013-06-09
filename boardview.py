@@ -52,7 +52,7 @@ from time import asctime, time
 
 from gomill import sgf, boards
 from abstractboard import *
-from sgfcollections import CollectionChooserButton
+from sgfcollections import CollectionChooserButton, get_collectioninfo_from_collection
 from widgetcache import WidgetCache
 from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone
 
@@ -390,6 +390,7 @@ class GuiBoard(Widget):
         print 'asked to set with info',info
         self.abstractboard.set_gameinfo(info)
         self.get_game_info()
+        App.get_running_app().manager.refresh_open_games()
 
     def get_game_info(self):
         gi = self.abstractboard.get_gameinfo()
@@ -401,6 +402,7 @@ class GuiBoard(Widget):
             print 'Tried to set collectionsgf info when it doesn\'t exist yet.'
         try:
             App.get_running_app().manager.refresh_collection(self.collectionsgf.collection)
+            App.get_running_app().manager.refresh_open_games()
         except AttributeError:
             print 'Tried to refresh collectionsgf before it was created'
 
@@ -424,27 +426,21 @@ class GuiBoard(Widget):
         App.get_running_app().collections.save()
 
     def ask_where_to_save(self,force=True):
-        sq = SaveQuery(board=self)
+        sq = SaveQuery(board=self,collectionsgf=self.collectionsgf)
         popup = Popup(content=sq,title='Where to save?',size_hint=(0.85,0.85))
         popup.content.popup = popup
-        fileh = open('game_collection_locations.json','r')
-        collection_folders = jsonload(fileh)
-        fileh.close()
-        collections_args_converter = get_collectioninfo_from_dir
-        list_adapter = ListAdapter(data=collection_folders,
-                                   args_converter=collections_args_converter,
-                                   selection_mode='single',
+
+        collections_list = App.get_running_app().collections.collections
+        collections_args_converter = get_collectioninfo_from_collection
+        list_adapter = ListAdapter(data=collections_list,
+                                   args_converter = collections_args_converter,
+                                   selection_mode = 'single',
                                    allow_empty_selection=True,
-                                   cls=CollectionChooserButton
+                                   cls=CollectionChooserButton,
                                    )
         sq.collections_list.adapter = list_adapter
         popup.open()
 
-    def make_savefile_in_dir(self,dirn):
-        filen = self.build_savefile_name(dirn)
-        self.permanent_filepath = filen
-        self.user_saved = True
-        self.save_sgf()
     def build_savefile_name(self,dirn):
         filen = ''.join((dirn,'/',asctime().replace(' ','_')))
         if 'wname' in self.gameinfo:
@@ -559,8 +555,11 @@ class GuiBoard(Widget):
     def load_sgf_from_file(self,path,filen):
         print 'asked to load from',path,filen
         self.abstractboard.load_sgf_from_file(filen[0])
+        print 'loaded abstractboard from file'
         self.permanent_filepath = self.abstractboard.filepath
+        print 'set permanent filepath'
         self.reset_abstractboard()
+        print 'reset abstractboard'
 
     def get_new_comment(self,*args,**kwargs):
         print 'get new comment called'
@@ -916,7 +915,13 @@ class GuiBoard(Widget):
         self.wname = wname
         self.brank = brank
         self.bname = bname
-        
+        result = self.abstractboard.get_result()
+        print 'result is',result
+        if len(result) > 0:
+            if result[0] in ['B','b']:
+                self.bname = '[b]' + self.bname + '[/b]'
+            elif result[0] in ['W','2']:
+                self.wname = '[b]' + self.wname + '[/b]'
 
     def advance_one_move(self,*args,**kwargs):
         print '%% Advancing one move!', time()
@@ -1284,6 +1289,7 @@ class CommentInput(BoxLayout):
 class SaveQuery(BoxLayout):
     collections_list = ObjectProperty(None,allownone=True)
     board = ObjectProperty(None,allownone=True)
+    collectionsgf = ObjectProperty(None,allownone=True)
 
 def get_collectioninfo_from_dir(row_index,dirn):
     sgfs = glob(dirn + '/*.sgf')

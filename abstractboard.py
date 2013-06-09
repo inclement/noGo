@@ -209,6 +209,14 @@ def set_gameinfo_in_sgf(info,game):
         handicap = info['handicap']
         root.set('HA',handicap)
 
+def get_result_from_sgf(game):
+    rootnode = game.get_root()
+    props = rootnode.properties()
+    if 'RE' in props:
+        result = rootnode.find_property('RE')
+        return result
+    return ''
+
 def get_gameinfo_from_sgf(game):
     info = {}
     bname = game.get_player_name('b')
@@ -519,16 +527,24 @@ class AbstractBoard(object):
         return newboard
 
     def load_sgf_from_file(self,filen):
-        print 'asked to load from',filen
+        print 'abstractboard asked to load from',filen
+        print 'opening file'
         fileh = open(filen,'r')
+        print 'opened'
         sgfdata = fileh.read()
+        print 'read from file'
         fileh.close()
+        print 'file closed'
         try:
             self.game = sgf.Sgf_game.from_string(sgfdata)
             self.filepath = filen
+            print 'Successfully parsed string'
         except ValueError:
+            print 'Failed to parse string'
             self.game = sgf.Sgf_game(19)
+        print 'loaded from file'
         self.reset_position()
+        print 'reset position'
 
     def get_gameinfo(self):
         info = get_gameinfo_from_sgf(self.game)
@@ -808,6 +824,8 @@ class AbstractBoard(object):
         board, instructions = apply_node_to_board(board, node)
         self.boards[node] = board
 
+    def get_result(self):
+        return get_result_from_sgf(self.game)
     def get_player_names(self):
         wname = self.game.get_player_name('w')
         bname = self.game.get_player_name('b')

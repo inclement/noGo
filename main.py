@@ -98,7 +98,7 @@ def markercode_to_marker(markercode):
 
 def get_game_chooser_info_from_boardname(sm,boardname):
     board = sm.get_screen(boardname).children[0].board
-    gameinfo = board.gameinfo
+    gameinfo = board.collectionsgf.info_for_button()
     if 'wname' in gameinfo:
         wname = gameinfo['wname']
     else:
@@ -289,6 +289,17 @@ class NogoManager(ScreenManager):
                 self.add_widget(s)
                 if goto:
                     self.switch_and_set_back(s.name)
+    def refresh_open_games(self):
+        homepage = self.get_screen('Home')
+        args_converter = lambda c,j: get_game_chooser_info_from_boardname(self,j)
+        list_adapter = ListAdapter(data=self.boards,
+                                   args_converter=args_converter,
+                                   selection_mode='single',
+                                   allow_empty_selection=True,
+                                   cls=OpenChooserButton,
+                                   )
+        homepage.children[0].opengames.adapter = list_adapter
+
     def refresh_collection(self,collection):
         print 'Asked to refresh collection',collection,collection.name
         matching_screens = filter(lambda j: j == ('Collection ' + collection.name),self.screen_names)
@@ -323,7 +334,10 @@ class NogoManager(ScreenManager):
     def close_board(self,name):
         if self.has_screen(name):
             pbvs = self.get_screen(name)
-            pbvs.children[0].board.save_sgf()
+            try:
+                pbvs.children[0].board.save_sgf()
+            except IndexError:
+                pass # Board not initialised
             self.remove_widget(pbvs)
             self.boards.remove(name)
             print 'new boards',self.screens
@@ -407,9 +421,11 @@ class NogoManager(ScreenManager):
             try:
                 pbv.board.load_sgf_from_file('',[filen])
             except:
+                print 'Exception occurred, making popup'
                 popup = Popup(content=Label(text='Unable to open SGF. Please check the file exists and is a valid SGF.',title='Error opening file'),size_hint=(0.85,0.4),title='Error')
+                print 'popup made'
                 popup.open()
-                self.close_board(name)
+                #self.close_board(name)
                 return False
         else:
             pbv.board.reset_gridsize(gridsize)
@@ -427,6 +443,7 @@ class NogoManager(ScreenManager):
         self.boards.append(name)
         App.get_running_app().collections.save()
         self.refresh_collection(collection)
+        self.refresh_open_games()
         
     # def new_board(self,in_collection=None,mode='Play',from_file='',gridsize=19,handicap=0):
     #     if in_collection is None:
@@ -558,6 +575,7 @@ class NogoManager(ScreenManager):
         App.get_running_app().collections.save()
         self.refresh_collection(collectionsgf.collection)
         self.refresh_collections_index()
+        self.refresh_open_games()
     def save_sgfs(self):
         for name in self.screen_names:
             if name[:6] == 'Board ':
@@ -728,6 +746,19 @@ class GobanApp(App):
             unsaved = self.collections.new_collection('unsaved')
             self.manager.refresh_collections_index()
         return unsaved
+    def move_collectionsgf(self,collectionsgf,selection,board=None):
+        if len(selection) > 0:
+            collection = selection[0].collection
+        else:
+            return False
+        collectionsgf.delete()
+        collectionsgf.collection = collection
+        collectionsgf.filen = collectionsgf.get_default_filen() + '.sgf'
+        collection.games.append(collectionsgf)
+        if board is not None:
+            board.get_game_info()
+            board.save_sgf()
+        
         
 def testconverter(j,*args):
     print 'converter got j',j,args

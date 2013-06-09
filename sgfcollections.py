@@ -15,6 +15,8 @@ from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProper
 from kivy.app import App
 from kivy.event import EventDispatcher
 
+from helpers import embolden
+
 from glob import glob
 from os import mkdir
 import os
@@ -73,6 +75,8 @@ class OpenChooserButton(ListItemButton):
     date = StringProperty('')
     filepath = StringProperty('')
     boardname = StringProperty('')
+    collection = ObjectProperty(None,allownone=True)
+    collectionsgf = ObjectProperty(None,allownone=True)
 
 class GameChooserButton(ListItemButton):
     info = ObjectProperty()
@@ -285,7 +289,16 @@ class CollectionSgf(object):
         info['collection'] = self.collection
         info['filepath'] = self.filen
         info['collectionsgf'] = self
-        print 'Returning info for button',info
+
+        try:
+            result = info['result']
+            winner = result[0]
+            if winner in ['B','b']:
+                info['bname'] = embolden(info['bname'])
+            elif winner in ['W','w']:
+                info['wname'] = embolden(info['bname'])
+        except KeyError:
+            pass # If one of these keys doesn't exist, just don't modify anything
         return info
         
 def jsonconvert(input):

@@ -298,7 +298,7 @@
         Button:
             size_hint: (0.5,1.)
             text: 'Save in selected collection'
-            on_press: root.board.make_savefile_in_dir(collections.adapter.selection[0].coldir)
+            on_press: app.move_collectionsgf(root.collectionsgf,collections.adapter.selection,root.board)
             on_release: root.popup.dismiss()
 
 <CollectionsIndex>:
@@ -610,7 +610,7 @@
 
 <GameChooserButton>:
     info: gamechooser
-    height: (100,'sp')
+    height: (80,'sp')
     size_hint: (1,None)
     background_normal: './media/white_pixel.png'
     background_color: [0,0,0,1]
@@ -800,6 +800,7 @@
     id: homeroot
     orientation: 'vertical'
     gamesview: opengames
+    opengames: opengames
     pb: pb
 
     BoxLayout:

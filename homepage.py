@@ -18,6 +18,7 @@ from kivy.utils import platform
 class HomeScreen(BoxLayout):
     managedby = ObjectProperty(None,allownone=True)
     gamesview = ObjectProperty(None,allownone=True)
+    opengames = ObjectProperty(None,allownone=True)
     pb = ObjectProperty(None, allownone=True)
 
 class MyListView(ListView):
