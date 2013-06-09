@@ -247,14 +247,11 @@ class NogoManager(ScreenManager):
         if self.has_screen('Info Page'):
             self.switch_and_set_back('Info Page')
         else:
-            fileh = open('gpl.txt','r')
-            gpl = fileh.read()
-            fileh.close()
             fileh = open('README.rst','r')
             readme = fileh.read()
             fileh.close()
             infoscreen = Screen(name='Info Page')
-            infoscreen.add_widget(InfoPage(infotext=readme,licensetext=gpl))
+            infoscreen.add_widget(InfoPage(infotext=readme))
             self.add_widget(infoscreen)
             self.switch_and_set_back('Info Page')
     def view_or_open_collection(self,selection,goto=True):
@@ -274,7 +271,8 @@ class NogoManager(ScreenManager):
                 games = collection.games
                 args_converter = lambda k,j: j.info_for_button()
                 print 'made args converter',games
-                print args_converter('yay',games[0])
+                if len(games)>0:
+                    print args_converter('yay',games[0])
                 list_adapter = ListAdapter(data=games,
                                            args_converter = args_converter,
                                            selection_mode = 'single',
@@ -285,18 +283,20 @@ class NogoManager(ScreenManager):
                 gc.gameslist.adapter = list_adapter
                 print 'made gc and set adapter'
                 print 'games are',games
+                print 'gameinfos are', map(lambda j: j.gameinfo,games)
                 s = Screen(name=screenname)
                 s.add_widget(gc)
                 self.add_widget(s)
                 if goto:
                     self.switch_and_set_back(s.name)
     def refresh_collection(self,collection):
-        matching_screens = filter(lambda j: j.name == 'Collection ' + collection.name,self.screen_names)
+        print 'Asked to refresh collection',collection,collection.name
+        matching_screens = filter(lambda j: j == ('Collection ' + collection.name),self.screen_names)
         if len(matching_screens) > 0:
-            scr = matching_screens[0]
+            scr = self.get_screen(matching_screens[0])
             gc = scr.children[0]
             games = collection.games
-            args_converter = lambda k,j: j.gameinfo
+            args_converter = lambda k,j: j.info_for_button()
             #args_converter = testconverter
             list_adapter = ListAdapter(data=games,
                                        args_converter = args_converter,
@@ -305,14 +305,17 @@ class NogoManager(ScreenManager):
                                        cls=GameChooserButton,
                                        )
             gc.gameslist.adapter = list_adapter
+        self.refresh_collections_index()
     def open_sgf_dialog(self):
         popup = Popup(content=OpenSgfDialog(manager=self),title='Open SGF',size_hint=(0.85,0.85))
         popup.content.popup = popup
         popup.open()
     def board_from_gamechooser(self,selection):
         if len(selection) > 0:
-            filen = filens[0].filepath
-            self.new_board(filen,'Navigate')
+            button = selection[0]
+            collection = button.collection
+            collectionsgf = button.collectionsgf
+            self.new_board(with_collectionsgf=collectionsgf,mode='Navigate')
     def close_board_from_selection(self,sel):
         print 'asked to close from sel',sel
         if len(sel) > 0:
@@ -320,23 +323,18 @@ class NogoManager(ScreenManager):
     def close_board(self,name):
         if self.has_screen(name):
             pbvs = self.get_screen(name)
-            if pbvs.children[0].board.has_unsaved_data:
-                print 'Should ask to save, but am not going to...'
-            else:
-                print 'removing board'
-                print 'current boards',self.screens
-                self.remove_widget(pbvs)
-                self.boards.remove(name)
-                print 'new boards',self.screens
+            pbvs.children[0].board.save_sgf()
+            self.remove_widget(pbvs)
+            self.boards.remove(name)
+            print 'new boards',self.screens
     def new_board_dialog(self):
+        print 'Opening new_board_dialog'
         dialog = NewBoardQuery(manager=self)
         popup = Popup(content=dialog,title='Create new board...',size_hint=(0.85,0.85))
         popup.content.popup = popup
-        fileh = open('game_collection_locations.json','r')
-        collection_folders = jsonload(fileh)
-        fileh.close()
-        collections_args_converter = get_collectioninfo_from_dir
-        list_adapter = ListAdapter(data=collection_folders,
+        collections_list = App.get_running_app().collections.collections
+        collections_args_converter = get_collectioninfo_from_collection
+        list_adapter = ListAdapter(data=collections_list,
                                    args_converter=collections_args_converter,
                                    selection_mode='single',
                                    allow_empty_selection=True,
@@ -348,43 +346,75 @@ class NogoManager(ScreenManager):
         if len(sel)>0:
             collection = sel[0].collection
         else:
-            dirn = './games/unsaved'
+            collection = App.get_running_app().get_default_collection()
         self.new_board(in_collection=collection,gridsize=gridsize,handicap=handicap)
-    def new_board(self,in_collection=None,mode='Play',from_file='',gridsize=19,handicap=0):
-        if in_collection is None:
-            in_collection = App.get_running_app().get_default_collection()
-        print 'in_collection is',in_collection
-        print 'size is', gridsize
-        print 'self.coordinates is', self.coordinates
-        self.back_screen_name = self.current
+    def new_board(self,with_collectionsgf=None,in_collection=None,from_file='',mode='Play',gridsize=19,handicap=0):
+        load_from_file = False
 
+        # Get a collection and collectionsgf to contain and represent the board 
+        filen = from_file
+        if with_collectionsgf is not None:
+            collectionsgf = with_collectionsgf
+            filen = collectionsgf.filen
+            collection = collectionsgf.collection
+            newboard = False
+            load_from_file = True
+        elif in_collection is not None:
+            collection = in_collection
+            collectionsgf = collection.add_game(can_change_name=True)
+            load_from_file = False
+            if from_file != '':
+                load_from_file = True
+                filen = from_file
+                collectionsgf.filen = filen
+                collectionsgf.can_change_name = False
+        else:
+            collection = App.get_running_app().get_default_collection()
+            collectionsgf = collection.add_game()
+            load_from_file = False
+            if from_file != '':
+                load_from_file = True
+                filen = from_file
+                collectionsgf.filen = filen
+                collectionsgf.can_change_name = False
+        if filen == '' and with_collectionsgf is None:
+            collectionsgf.filen = collectionsgf.get_default_filen() + '.sgf'
+            filen = collectionsgf.filen
+            load_from_file = False
+
+        # Work out what screen name is free to put it in
         i = 1
         while True:
             if not self.has_screen('Board %d' % i):
                 name = 'Board %d' % i
                 break
             i += 1
+
         s = Screen(name=name)
         self.add_widget(s)
         self.current = name
 
-        collectionsgf = in_collection.add_game()
         pbv = PhoneBoardView(collectionsgf=collectionsgf)
         pbv.board.collectionsgf = collectionsgf
-        if from_file != '':
+
+        gi = collectionsgf.gameinfo
+        if 'gridsize' in gi:
+            gridsize = gi['gridsize']
+        pbv.board.gridsize = gridsize
+
+        if load_from_file:
+            print 'Trying to load from',filen
             try:
-                print 'loading from file'
-                pbv.board.load_sgf_from_file('',[from_file])
-                collectionsgf.from_file = True
-                print 'done loading'
+                pbv.board.load_sgf_from_file('',[filen])
             except:
                 popup = Popup(content=Label(text='Unable to open SGF. Please check the file exists and is a valid SGF.',title='Error opening file'),size_hint=(0.85,0.4),title='Error')
                 popup.open()
+                self.close_board(name)
                 return False
         else:
             pbv.board.reset_gridsize(gridsize)
             pbv.board.add_handicap_stones(handicap)
-            collectionsgf.from_file = False
+
         pbv.board.time_start()
         s.add_widget(pbv)
         pbv.screenname = name
@@ -392,8 +422,56 @@ class NogoManager(ScreenManager):
         pbv.spinner.text = mode
         pbv.board.touchoffset = self.touchoffset
         pbv.board.coordinates = self.coordinates
+        pbv.board.get_game_info()
+        pbv.board.save_sgf()
         self.boards.append(name)
         App.get_running_app().collections.save()
+        self.refresh_collection(collection)
+        
+    # def new_board(self,in_collection=None,mode='Play',from_file='',gridsize=19,handicap=0):
+    #     if in_collection is None:
+    #         in_collection = App.get_running_app().get_default_collection()
+    #     print 'in_collection is',in_collection
+    #     print 'size is', gridsize
+    #     print 'self.coordinates is', self.coordinates
+    #     self.back_screen_name = self.current
+
+    #     i = 1
+    #     while True:
+    #         if not self.has_screen('Board %d' % i):
+    #             name = 'Board %d' % i
+    #             break
+    #         i += 1
+    #     s = Screen(name=name)
+    #     self.add_widget(s)
+    #     self.current = name
+
+    #     collectionsgf = in_collection.add_game()
+    #     pbv = PhoneBoardView(collectionsgf=collectionsgf)
+    #     pbv.board.collectionsgf = collectionsgf
+    #     if from_file != '':
+    #         try:
+    #             print 'loading from file'
+    #             pbv.board.load_sgf_from_file('',[from_file])
+    #             collectionsgf.from_file = True
+    #             print 'done loading'
+    #         except:
+    #             popup = Popup(content=Label(text='Unable to open SGF. Please check the file exists and is a valid SGF.',title='Error opening file'),size_hint=(0.85,0.4),title='Error')
+    #             popup.open()
+    #             return False
+    #     else:
+    #         pbv.board.reset_gridsize(gridsize)
+    #         pbv.board.add_handicap_stones(handicap)
+    #         collectionsgf.from_file = False
+    #     pbv.board.time_start()
+    #     s.add_widget(pbv)
+    #     pbv.screenname = name
+    #     pbv.managedby = self
+    #     pbv.spinner.text = mode
+    #     pbv.board.touchoffset = self.touchoffset
+    #     pbv.board.coordinates = self.coordinates
+    #     self.boards.append(name)
+    #     App.get_running_app().collections.save()
     def refresh_collections_index(self):
         if 'Collections Index' not in self.screen_names:
             self.create_collections_index()
@@ -409,12 +487,12 @@ class NogoManager(ScreenManager):
                                    )
         collections_index.collections_list.adapter = list_adapter
 
-    def refresh_collection(self,dirn):
-        sname = 'Collection ' + dirn
-        if self.has_screen(sname):
-            scr = self.get_screen(sname)
-            self.remove_widget(scr)
-            self.view_or_open_collection(dirn,goto=False)
+    # def refresh_collection(self,dirn):
+    #     sname = 'Collection ' + dirn
+    #     if self.has_screen(sname):
+    #         scr = self.get_screen(sname)
+    #         self.remove_widget(scr)
+    #         self.view_or_open_collection(dirn,goto=False)
     def create_collections_index(self):
         collections_list = App.get_running_app().collections.collections
         collections_index = CollectionsIndex(managedby=self)
@@ -470,14 +548,21 @@ class NogoManager(ScreenManager):
             popup.content.popup = popup
             popup.open()
     def delete_sgf_from_selection(self,selection):
+        print 'Asked to delete from selection',selection
         if len(selection)>0:
-            self.delete_sgf(selection[0].filepath)
-    def delete_sgf(self,filen):
-        name = filen.split('/')[-1]
-        try:
-            os.rename(filen,'./games/deleted'+name)
-        except:
-            print 'Couldn\'t delete sgf...should raise exception?'
+            button = selection[0]
+            print 'collectionsgf is',button,button.collection,button.collectionsgf,button.filepath
+            self.delete_sgf(selection[0].collectionsgf)
+    def delete_sgf(self,collectionsgf):
+        collectionsgf.delete()
+        App.get_running_app().collections.save()
+        self.refresh_collection(collectionsgf.collection)
+        self.refresh_collections_index()
+    def save_sgfs(self):
+        for name in self.screen_names:
+            if name[:6] == 'Board ':
+                s = self.get_screen(name)
+                s.children[0].board.save_sgf()
 
 class DataItem(object):
     def __init__(self, text='', is_selected=False):
@@ -545,6 +630,8 @@ class GobanApp(App):
         win = Window
         win.bind(on_keyboard=self.my_key_handler)
 
+        Clock.schedule_interval(self.save_all_boards,60)
+
     def my_key_handler(self,window,keycode1,keycode2,text,modifiers):
         if keycode1 == 27 or keycode1 == 1001:
             self.manager.handle_android_back()
@@ -590,12 +677,15 @@ class GobanApp(App):
 
     def on_stop(self,*args,**kwargs):
         print 'App asked to stop'
+        self.save_all_boards()
+        return super(GobanApp,self).on_stop()
+
+    def save_all_boards(self,*args):
         names = self.manager.screen_names
         for name in names:
             if name[:5] == 'Board':
                 board = self.manager.get_screen(name)
-                board.children[0].board.save_sgf(autosave=True)
-        return super(GobanApp,self).on_stop()
+                board.children[0].board.save_sgf()
 
     def on_config_change(self, config, section, key, value):
         super(GobanApp,self).on_config_change(config,section,key,value)
@@ -628,12 +718,14 @@ class GobanApp(App):
         self.collections.delete_collection(selection[0].colname)
         self.manager.refresh_collections_index()
     def get_default_collection(self):
-        collections = self.collections
+        collections = self.collections.collections
+        print 'current collections are',collections
         unsaved = filter(lambda j: j.name == 'unsaved',collections)
+        print 'found name unsaved',unsaved
         if len(unsaved) > 0:
             unsaved = unsaved[0]
         else:
-            unsaved = collections.new_collection('unsaved')
+            unsaved = self.collections.new_collection('unsaved')
             self.manager.refresh_collections_index()
         return unsaved
         

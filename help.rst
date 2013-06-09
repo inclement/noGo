@@ -1,7 +1,7 @@
 Board
 =====
 
-.. image:: media/board_alpha_small.png
+.. image:: media/screenshot_review2_small.png
    :width: 150px
 
 Player details

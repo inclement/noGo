@@ -20,7 +20,7 @@ The APK form is also bundled with a full set of python libraries and the kivy gu
 noGo
 ----
 
-noGo is published under the GNU General Public License version 3, which can be found in LICENSE.
+noGo is published under the GNU General Public License version 3, which can be found in the file LICENSE that should be distributed along with noGo. If it is not available, see http://www.gnu.org/licenses/gpl-3.0.txt for the full text.
 
 Gomill
 ------

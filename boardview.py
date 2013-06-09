@@ -372,7 +372,10 @@ class GuiBoard(Widget):
                 print 'handicap positions are',stone_coords
                 for coord in stone_coords:
                     self.toggle_background_stone(coord,'b')
-        self.next_to_play = 'w'
+        if num > 0:
+            self.next_to_play = 'w'
+        else:
+            self.next_to_play = 'b'
 
     def start_autoplay(self,*args,**kwargs):
         Clock.schedule_interval(self.advance_one_move,0.25)
@@ -392,13 +395,14 @@ class GuiBoard(Widget):
         gi = self.abstractboard.get_gameinfo()
         self.gameinfo = gi
         self.get_player_details()
-        if not self.user_saved:
-            if self.gameinfo.has_key('filepath'):
-                self.permanent_filepath = self.gameinfo['filepath']
         try:
             self.collectionsgf.set_gameinfo(gi)
         except AttributeError:
             print 'Tried to set collectionsgf info when it doesn\'t exist yet.'
+        try:
+            App.get_running_app().manager.refresh_collection(self.collectionsgf.collection)
+        except AttributeError:
+            print 'Tried to refresh collectionsgf before it was created'
 
     def view_game_info(self):
         gi = GameInfo(board=self)
@@ -417,6 +421,7 @@ class GuiBoard(Widget):
             self.abstractboard.save_sgf(filen)
         elif mode == 'saveas':
             self.ask_where_to_save()
+        App.get_running_app().collections.save()
 
     def ask_where_to_save(self,force=True):
         sq = SaveQuery(board=self)
@@ -674,6 +679,8 @@ class GuiBoard(Widget):
             
 
     def marker_colour(self, coord):
+        print 'coord is',coord
+        coord = tuple(coord)
         if self.stones.has_key(coord):
             stone_colour = self.stones[coord].colour
             return [1-stone_colour[0],1-stone_colour[1],1-stone_colour[2]]
@@ -695,6 +702,7 @@ class GuiBoard(Widget):
         if self.playmarker is not None:
             print 'playmarker exists',self.playmarker
             marker = self.playmarker
+            marker.size = self.stonesize
             print 'marker pos is',marker.pos
             marker.pos = self.coord_to_pos(coord)
             self.remove_widget(marker)
@@ -1144,7 +1152,6 @@ class GuiBoard(Widget):
         self.abstractboard = AbstractBoard(gridsize=newsize)
         print 'New gridsize is', self.gridsize
         print 'New abstractboard gridsize', self.abstractboard.game.size
-        
 
 class BoardContainer(StencilView):
     board = ObjectProperty(None,allownone=True)

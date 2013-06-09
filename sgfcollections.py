@@ -22,6 +22,8 @@ import json
 import time
 import shutil
 
+SERIALISATION_VERSION = 1
+
 
 def get_collectioninfo_from_dir(row_index,dirn):
     sgfs = glob(dirn + '/*.sgf')
@@ -48,21 +50,22 @@ class StandaloneGameChooser(BoxLayout):
     managedby = ObjectProperty(None,allownone=True)
     gameslist = ObjectProperty()
     collection = ObjectProperty(None,allownone=True)
-    def populate_from_directory(self,dir):
-        sgfs = glob(''.join((dir,'/*.sgf')))
-        print 'sgfs found in directory: ',sgfs
-        for sgfpath in sgfs:
-            sgfpath = abspath(sgfpath)
-            info = get_gameinfo_from_file(sgfpath)
-            info['filepath'] = sgfpath
-            print info
-            pathwidget = GameChooserButton(owner=self)
-            pathwidget.construct_from_sgfinfo(info)
-            self.gameslist.add_widget(pathwidget)
+    # def populate_from_directory(self,dir):
+    #     sgfs = glob(''.join((dir,'/*.sgf')))
+    #     print 'sgfs found in directory: ',sgfs
+    #     for sgfpath in sgfs:
+    #         sgfpath = abspath(sgfpath)
+    #         info = get_gameinfo_from_file(sgfpath)
+    #         info['filepath'] = sgfpath
+    #         print info
+    #         pathwidget = GameChooserButton(owner=self)
+    #         pathwidget.construct_from_sgfinfo(info)
+    #         self.gameslist.add_widget(pathwidget)
  
 class CollectionChooserButton(ListItemButton):
     colname = StringProperty('')
     numentries = NumericProperty(0)
+    collection = ObjectProperty(None,allownone=True)
 
 class OpenChooserButton(ListItemButton):
     wname = StringProperty('')
@@ -82,6 +85,7 @@ class GameChooserButton(ListItemButton):
     result = StringProperty('')
     date = StringProperty('')
     collection = ObjectProperty(None,allownone=True)
+    collectionsgf = ObjectProperty(None,allownone=True)
     def construct_from_sgfinfo(self,info):
         self.info.construct_from_sgfinfo(info)
 
@@ -139,7 +143,7 @@ class CollectionsList(EventDispatcher):
         with open(filen,'w') as fileh:
             fileh.write(colstr)
     def serialise(self):
-        coll_lists = map(lambda j: j.as_list(),self.collections)
+        coll_lists = [SERIALISATION_VERSION,map(lambda j: j.as_list(),self.collections)]
         return json.dumps(coll_lists)
     def from_file(self,filen='default'):
         default_filen = App.get_running_app().user_data_dir + '/collections_list.json'
@@ -147,15 +151,18 @@ class CollectionsList(EventDispatcher):
             filen = default_filen
         with open(filen,'r') as fileh:
             colstr = fileh.read()
-        colpy = json.loads(colstr)
+        version,colpy = json.loads(colstr)
         colpy = jsonconvert(colpy)
-        for entry in colpy:
-            col = Collection()
-            col.name = entry[0]
-            col.defaultdir = entry[1]
-            for game in entry[2]:
-                col.games.append(CollectionSgf().from_dict(game,col))
-            self.collections.append(col)
+        if version == 1:
+            for entry in colpy:
+                col = Collection()
+                col.name = entry[0]
+                col.defaultdir = entry[1]
+                for game in entry[2]:
+                    col.games.append(CollectionSgf().from_dict(game,col))
+                self.collections.append(col)
+        else:
+            print 'Collection list version not recognised.'
         return self
     def new_collection(self,newname):
         dirn = './games/{0}'.format(newname)
@@ -173,7 +180,7 @@ class CollectionsList(EventDispatcher):
             self.collections.remove(col)
 
 def get_collectioninfo_from_collection(row_index,col):
-    return {'colname': col.name, 'numentries': len(col.games)}
+    return {'colname': col.name, 'numentries': len(col.games), 'collection': col}
 
 class Collection(EventDispatcher):
     games = ListProperty([])
@@ -183,6 +190,9 @@ class Collection(EventDispatcher):
         return 'SGF collection {0} with {1} games'.format(self.name,len(self.games))
     def __repr__(self):
         return self.__str__()
+    def remove_sgf(self,sgf):
+        if sgf in self.games:
+            self.games.remove(sgf)
     def get_default_dir(self):
         return App.get_running_app().user_data_dir + '/' + self.name
     def from_list(self,l):
@@ -193,8 +203,8 @@ class Collection(EventDispatcher):
         return self
     def as_list(self):
         return [self.name, self.defaultdir, map(lambda j: j.to_dict(),self.games)]
-    def add_game(self):
-        game = CollectionSgf(collection=self)
+    def add_game(self,can_change_name=True):
+        game = CollectionSgf(collection=self,can_change_name=can_change_name)
         game.filen = game.get_default_filen() + '.sgf'
         self.games.append(game)
         return game
@@ -202,27 +212,38 @@ class Collection(EventDispatcher):
 
 
 class CollectionSgf(object):
-    def __init__(self,collection=None, from_file=True, filen=''):
+    def __init__(self,collection=None, can_change_name=True, filen=''):
         self.gameinfo = {}
         self.collection = collection
-        self.from_file = from_file
+        self.can_change_name = can_change_name # Indicates whether the filename should be changed when game info does
         self.filen = filen
+    def delete(self):
+        self.collection.remove_sgf(self)
     def get_default_filen(self):
         print 'asked for default filen',self.collection
         if self.collection is not None:
             return self.collection.defaultdir + '/' + time.asctime().replace(' ','_')
     def from_dict(self,info,collection=None):
-        filen,from_file,gameinfo = info
+        filen,can_change_name,gameinfo = info
         self.filen = filen
-        self.from_file = from_file
+        self.can_change_name = can_change_name
         self.gameinfo = gameinfo
         self.collection = collection
         return self
     def to_dict(self):
-        return [self.filen,self.from_file,self.gameinfo]
+        gi = self.gameinfo
+        try:
+            gi.pop('collection')
+        except KeyError:
+            pass
+        try:
+            gi.pop('collectionsgf')
+        except KeyError:
+            pass
+        return [self.filen,self.can_change_name,gi]
     def set_gameinfo(self,info,resave=True):
         self.gameinfo = info
-        if not self.from_file:
+        if self.can_change_name:
             oldn = self.filen
             gamestr = ''
             if 'bname' in info:
@@ -234,13 +255,13 @@ class CollectionSgf(object):
             if gamestr not in self.filen:
                 newn = self.get_default_filen() + gamestr + '.sgf'
                 self.filen = newn
-
-                if resave:
-                    try:
-                        shutil.copyfile(oldn,newn)
-                        os.remove(oldn)
-                    except IOError:
-                        print 'Tried to copy file that doesn\'t exist',oldn,newn
+                App.get_running_app().collections.save()
+                try:
+                    shutil.copyfile(oldn,newn)
+                    os.remove(oldn)
+                except IOError:
+                    print 'Tried to copy file that doesn\'t exist',oldn,newn
+        App.get_running_app().collections.save()
     def set_filen(self,filen=''):
         if filen == '':
             info = self.gameinfo
@@ -254,7 +275,7 @@ class CollectionSgf(object):
                 if 'event' in info:
                     gamestr += '_' + info['event']
                 if gamestr not in self.filen:
-                    newn = self.get_default_filen + gamestr + '.sgf'
+                    newn = self.get_default_filen() + gamestr + '.sgf'
                     self.filen = newn
         else:
             self.filen = filen
@@ -262,7 +283,9 @@ class CollectionSgf(object):
     def info_for_button(self):
         info = self.gameinfo
         info['collection'] = self.collection
-        info['filen'] = self.filen
+        info['filepath'] = self.filen
+        info['collectionsgf'] = self
+        print 'Returning info for button',info
         return info
         
 def jsonconvert(input):
