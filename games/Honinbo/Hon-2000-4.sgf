@@ -1,29 +1,15 @@
-(;
-EV[55th Honinbo Final]
-RO[4]
-PB[O Meien]
-BR[9d]
-PW[Cho Sonjin]
-WR[9d]
-KM[5.5]
-RE[W+R]
-DT[2000-06-28,29]
-PC[Oita Toyo Hotel, Oita City]
-
-;B[qd];W[dp];B[cn];W[fq];B[dc];W[pp];B[di];W[kc];B[nc];W[hc]
-;B[fc];W[he];B[nq];W[qn];B[pr];W[qq];B[kq];W[qf];B[pi];W[qk]
-;B[of];W[ce];B[cd];W[ed];B[ec];W[bd];B[bc];W[dg];B[bp];W[cq]
-;B[dl];W[iq];B[ef];W[ci];B[cj];W[bh];B[bj];W[ei];B[dj];W[bf]
-;B[eg];W[dh];B[eh];W[ac];B[ab];W[ad];B[ke];W[qh];B[jd];W[pc]
-;B[pd];W[oc];B[od];W[nb];B[mc];W[mb];B[jc];W[jb];B[ib];W[kb]
-;B[ic];W[qc];B[hh];W[ki];B[mi];W[og];B[mg];W[oh];B[jh];W[nf]
-;B[rc];W[rb];B[me];W[mk];B[oi];W[rj];B[gp];W[dn];B[dm];W[lr]
-;B[kr];W[lq];B[lp];W[kp];B[mq];W[lo];B[mp];W[jq];B[ls];W[en]
-;B[gn];W[ho];B[hn];W[kk];B[qr];W[jr];B[mr];W[bq];B[pk];W[ko]
-;B[pm];W[qm];B[io];W[gq];B[nn];W[mn];B[mm];W[lm];B[ml];W[ll]
-;B[mo];W[ln];B[lj];W[hk];B[im];W[jl];B[ij];W[kj];B[gl];W[hl]
-;B[fl];W[kh];B[kg];W[ji];B[ii];W[jg];B[ih];W[lg];B[kf];W[ol]
-;B[nk];W[pl];B[lk];W[ok];B[nm];W[mh];B[nh];W[ng];B[lh];W[li]
-;B[mj];W[mh];B[df];W[cf];B[lh];W[hp];B[lf];W[de];B[fd];W[bo]
-;B[bn];W[co];B[ao];W[gj];B[bi];W[ch];B[go];W[el];B[em];W[cm]
-;B[ip];W[jp];B[hq];W[hr];B[ae];W[be])
+(;BR[9d]DT[2000-06-28,29]EV[55th Honinbo Final]KM[5.5]PB[O Meien]
+PC[Oita Toyo Hotel, Oita City]PW[Cho Sonjin]RE[W+R]RO[4]WR[9d];B[qd];W[dp];
+B[cn];W[fq];B[dc];W[pp];B[di];W[kc];B[nc];W[hc];B[fc];W[he];B[nq];W[qn];B[pr];
+W[qq];B[kq];W[qf];B[pi];W[qk];B[of];W[ce];B[cd];W[ed];B[ec];W[bd];B[bc];W[dg];
+B[bp];W[cq];B[dl];W[iq];B[ef];W[ci];B[cj];W[bh];B[bj];W[ei];B[dj];W[bf];B[eg];
+W[dh];B[eh];W[ac];B[ab];W[ad];B[ke];W[qh];B[jd];W[pc];B[pd];W[oc];B[od];W[nb];
+B[mc];W[mb];B[jc];W[jb];B[ib];W[kb];B[ic];W[qc];B[hh];W[ki];B[mi];W[og];B[mg];
+W[oh];B[jh];W[nf];B[rc];W[rb];B[me];W[mk];B[oi];W[rj];B[gp];W[dn];B[dm];W[lr];
+B[kr];W[lq];B[lp];W[kp];B[mq];W[lo];B[mp];W[jq];B[ls];W[en];B[gn];W[ho];B[hn];
+W[kk];B[qr];W[jr];B[mr];W[bq];B[pk];W[ko];B[pm];W[qm];B[io];W[gq];B[nn];W[mn];
+B[mm];W[lm];B[ml];W[ll];B[mo];W[ln];B[lj];W[hk];B[im];W[jl];B[ij];W[kj];B[gl];
+W[hl];B[fl];W[kh];B[kg];W[ji];B[ii];W[jg];B[ih];W[lg];B[kf];W[ol];B[nk];W[pl];
+B[lk];W[ok];B[nm];W[mh];B[nh];W[ng];B[lh];W[li];B[mj];W[mh];B[df];W[cf];B[lh];
+W[hp];B[lf];W[de];B[fd];W[bo];B[bn];W[co];B[ao];W[gj];B[bi];W[ch];B[go];W[el];
+B[em];W[cm];B[ip];W[jp];B[hq];W[hr];B[ae];W[be])

@@ -365,7 +365,7 @@
         BoxLayout:
             orientation: 'vertical'
             size_hint_y: None
-            height: (300,'sp')
+            height: (400,'sp')
             BoxLayout:
                 orientation: 'horizontal'
                 Label:
@@ -592,6 +592,7 @@
             text_size: self.size
             halign: 'left'
             valign: 'middle'
+            markup: True
         Label:
             padding: (-10,0)
             text: root.date
@@ -1033,7 +1034,8 @@
 
     BoxLayout:
         orientation: 'horizontal'
-        size_hint: (1.,0.08)
+        size_hint: (1.,None)
+        height: (60,'sp')
 
         PlayerDetails:
             id: pd
@@ -1057,12 +1059,12 @@
 
     BoardContainer:
         id: bc
-        size_hint: (1.,0.65)
+        size_hint: (1.,0.75)
 
         uielements: {'varbutton': [btn_nextvar]}
 
     CommentBox:
-        size_hint: (1.0,0.18)
+        size_hint: (1.0,0.25)
         id: thecb
         text: bc.board.comment_pre_text + bc.board.comment_text
         board: bc.board
@@ -1070,7 +1072,8 @@
     DividerLine
     BoxLayout:
         orientation: 'horizontal'
-        size_hint: (1.0,0.09)
+        size_hint: (1.0,None)
+        height: (70,'sp')
 
         VarBranchButton:
             id: btn_varbranch

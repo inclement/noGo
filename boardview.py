@@ -38,6 +38,8 @@ from kivy.clock import Clock
 
 from kivy.input.postproc import doubletap
 
+from helpers import embolden
+
 from random import random as r
 from random import choice
 from math import sin
@@ -47,7 +49,7 @@ from os.path import abspath
 from os import mkdir
 from json import dump as jsondump, load as jsonload, dump as jsondump
 import json
-from time import asctime, time
+from time import asctime, time, strftime
 
 
 from gomill import sgf, boards
@@ -386,6 +388,12 @@ class GuiBoard(Widget):
         except:
             pass
 
+    def set_game_date(self):
+        isodate = strftime("%Y-%m-%d")
+        gi = self.gameinfo
+        gi['date'] = isodate
+        self.set_game_info(gi)
+
     def set_game_info(self,info):
         print 'asked to set with info',info
         self.abstractboard.set_gameinfo(info)
@@ -409,7 +417,7 @@ class GuiBoard(Widget):
     def view_game_info(self):
         gi = GameInfo(board=self)
         gi.populate_from_gameinfo(self.gameinfo)
-        popup = Popup(content=gi,title='Game info.',size_hint=(0.85,0.85))
+        popup = Popup(content=gi,title='Game info.',size_hint=(0.95,0.55),pos_hint={'top':0.95})
         popup.content.popup = popup
         popup.open()
 
@@ -919,9 +927,9 @@ class GuiBoard(Widget):
         print 'result is',result
         if len(result) > 0:
             if result[0] in ['B','b']:
-                self.bname = '[b]' + self.bname + '[/b]'
+                self.bname = embolden(self.bname)
             elif result[0] in ['W','2']:
-                self.wname = '[b]' + self.wname + '[/b]'
+                self.wname = embolden(self.wname)
 
     def advance_one_move(self,*args,**kwargs):
         print '%% Advancing one move!', time()

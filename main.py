@@ -96,6 +96,18 @@ def markercode_to_marker(markercode):
         return 'text'
     return None
 
+def set_board_height(boardcontainer):
+    width = Window.width
+    height = Window.height
+    print 'window height,width',height,width
+    if height > width:
+        boardheight = width
+        boardcontainer.height = boardheight
+        boardcontainer.size_hint_y = None
+        print 'boardcontainer size',boardcontainer.size,boardcontainer.size_hint
+    
+        
+
 def get_game_chooser_info_from_boardname(sm,boardname):
     board = sm.get_screen(boardname).children[0].board
     gameinfo = board.collectionsgf.info_for_button()
@@ -411,6 +423,9 @@ class NogoManager(ScreenManager):
         pbv = PhoneBoardView(collectionsgf=collectionsgf)
         pbv.board.collectionsgf = collectionsgf
 
+        if platform() == 'android':
+            set_board_height(pbv.boardcontainer)
+
         gi = collectionsgf.gameinfo
         if 'gridsize' in gi:
             gridsize = gi['gridsize']
@@ -444,6 +459,9 @@ class NogoManager(ScreenManager):
         App.get_running_app().collections.save()
         self.refresh_collection(collection)
         self.refresh_open_games()
+
+        if not pbv.board.gameinfo.has_key('date') and with_collectionsgf is None and from_file == '':
+            pbv.board.set_game_date()
         
     # def new_board(self,in_collection=None,mode='Play',from_file='',gridsize=19,handicap=0):
     #     if in_collection is None:

@@ -118,9 +118,9 @@ class GameChooserInfo(BoxLayout):
         if 'result' in info:
             result = info['result']
             if result[0] in ['w','W']:
-                self.wname = ''.join(('[b]',self.wname,'[/b]'))
+                self.wname = embolden(self.wname)
             elif result[0] in ['b','B']:
-                self.bname = ''.join(('[b]',self.bname,'[/b]'))
+                self.bname = embolden(self.bname)
             self.result = info['result']
         else:
             self.result = '?'
