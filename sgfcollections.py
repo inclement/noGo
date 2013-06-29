@@ -146,8 +146,12 @@ class CollectionsList(EventDispatcher):
         colstr = self.serialise()
         with open(filen,'w') as fileh:
             fileh.write(colstr)
+    def save_collection(self,colname):
+        cols = filter(lambda j: j.name == colname,self.collections)
+        if len(cols) > 0:
+            cols[0].save()
     def serialise(self):
-        coll_lists = [SERIALISATION_VERSION,map(lambda j: j.save(),self.collections)]
+        coll_lists = [SERIALISATION_VERSION,map(lambda j: j.get_filen(),self.collections)]
         return json.dumps(coll_lists)
     def from_file(self,filen='default'):
         #default_filen = App.get_running_app().user_data_dir + '/collections_list.json'
@@ -182,6 +186,7 @@ class CollectionsList(EventDispatcher):
             print 'File exists! Add an error popup.'
         col = Collection(name=newname,defaultdir=dirn)
         self.collections.append(col)
+        self.save()
         return col
     def delete_collection(self,name):
         matching_collections = filter(lambda j: j.name == name,self.collections)
@@ -211,7 +216,7 @@ class Collection(EventDispatcher):
         self.games = map(lambda j: CollectionSgf(collection=self).load(j),games)
         return self
     def as_list(self):
-        return [self.name, self.defaultdir, map(lambda j: j.save(),self.games)]
+        return [self.name, self.defaultdir, map(lambda j: j.get_filen(),self.games)]
     def serialise(self):
         return json.dumps([SERIALISATION_VERSION,self.as_list()])
     def save(self):
@@ -219,15 +224,20 @@ class Collection(EventDispatcher):
         with open(filen,'w') as fileh:
             fileh.write(self.serialise())
         return filen
+    def get_filen(self):
+        filen = '.' + '/' + self.name + '.json'
+        return filen
     def from_file(self,filen):
         with open(filen,'r') as fileh:
             jsonstr = fileh.read()
         version,selflist = json.loads(jsonstr)
+        selflist = jsonconvert(selflist)
         return self.from_list(selflist)
     def add_game(self,can_change_name=True):
         game = CollectionSgf(collection=self,can_change_name=can_change_name)
         game.filen = game.get_default_filen() + '.sgf'
         self.games.append(game)
+        self.save()
         return game
 
 
@@ -271,10 +281,14 @@ class CollectionSgf(object):
         with open(filen,'w') as fileh:
             fileh.write(self.serialise())
         return filen
+    def get_filen(self):
+        filen = self.filen + '.json'
+        return filen
     def load(self,filen):
         with open(filen,'r') as fileh:
             jsonstr = fileh.read()
         version, selfdict = json.loads(jsonstr)
+        selfdict = jsonconvert(selfdict)
         self.from_dict(selfdict)
         return self
     def set_gameinfo(self,info,resave=True):
@@ -291,6 +305,7 @@ class CollectionSgf(object):
             if gamestr not in self.filen:
                 newn = self.get_default_filen() + gamestr + '.sgf'
                 self.filen = newn
+                self.collection.save()
                 #App.get_running_app().collections.save()
                 try:
                     shutil.copyfile(oldn,newn)
@@ -313,6 +328,7 @@ class CollectionSgf(object):
                 if gamestr not in self.filen:
                     newn = self.get_default_filen() + gamestr + '.sgf'
                     self.filen = newn
+                    self.collection.save()
         else:
             self.filen = filen
         return self.filen
