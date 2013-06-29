@@ -315,10 +315,10 @@ class GuiBoard(Widget):
 
     comment_pre_text = StringProperty('')
     comment_text = StringProperty('')
-    def on_comment_pre_text(self,*args):
-        print 'on_comment_pre_text',args
-    def on_comment_text(self,*args):
-        print 'on_comment_text',args
+    # def on_comment_pre_text(self,*args):
+    #     print 'on_comment_pre_text',args
+    # def on_comment_text(self,*args):
+    #     print 'on_comment_text',args
 
     # Board flipping
     flip_horiz = BooleanProperty(False)
@@ -413,6 +413,16 @@ class GuiBoard(Widget):
             self.collectionsgf.save()
         except AttributeError:
             print 'Tried to set collectionsgf info when it doesn\'t exist yet.'
+        try:
+            print 'Trying to remind'
+            print App.get_running_app().manager
+            print App.get_running_app().manager.collections_to_refresh
+            App.get_running_app().manager.add_collection_refresh_reminder(self.collectionsgf.collection)
+            print 'Added collection refresh reminder'
+            App.get_running_app().manager.homescreen_to_refresh = True
+            print 'Set homescreen refresh reminder'
+        except AttributeError:
+            print 'Tried to refresh collectionsgf before it was created?'
         # try:
         #     App.get_running_app().manager.refresh_collection(self.collectionsgf.collection)
         #     App.get_running_app().manager.refresh_open_games()

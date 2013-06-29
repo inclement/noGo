@@ -221,7 +221,21 @@ class NogoManager(ScreenManager):
     touchoffset = ListProperty([0,0])
     coordinates = BooleanProperty(False)
 
+    collectionindex_to_refresh = BooleanProperty(False)
+    homescreen_to_refresh = BooleanProperty(False)
+    collections_to_refresh = ListProperty([])
 
+    def on_current(self,*args,**kwargs):
+        super(NogoManager,self).on_current(*args,**kwargs)
+        if self.current == 'Home' and self.homescreen_to_refresh:
+            self.refresh_open_games()
+            self.homescreen_to_refresh = False
+    
+    def add_collection_refresh_reminder(self, collection):
+        print 'Asked to remind collection refresh',collection
+        if collection not in self.collections_to_refresh:
+            self.collections_to_refresh.append(collection)
+    
     def switch_and_set_back(self,newcurrent):
         print 'Asked to switch and set back',self.transition.is_active
         if not self.transition.is_active:
@@ -272,6 +286,12 @@ class NogoManager(ScreenManager):
             return False
         collection_name = selection[0].colname
         if self.has_screen('Collection ' + collection_name):
+            print 'screen already exists',collection_name
+            print 'supposed to refresh',self.collections_to_refresh
+            matching_refresh = filter(lambda j: j.name == collection_name,self.collections_to_refresh)
+            if len(matching_refresh) > 0:
+                self.refresh_collection(matching_refresh[0])
+                self.collections_to_refresh.remove(matching_refresh[0])
             self.current = 'Collection ' + collection_name
         else:
             collections = App.get_running_app().collections

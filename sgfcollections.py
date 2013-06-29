@@ -172,8 +172,11 @@ class CollectionsList(EventDispatcher):
                 self.collections.append(col)
         elif version == 2:
             for entry in colpy:
-                col = Collection().from_file(entry)
-                self.collections.append(col)
+                try:
+                    col = Collection().from_file(entry)
+                    self.collections.append(col)
+                except IOError:
+                    print 'Collection doesn\'t seem to exist. Skipping.'
         else:
             print 'Collection list version not recognised.'
         return self
@@ -213,7 +216,12 @@ class Collection(EventDispatcher):
         name,defaultdir,games = l
         self.name = name
         self.defaultdir = defaultdir
-        self.games = map(lambda j: CollectionSgf(collection=self).load(j),games)
+        for game in games:
+            try:
+                self.games.append(CollectionSgf(collection=self).load(game))
+            except IOError:
+                print 'Tried to load sgf that doesn\'t seem to exist. Skipping.'
+        #self.games = map(lambda j: CollectionSgf(collection=self).load(j),games)
         return self
     def as_list(self):
         return [self.name, self.defaultdir, map(lambda j: j.get_filen(),self.games)]
