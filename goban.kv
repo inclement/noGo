@@ -1035,7 +1035,7 @@
     BoxLayout:
         orientation: 'horizontal'
         size_hint: (1.,None)
-        height: (60,'sp')
+        height: (40,'sp')
 
         PlayerDetails:
             id: pd
@@ -1059,12 +1059,12 @@
 
     BoardContainer:
         id: bc
-        size_hint: (1.,0.75)
+        size_hint: (1.,0.80)
 
         uielements: {'varbutton': [btn_nextvar]}
 
     CommentBox:
-        size_hint: (1.0,0.25)
+        size_hint: (1.0,0.2)
         id: thecb
         text: bc.board.comment_pre_text + bc.board.comment_text
         board: bc.board
@@ -1073,7 +1073,7 @@
     BoxLayout:
         orientation: 'horizontal'
         size_hint: (1.0,None)
-        height: (70,'sp')
+        height: (50,'sp')
 
         VarBranchButton:
             id: btn_varbranch

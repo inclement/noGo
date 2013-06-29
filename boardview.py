@@ -315,6 +315,10 @@ class GuiBoard(Widget):
 
     comment_pre_text = StringProperty('')
     comment_text = StringProperty('')
+    def on_comment_pre_text(self,*args):
+        print 'on_comment_pre_text',args
+    def on_comment_text(self,*args):
+        print 'on_comment_text',args
 
     # Board flipping
     flip_horiz = BooleanProperty(False)
@@ -398,7 +402,7 @@ class GuiBoard(Widget):
         print 'asked to set with info',info
         self.abstractboard.set_gameinfo(info)
         self.get_game_info()
-        App.get_running_app().manager.refresh_open_games()
+        #App.get_running_app().manager.refresh_open_games()
 
     def get_game_info(self):
         gi = self.abstractboard.get_gameinfo()
@@ -406,18 +410,19 @@ class GuiBoard(Widget):
         self.get_player_details()
         try:
             self.collectionsgf.set_gameinfo(gi)
+            self.collectionsgf.save()
         except AttributeError:
             print 'Tried to set collectionsgf info when it doesn\'t exist yet.'
-        try:
-            App.get_running_app().manager.refresh_collection(self.collectionsgf.collection)
-            App.get_running_app().manager.refresh_open_games()
-        except AttributeError:
-            print 'Tried to refresh collectionsgf before it was created'
+        # try:
+        #     App.get_running_app().manager.refresh_collection(self.collectionsgf.collection)
+        #     App.get_running_app().manager.refresh_open_games()
+        # except AttributeError:
+        #     print 'Tried to refresh collectionsgf before it was created'
 
     def view_game_info(self):
         gi = GameInfo(board=self)
         gi.populate_from_gameinfo(self.gameinfo)
-        popup = Popup(content=gi,title='Game info.',size_hint=(0.95,0.55),pos_hint={'top':0.95})
+        popup = Popup(content=gi,title='Game info.',size_hint=(0.95,0.45),pos_hint={'top':0.95})
         popup.content.popup = popup
         popup.open()
 
@@ -431,7 +436,8 @@ class GuiBoard(Widget):
             self.abstractboard.save_sgf(filen)
         elif mode == 'saveas':
             self.ask_where_to_save()
-        App.get_running_app().collections.save()
+        self.collectionsgf.save()
+        #App.get_running_app().collections.save()
 
     def ask_where_to_save(self,force=True):
         sq = SaveQuery(board=self,collectionsgf=self.collectionsgf)
@@ -733,7 +739,6 @@ class GuiBoard(Widget):
         self.set_playmarker
 
     def on_size(self,*args,**kwargs):
-        print '%%% ON_SIZE %%%'
         self.gobanpos = self.pos
         self.gridlines = self.get_gridlines()
 
@@ -1080,13 +1085,11 @@ class GuiBoard(Widget):
             self.remove_widget(stone)
 
     def update_stones(self):
-        print '%% UPDATE_STONES %%'
         for coord in self.stones.keys():
             self.stones[coord].pos = self.coord_to_pos(coord)
             self.stones[coord].size = self.stonesize
 
     def redraw_stones(self):
-        print '%% REDRAW_STONES %%'
         for coord in self.stones.keys():
             stone = self.stones[coord]
             self.remove_widget(stone)

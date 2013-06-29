@@ -377,6 +377,9 @@ class NogoManager(ScreenManager):
     def new_board(self,with_collectionsgf=None,in_collection=None,from_file='',mode='Play',gridsize=19,handicap=0):
         load_from_file = False
 
+        print '%% NEW BOARD'
+        t1 = time()
+
         # Get a collection and collectionsgf to contain and represent the board 
         filen = from_file
         if with_collectionsgf is not None:
@@ -403,10 +406,15 @@ class NogoManager(ScreenManager):
                 filen = from_file
                 collectionsgf.filen = filen
                 collectionsgf.can_change_name = False
+
+        t2 = time()
+
         if filen == '' and with_collectionsgf is None:
             collectionsgf.filen = collectionsgf.get_default_filen() + '.sgf'
             filen = collectionsgf.filen
             load_from_file = False
+
+        t3 = time()
 
         # Work out what screen name is free to put it in
         i = 1
@@ -420,17 +428,22 @@ class NogoManager(ScreenManager):
         self.add_widget(s)
         self.current = name
 
+        t4 = time()
+
+
         pbv = PhoneBoardView(collectionsgf=collectionsgf)
         pbv.board.collectionsgf = collectionsgf
 
-        if platform() == 'android':
-            set_board_height(pbv.boardcontainer)
+        # if platform() == 'android':
+        #     set_board_height(pbv.boardcontainer)
 
         gi = collectionsgf.gameinfo
         if 'gridsize' in gi:
             gridsize = gi['gridsize']
         pbv.board.gridsize = gridsize
 
+        t5 = time()
+        
         if load_from_file:
             print 'Trying to load from',filen
             try:
@@ -446,6 +459,9 @@ class NogoManager(ScreenManager):
             pbv.board.reset_gridsize(gridsize)
             pbv.board.add_handicap_stones(handicap)
 
+        t6 = time()
+
+        ta = time()
         pbv.board.time_start()
         s.add_widget(pbv)
         pbv.screenname = name
@@ -453,15 +469,29 @@ class NogoManager(ScreenManager):
         pbv.spinner.text = mode
         pbv.board.touchoffset = self.touchoffset
         pbv.board.coordinates = self.coordinates
+        tb = time()
         pbv.board.get_game_info()
+        tc = time()
         pbv.board.save_sgf()
+        td = time()
         self.boards.append(name)
-        App.get_running_app().collections.save()
-        self.refresh_collection(collection)
-        self.refresh_open_games()
+        t65 = time()
+        #App.get_running_app().collections.save()
+        te = time()
+        #self.refresh_collection(collection)
+        tf = time()
+        #self.refresh_open_games()
+        tg = time()
 
-        if not pbv.board.gameinfo.has_key('date') and with_collectionsgf is None and from_file == '':
-            pbv.board.set_game_date()
+        t7 = time()
+
+        # if not pbv.board.gameinfo.has_key('date') and with_collectionsgf is None and from_file == '':
+        #     pbv.board.set_game_date()
+
+        t8 = time()
+
+        print '%%%%',t8-t1,t2-t1,t3-t2,t4-t3,t5-t4,t6-t5,t65-t6,t7-t65,t8-t7
+        print '%%%%',tg-ta,tb-ta,tc-tb,td-tc,te-td,tf-te,tg-tf
         
     # def new_board(self,in_collection=None,mode='Play',from_file='',gridsize=19,handicap=0):
     #     if in_collection is None:
@@ -704,11 +734,7 @@ class GobanApp(App):
 
     def on_pause(self,*args,**kwargs):
         print 'App asked to pause'
-        names = self.manager.screen_names
-        for name in names:
-            if name[:5] == 'Board':
-                board = self.manager.get_screen(name)
-                board.children[0].board.save_sgf(autosave=True)
+        self.save_all_boards()
         return True
 
     def on_stop(self,*args,**kwargs):

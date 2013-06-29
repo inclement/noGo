@@ -24,7 +24,7 @@ import json
 import time
 import shutil
 
-SERIALISATION_VERSION = 1
+SERIALISATION_VERSION = 2
 
 
 def get_collectioninfo_from_dir(row_index,dirn):
@@ -141,16 +141,17 @@ class CollectionsList(EventDispatcher):
         return self.__str__()
     def save(self,filen='default'):
         if filen == 'default':
-            default_filen = App.get_running_app().user_data_dir + '/collections_list.json'
+            default_filen = '.' + '/collections_list.json'
             filen = default_filen
         colstr = self.serialise()
         with open(filen,'w') as fileh:
             fileh.write(colstr)
     def serialise(self):
-        coll_lists = [SERIALISATION_VERSION,map(lambda j: j.as_list(),self.collections)]
+        coll_lists = [SERIALISATION_VERSION,map(lambda j: j.save(),self.collections)]
         return json.dumps(coll_lists)
     def from_file(self,filen='default'):
-        default_filen = App.get_running_app().user_data_dir + '/collections_list.json'
+        #default_filen = App.get_running_app().user_data_dir + '/collections_list.json'
+        default_filen = './collections_list.json'
         if filen == 'default':
             filen = default_filen
         with open(filen,'r') as fileh:
@@ -164,6 +165,10 @@ class CollectionsList(EventDispatcher):
                 col.defaultdir = entry[1]
                 for game in entry[2]:
                     col.games.append(CollectionSgf().from_dict(game,col))
+                self.collections.append(col)
+        elif version == 2:
+            for entry in colpy:
+                col = Collection().from_file(entry)
                 self.collections.append(col)
         else:
             print 'Collection list version not recognised.'
@@ -198,15 +203,27 @@ class Collection(EventDispatcher):
         if sgf in self.games:
             self.games.remove(sgf)
     def get_default_dir(self):
-        return App.get_running_app().user_data_dir + '/' + self.name
+        return '.' + '/' + self.name
     def from_list(self,l):
         name,defaultdir,games = l
         self.name = name
         self.defaultdir = defaultdir
-        self.games = map(lambda j: CollectionSgf().from_dict(j,self),games)
+        self.games = map(lambda j: CollectionSgf(collection=self).load(j),games)
         return self
     def as_list(self):
-        return [self.name, self.defaultdir, map(lambda j: j.to_dict(),self.games)]
+        return [self.name, self.defaultdir, map(lambda j: j.save(),self.games)]
+    def serialise(self):
+        return json.dumps([SERIALISATION_VERSION,self.as_list()])
+    def save(self):
+        filen = '.' + '/' + self.name + '.json'
+        with open(filen,'w') as fileh:
+            fileh.write(self.serialise())
+        return filen
+    def from_file(self,filen):
+        with open(filen,'r') as fileh:
+            jsonstr = fileh.read()
+        version,selflist = json.loads(jsonstr)
+        return self.from_list(selflist)
     def add_game(self,can_change_name=True):
         game = CollectionSgf(collection=self,can_change_name=can_change_name)
         game.filen = game.get_default_filen() + '.sgf'
@@ -224,7 +241,7 @@ class CollectionSgf(object):
     def delete(self):
         self.collection.remove_sgf(self)
     def get_default_filen(self):
-        print 'asked for default filen',self.collection
+        #print 'asked for default filen',self.collection
         if self.collection is not None:
             return self.collection.defaultdir + '/' + time.asctime().replace(' ','_')
     def from_dict(self,info,collection=None):
@@ -232,7 +249,8 @@ class CollectionSgf(object):
         self.filen = filen
         self.can_change_name = can_change_name
         self.gameinfo = gameinfo
-        self.collection = collection
+        if collection is not None:
+            self.collection = collection
         return self
     def to_dict(self):
         gi = self.gameinfo
@@ -245,6 +263,20 @@ class CollectionSgf(object):
         except KeyError:
             pass
         return [self.filen,self.can_change_name,gi]
+    def serialise(self):
+        return json.dumps([SERIALISATION_VERSION,self.to_dict()])
+    def save(self):
+        dict = self.to_dict()
+        filen = self.filen + '.json'
+        with open(filen,'w') as fileh:
+            fileh.write(self.serialise())
+        return filen
+    def load(self,filen):
+        with open(filen,'r') as fileh:
+            jsonstr = fileh.read()
+        version, selfdict = json.loads(jsonstr)
+        self.from_dict(selfdict)
+        return self
     def set_gameinfo(self,info,resave=True):
         self.gameinfo = info
         if self.can_change_name:
@@ -259,13 +291,13 @@ class CollectionSgf(object):
             if gamestr not in self.filen:
                 newn = self.get_default_filen() + gamestr + '.sgf'
                 self.filen = newn
-                App.get_running_app().collections.save()
+                #App.get_running_app().collections.save()
                 try:
                     shutil.copyfile(oldn,newn)
                     os.remove(oldn)
                 except IOError:
                     print 'Tried to copy file that doesn\'t exist',oldn,newn
-        App.get_running_app().collections.save()
+        #App.get_running_app().collections.save()
     def set_filen(self,filen=''):
         if filen == '':
             info = self.gameinfo
@@ -296,8 +328,8 @@ class CollectionSgf(object):
             if winner in ['B','b']:
                 info['bname'] = embolden(info['bname'])
             elif winner in ['W','w']:
-                info['wname'] = embolden(info['bname'])
-        except KeyError:
+                info['wname'] = embolden(info['wname'])
+        except (KeyError, IndexError):
             pass # If one of these keys doesn't exist, just don't modify anything
         return info
         
