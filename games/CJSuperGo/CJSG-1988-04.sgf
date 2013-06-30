@@ -1,24 +1,40 @@
-(;FF[3]BT[Japan]DT[1988-05-29]ID[ 4/ 4]KM[5.5]PB[Yoda Norimoto]
-PW[Liu Xiaoguang]RE[B+0.5]WT[China];B[qe];W[pc];B[pq];W[dp];B[cd];W[ph];B[ne];
-W[mc];B[ld];W[lc];B[kd];W[kc];B[jd];W[pk];B[jc];W[qo];B[mq];W[ed];B[df];W[cc];
-B[bc];W[dc];B[bb];W[ff];B[gd];W[gc];B[fd];W[ce];B[de];W[fc];B[ee];W[dd];B[bd];
-W[hd];B[he];W[ie];B[id];W[hc];B[fe];W[hf];B[ge];W[eb];B[cb];W[db];B[if];W[ch];
-B[bf];B[cj];W[dj];B[dk];W[di];B[ck];W[fj];B[cn];W[cf];B[bf];W[cg];B[be];W[ig];
-B[je];W[jf];B[ie];W[qd];B[od];W[oc];B[rd];W[qf];B[re];W[of];B[jg];W[jh];B[kg];
-W[pe];B[rf];W[qc];B[rh];W[qg];B[rj];W[qi];B[ri];W[rg];B[ql];W[sh];B[qk];W[np];
-B[nq];W[qq];B[qr];W[pp];B[oq];W[om];B[pj];W[ok];B[pi];W[oi];B[oj];W[nj];B[qj];
-W[ni];B[rm];W[dn];B[co];W[ih];B[ib];W[hb];B[gf];W[do];B[cp];W[cm];B[dm];W[cq];
-B[bq];W[em];B[dl];W[br];B[bp];W[dq];B[hq];W[gg];B[kh];W[ki];B[gh];W[fg];B[hg];
-W[hh];B[gi];W[gj];B[ji];W[hf];B[li];W[kj];B[hg];W[bm];B[bn];W[hf];B[ha];W[ga];
-B[hg];W[ii];B[jj];W[hf];B[jk];W[lj];B[hj];W[fh];B[hg];W[bi];B[bj];W[hf];B[lk];
-W[lh];B[hg];W[aq];B[fi];W[ei];B[hi];W[hf];B[eh];W[eg];B[hg];W[fl];B[ij];W[ao];
-B[ar];W[ap];B[bs];W[as];B[ek];W[ej];B[ar];W[cr];B[an];W[as];B[fk];W[gk];B[ar];
-W[hp];B[gl];W[hl];B[gm];W[hm];B[gn];W[hn];B[go];W[hk];B[ho];W[io];B[ip];W[as];
-B[fm];W[jp];B[gp];W[am];B[in];W[im];B[jo];W[km];B[si];W[sg];B[ln];W[lm];B[mn];
-W[mm];B[nn];W[jn];B[io];W[pn];B[nm];W[mk];B[kk];W[nl];B[kn];W[jm];B[mj];W[gr];
-B[hr];W[rq];B[rr];W[en];B[el];W[fq];B[kb];W[hs];B[is];W[gs];B[ir];W[rn];B[qh];
-W[qm];B[rl];W[nh];B[rp];W[sp];B[so];W[sq];B[sr];W[qp];B[ma];W[nb];B[dg];W[dh];
-B[gq];W[fr];B[op];W[mf];B[ef];W[eh];B[nf];W[ng];B[lf];W[mi];B[lj];W[pl];B[pg];
-W[oh];B[mg];W[mh];B[me];W[oo];B[no];W[na];B[sn];W[lb];B[la];W[mb];B[ka];W[ia];
-B[jb];W[ro];B[sm];W[bg];B[fp];W[ep];B[da];W[ea];B[ca];W[af];B[ae];W[ag];B[ai];
-W[ak];B[aj];W[pd];B[lg];W[on];B[nd];W[nc])
+(;
+FF[3]
+ID[ 4/ 4]
+PB[Yoda Norimoto]
+PW[Liu Xiaoguang]
+KM[5.5]
+RE[B+0.5]
+DT[1988-05-29]
+WT[China]
+BT[Japan]
+
+;B[qe];W[pc];B[pq];W[dp];B[cd];W[ph];B[ne];W[mc];B[ld];W[lc]
+;B[kd];W[kc];B[jd];W[pk];B[jc];W[qo];B[mq];W[ed];B[df];W[cc]
+;B[bc];W[dc];B[bb];W[ff];B[gd];W[gc];B[fd];W[ce];B[de];W[fc]
+;B[ee];W[dd];B[bd];W[hd];B[he];W[ie];B[id];W[hc];B[fe];W[hf]
+;B[ge];W[eb];B[cb];W[db];B[if];W[ch];B[cj];W[dj];B[dk];W[di]
+;B[ck];W[fj];B[cn];W[cf];B[bf];W[cg];B[be];W[ig];B[je];W[jf]
+;B[ie];W[qd];B[od];W[oc];B[rd];W[qf];B[re];W[of];B[jg];W[jh]
+;B[kg];W[pe];B[rf];W[qc];B[rh];W[qg];B[rj];W[qi];B[ri];W[rg]
+;B[ql];W[sh];B[qk];W[np];B[nq];W[qq];B[qr];W[pp];B[oq];W[om]
+;B[pj];W[ok];B[pi];W[oi];B[oj];W[nj];B[qj];W[ni];B[rm];W[dn]
+;B[co];W[ih];B[ib];W[hb];B[gf];W[do];B[cp];W[cm];B[dm];W[cq]
+;B[bq];W[em];B[dl];W[br];B[bp];W[dq];B[hq];W[gg];B[kh];W[ki]
+;B[gh];W[fg];B[hg];W[hh];B[gi];W[gj];B[ji];W[hf];B[li];W[kj]
+;B[hg];W[bm];B[bn];W[hf];B[ha];W[ga];B[hg];W[ii];B[jj];W[hf]
+;B[jk];W[lj];B[hj];W[fh];B[hg];W[bi];B[bj];W[hf];B[lk];W[lh]
+;B[hg];W[aq];B[fi];W[ei];B[hi];W[hf];B[eh];W[eg];B[hg];W[fl]
+;B[ij];W[ao];B[ar];W[ap];B[bs];W[as];B[ek];W[ej];B[ar];W[cr]
+;B[an];W[as];B[fk];W[gk];B[ar];W[hp];B[gl];W[hl];B[gm];W[hm]
+;B[gn];W[hn];B[go];W[hk];B[ho];W[io];B[ip];W[as];B[fm];W[jp]
+;B[gp];W[am];B[in];W[im];B[jo];W[km];B[si];W[sg];B[ln];W[lm]
+;B[mn];W[mm];B[nn];W[jn];B[io];W[pn];B[nm];W[mk];B[kk];W[nl]
+;B[kn];W[jm];B[mj];W[gr];B[hr];W[rq];B[rr];W[en];B[el];W[fq]
+;B[kb];W[hs];B[is];W[gs];B[ir];W[rn];B[qh];W[qm];B[rl];W[nh]
+;B[rp];W[sp];B[so];W[sq];B[sr];W[qp];B[ma];W[nb];B[dg];W[dh]
+;B[gq];W[fr];B[op];W[mf];B[ef];W[eh];B[nf];W[ng];B[lf];W[mi]
+;B[lj];W[pl];B[pg];W[oh];B[mg];W[mh];B[me];W[oo];B[no];W[na]
+;B[sn];W[lb];B[la];W[mb];B[ka];W[ia];B[jb];W[ro];B[sm];W[bg]
+;B[fp];W[ep];B[da];W[ea];B[ca];W[af];B[ae];W[ag];B[ai];W[ak]
+;B[aj];W[pd];B[lg];W[on];B[nd];W[nc])

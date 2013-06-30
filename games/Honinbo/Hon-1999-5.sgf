@@ -1,24 +1,43 @@
-(;BR[9d]DT[1999-06-22,23]EV[54th Honinbo Title]KM[5.5]PB[Cho Chikun]
-PC[Hotel Palace Onoya, Harazuru Hot Spring, Fukuoka, Japan]PW[Cho Sonjin]
-RE[W+2.5]RO[5]SO[Mainichi Shinbun]WR[9d];B[qd];W[dd];B[cp];W[pp];B[eq];W[oc];
-B[mc];W[pe];B[pd];W[od];B[oe];W[ne];B[of];W[md];B[ld];W[le];B[kd];W[re];B[qb];
-W[ke];B[jd];W[qe];B[ob];W[pc];B[qc];W[pb];B[nc];W[nd];B[pa];W[nb];B[oa];W[nf];
-B[og];W[ng];B[oh];W[mb];B[lc];W[rc];B[ra];W[qh];B[nh];W[je];B[id];W[mh];B[mi];
-W[li];B[lh];W[mg];B[lj];W[ki];B[nj];W[rd];B[lb];W[qj];B[kj];W[ji];B[jj];W[ii];
-B[ij];W[hi];B[cf];W[mk];B[mj];W[dk];B[bd];W[cc];B[fc]
-C[Adjourned. Time: black 3h46m, white 3h14m];W[fd];B[ec];W[df];B[cg];W[gc];
-B[gb];W[ci];B[dg];W[ed];B[cm];W[fq];B[fp];W[gq];B[er];W[gp];B[kq];W[fo];B[ep];
-W[bc];B[di];W[dj];B[bi];W[bj];B[ch];W[cj];B[fi];W[fj];B[gj];W[hj];B[ej];W[hk];
-B[fl];W[dm];B[cl];W[fm];B[gm];W[gn];B[em];W[en];B[fn];W[eh];B[fm];W[ei];B[fk];
-W[hm];B[ef];W[fh];B[cd];W[hb];B[hc];W[gd];B[fb];W[dc];B[de];W[in];B[db];W[cb];
-B[eo];W[dh];B[nq];W[ol];B[pk];W[ok];B[pj];W[oj];B[pi];W[qi];B[ph];W[rl];B[mm];
-W[np];B[ql];W[mq];B[rm];W[oq];B[rk];W[qn];B[rn];W[go];B[kn];W[ln];B[lo];W[km];
-B[mn];W[lm];B[no];W[mp];B[mo];W[ko];B[lp];W[pm];B[nk];W[ro];B[ea];W[hd];B[ic];
-W[ie];B[gf];W[gh];B[so];W[rp];B[gg];W[hf];B[bk];W[dl];B[dn];W[al];B[po];W[qo];
-B[oo];W[mr];B[rj];W[rb];B[qa];W[ri];B[qg];W[rg];B[ak];W[ck];B[bl];W[aj];B[cn];
-W[ff];B[iq];W[ll];B[nl];W[nm];B[ml];W[bh];B[bg];W[ai];B[hr];W[fr];B[qm];W[pn];
-B[fs];W[gs];B[es];W[gr];B[jl];W[jn];B[op];W[qq];B[lr];W[eg];B[ee];W[ad];B[ae];
-W[ac];B[be];W[fe];B[lq];W[nr];B[jp];W[sj];B[sk];W[si];B[hs];W[ik];B[jk];W[lk];
-B[ag];W[ah];B[ms];W[ns];B[ls];W[qf];B[qk];W[oi];B[ni];W[sp];B[sn];W[ca];B[da];
-W[hq];B[ir];W[io];B[ip];W[pg];B[ho];W[hn];B[hp];W[sb];B[ma];W[pf];B[il];
-C[Time used: black 7h59m, white 7h51]W[hl])
+(;
+EV[54th Honinbo Title]
+RO[5]
+PB[Cho Chikun]
+BR[9d]
+PW[Cho Sonjin]
+WR[9d]
+KM[5.5]
+RE[W+2.5]
+DT[1999-06-22,23]
+PC[Hotel Palace Onoya, Harazuru Hot Spring, Fukuoka, Japan]
+SO[Mainichi Shinbun]
+
+;B[qd];W[dd];B[cp];W[pp];B[eq];W[oc];B[mc];W[pe];B[pd];W[od]
+;B[oe];W[ne];B[of];W[md];B[ld];W[le];B[kd];W[re];B[qb];W[ke]
+;B[jd];W[qe];B[ob];W[pc];B[qc];W[pb];B[nc];W[nd];B[pa];W[nb]
+;B[oa];W[nf];B[og];W[ng];B[oh];W[mb];B[lc];W[rc];B[ra];W[qh]
+;B[nh];W[je];B[id];W[mh];B[mi];W[li];B[lh];W[mg];B[lj];W[ki]
+;B[nj];W[rd];B[lb];W[qj];B[kj];W[ji];B[jj];W[ii];B[ij];W[hi]
+;B[cf];W[mk];B[mj];W[dk];B[bd];W[cc];B[fc]
+C[Adjourned. Time: black 3h46m, white 3h14m]
+;W[fd];B[ec];W[df]
+;B[cg];W[gc];B[gb];W[ci];B[dg];W[ed];B[cm];W[fq];B[fp];W[gq]
+;B[er];W[gp];B[kq];W[fo];B[ep];W[bc];B[di];W[dj];B[bi];W[bj]
+;B[ch];W[cj];B[fi];W[fj];B[gj];W[hj];B[ej];W[hk];B[fl];W[dm]
+;B[cl];W[fm];B[gm];W[gn];B[em];W[en];B[fn];W[eh];B[fm];W[ei]
+;B[fk];W[hm];B[ef];W[fh];B[cd];W[hb];B[hc];W[gd];B[fb];W[dc]
+;B[de];W[in];B[db];W[cb];B[eo];W[dh];B[nq];W[ol];B[pk];W[ok]
+;B[pj];W[oj];B[pi];W[qi];B[ph];W[rl];B[mm];W[np];B[ql];W[mq]
+;B[rm];W[oq];B[rk];W[qn];B[rn];W[go];B[kn];W[ln];B[lo];W[km]
+;B[mn];W[lm];B[no];W[mp];B[mo];W[ko];B[lp];W[pm];B[nk];W[ro]
+;B[ea];W[hd];B[ic];W[ie];B[gf];W[gh];B[so];W[rp];B[gg];W[hf]
+;B[bk];W[dl];B[dn];W[al];B[po];W[qo];B[oo];W[mr];B[rj];W[rb]
+;B[qa];W[ri];B[qg];W[rg];B[ak];W[ck];B[bl];W[aj];B[cn];W[ff]
+;B[iq];W[ll];B[nl];W[nm];B[ml];W[bh];B[bg];W[ai];B[hr];W[fr]
+;B[qm];W[pn];B[fs];W[gs];B[es];W[gr];B[jl];W[jn];B[op];W[qq]
+;B[lr];W[eg];B[ee];W[ad];B[ae];W[ac];B[be];W[fe];B[lq];W[nr]
+;B[jp];W[sj];B[sk];W[si];B[hs];W[ik];B[jk];W[lk];B[ag];W[ah]
+;B[ms];W[ns];B[ls];W[qf];B[qk];W[oi];B[ni];W[sp];B[sn];W[ca]
+;B[da];W[hq];B[ir];W[io];B[ip];W[pg];B[ho];W[hn];B[hp];W[sb]
+;B[ma];W[pf];B[il];W[hl]
+C[Time used: black 7h59m, white 7h51]
+)

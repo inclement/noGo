@@ -1,13 +1,27 @@
-(;DT[1988]EV[Tengen 14th]GC[154 moves]KM[5.5]PB[Sonoda]PW[Cho]RE[W+R]RO[5]
-SO[Go 26/1];B[pd];W[dc];B[pp];W[dq];B[de];W[ce];B[cf];W[cd];B[do];W[df];B[fp];
-W[co];B[cp];W[dp];B[cq];W[cr];B[br];W[dr];B[bo];W[cn];B[bn];W[cm];B[eo];W[bs];
-B[bq];W[gq];B[bm];W[cl];B[hp];W[bl];B[am];W[hr];B[hq];W[fr];B[jq];W[ir];B[gp];
-W[iq];B[ip];W[jp];B[lq];W[kq];B[kp];W[jr];B[jo];W[lp];B[jq];W[ar];B[kr];W[aq];
-B[pj];W[qp];B[qo];W[ro];B[po];W[rp];B[rn];W[pq];B[oq];W[pr];B[or];W[rr];B[jd];
-W[nc];B[ne];W[qc];B[pc];W[qd];B[qe];W[pb];B[ob];W[re];B[qb];W[rb];B[pa];W[qf];
-B[pe];W[rg];B[pg];W[hd];B[he];W[ge];B[hf];W[id];B[je];W[jc];B[kc];W[gd];B[gf];
-W[kb];B[jb];W[ic];B[lb];W[qn];B[qm];W[pn];B[rl];W[kd];B[ka];W[lc];B[kb];W[ie];
-B[if];W[jf];B[ke];W[ij];B[fj];W[kj];B[ji];W[jj];B[jg];W[on];B[op];W[mk];B[ok];
-W[kf];B[le];W[kl];B[lk];W[ll];B[lj];W[ki];B[mj];W[hl];B[gk];W[jh];B[kg];W[hk];
-B[dg];W[ef];B[ee];W[ff];B[gh];W[eh];B[eg];W[fg];B[fh];W[fe];B[dh];W[hh];B[ri];
-W[ra];B[bf];W[bh];B[ch];W[ci];B[di];W[cj];B[nm];W[sn];B[rm];W[ln];B[mo];W[mi])
+(;
+EV[Tengen 14th]
+RO[5]
+PB[Sonoda]
+PW[Cho]
+KM[5.5]
+RE[W+R]
+DT[1988]
+SO[Go 26/1]
+GC[154 moves]
+
+;B[pd];W[dc];B[pp];W[dq];B[de];W[ce];B[cf];W[cd];B[do];W[df]
+;B[fp];W[co];B[cp];W[dp];B[cq];W[cr];B[br];W[dr];B[bo];W[cn]
+;B[bn];W[cm];B[eo];W[bs];B[bq];W[gq];B[bm];W[cl];B[hp];W[bl]
+;B[am];W[hr];B[hq];W[fr];B[jq];W[ir];B[gp];W[iq];B[ip];W[jp]
+;B[lq];W[kq];B[kp];W[jr];B[jo];W[lp];B[jq];W[ar];B[kr];W[aq]
+;B[pj];W[qp];B[qo];W[ro];B[po];W[rp];B[rn];W[pq];B[oq];W[pr]
+;B[or];W[rr];B[jd];W[nc];B[ne];W[qc];B[pc];W[qd];B[qe];W[pb]
+;B[ob];W[re];B[qb];W[rb];B[pa];W[qf];B[pe];W[rg];B[pg];W[hd]
+;B[he];W[ge];B[hf];W[id];B[je];W[jc];B[kc];W[gd];B[gf];W[kb]
+;B[jb];W[ic];B[lb];W[qn];B[qm];W[pn];B[rl];W[kd];B[ka];W[lc]
+;B[kb];W[ie];B[if];W[jf];B[ke];W[ij];B[fj];W[kj];B[ji];W[jj]
+;B[jg];W[on];B[op];W[mk];B[ok];W[kf];B[le];W[kl];B[lk];W[ll]
+;B[lj];W[ki];B[mj];W[hl];B[gk];W[jh];B[kg];W[hk];B[dg];W[ef]
+;B[ee];W[ff];B[gh];W[eh];B[eg];W[fg];B[fh];W[fe];B[dh];W[hh]
+;B[ri];W[ra];B[bf];W[bh];B[ch];W[ci];B[di];W[cj];B[nm];W[sn]
+;B[rm];W[ln];B[mo];W[mi])

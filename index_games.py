@@ -16,5 +16,6 @@ for entry in default_cols:
         game = collection.add_game(False)
         game.filen = sgf
         game.gameinfo = info
+        game.save()
     collectionslist.collections.append(collection)
     collectionslist.save('indexed_collections.json')

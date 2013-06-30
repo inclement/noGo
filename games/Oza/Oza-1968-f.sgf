@@ -1,31 +1,42 @@
-(;FF[4]AP[SGFC:1.13b]
+(;
+FF[4]
+PB[Go Seigen 9 dan]
+PW[Hashimoto Shoji, 9 dan]
+AP[SGFC:1.13b]
 C[ 16th Oza tournament
  White: Hashimoto Shoji, 9 dan
  Black: Go Seigen 9 dan
  Commentary in 1969  kido yearbook p 120
  white wins by 2 1/2 points
  komi: 5 1/2 points]
-PB[Go Seigen 9 dan]PW[Hashimoto Shoji, 9 dan];B[cp];W[pq];B[dc];W[pc];B[eq];
-W[ce];B[dg];W[ee];B[fd];W[di];B[fg];W[cg];B[pe];W[qe];B[pd];W[qd];B[oc];W[qf];
-B[df];W[cf];B[de];W[cd];B[dd];W[cc];B[pb];W[qc];B[kd];W[md];B[nd];W[ld];B[kc];
-W[ne];B[mb];W[pf];B[of];W[mf];B[oe];W[og];B[ng];W[nf];B[od];W[ob];B[nc];W[ke];
-B[nh];W[je];B[nb];W[lg];B[po];W[qm];B[ro];W[np];B[on];W[pk];B[pj];W[oj];B[pi];
-W[nm];B[mo];W[no];B[nn];W[mn];B[lo];W[om];B[oq];W[pp];B[pn];W[nq];B[pm];W[ln];
-B[or];W[op];B[pl];W[ko];B[qh];W[qb];B[rq];W[gq];B[kn];W[jo];B[mm];W[lm];B[ml];
-W[km];B[gp];W[hp];B[fp];W[hq];B[ck];W[mi];B[kl];W[jm];B[ch];W[bh];B[ci];W[gm];
-B[bi];W[nk];B[nl];W[qk];B[pg];W[ki];B[qr];W[pr];B[fm];W[cq];B[dq];W[fl];B[em];
-W[cr];B[bp];W[fr];B[ol];W[ok];B[er];W[gl];B[el];W[qp];B[rm];W[rp];B[sp];W[rs];
-B[qs];W[qq];B[rr];W[ps];B[so];W[id];B[oa];W[fj];B[qa];W[rb];B[bg];W[bf];B[ah];
-W[db];B[eb];W[cb];B[ho];W[hg];B[lj];W[li];B[gn];W[es];B[ds];W[fs];B[dr];W[gh];
-B[jl];W[jj];B[ik];W[im];B[io];W[ip];B[ll];W[lc];B[rg];W[rf];B[gb];W[lb];B[ib];
-W[ra];B[ri];W[hc];B[hb];W[ge];B[fe];W[pa];B[kb];W[ob];B[la];W[na];B[ql];W[rk];
-B[gf];W[hf];B[af];W[ae];B[ag];W[ac];B[gd];W[he];B[ij];W[ii];B[dj];W[gg];B[fq];
-W[gr];B[ff];W[eh];B[ej];W[fh];B[gj];W[oa];B[ma];W[jc];B[jb];W[fk];B[hi];W[hh];
-B[mg];W[mh];B[ni];W[mj];B[mk];W[nj];B[kj];W[jk];B[il];W[qg];B[oh];W[sg];B[sh];
-W[rh];B[jp];W[kp];B[rg];W[sf];B[qj];W[rh];B[lf];W[me];B[rg];W[eg];B[ef];W[rh];
-B[jq];W[ir];B[rg];W[ek];B[dk];W[rh];B[kk];W[ji];B[rg];W[gi];B[hj];W[rh];B[lq];
-W[lp];B[rg];W[ai];B[aj];W[rh];B[kg];W[lh];B[rg];W[sr];B[sq];W[rh];B[hs];W[jr];
-B[rg];W[rl];B[sm];W[rh];B[kq];W[kr];B[rg];W[qo];B[qn];W[rh];B[ad];W[bd];B[rg];
-W[rn];B[sn];W[rh];B[iq];W[hr];B[rg];W[gc];B[hd];W[ic];B[fc];W[rh];B[jd];W[ie];
-B[rg];W[hn];B[ei];W[rh];B[in];W[hm];B[go];W[jn];B[rg];W[ea];B[fa];W[da];B[dh];
-W[rh];B[si];W[rg];B[rj];W[fi])
+
+;B[cp];W[pq];B[dc];W[pc];B[eq];W[ce];B[dg];W[ee];B[fd];W[di]
+;B[fg];W[cg];B[pe];W[qe];B[pd];W[qd];B[oc];W[qf];B[df];W[cf]
+;B[de];W[cd];B[dd];W[cc];B[pb];W[qc];B[kd];W[md];B[nd];W[ld]
+;B[kc];W[ne];B[mb];W[pf];B[of];W[mf];B[oe];W[og];B[ng];W[nf]
+;B[od];W[ob];B[nc];W[ke];B[nh];W[je];B[nb];W[lg];B[po];W[qm]
+;B[ro];W[np];B[on];W[pk];B[pj];W[oj];B[pi];W[nm];B[mo];W[no]
+;B[nn];W[mn];B[lo];W[om];B[oq];W[pp];B[pn];W[nq];B[pm];W[ln]
+;B[or];W[op];B[pl];W[ko];B[qh];W[qb];B[rq];W[gq];B[kn];W[jo]
+;B[mm];W[lm];B[ml];W[km];B[gp];W[hp];B[fp];W[hq];B[ck];W[mi]
+;B[kl];W[jm];B[ch];W[bh];B[ci];W[gm];B[bi];W[nk];B[nl];W[qk]
+;B[pg];W[ki];B[qr];W[pr];B[fm];W[cq];B[dq];W[fl];B[em];W[cr]
+;B[bp];W[fr];B[ol];W[ok];B[er];W[gl];B[el];W[qp];B[rm];W[rp]
+;B[sp];W[rs];B[qs];W[qq];B[rr];W[ps];B[so];W[id];B[oa];W[fj]
+;B[qa];W[rb];B[bg];W[bf];B[ah];W[db];B[eb];W[cb];B[ho];W[hg]
+;B[lj];W[li];B[gn];W[es];B[ds];W[fs];B[dr];W[gh];B[jl];W[jj]
+;B[ik];W[im];B[io];W[ip];B[ll];W[lc];B[rg];W[rf];B[gb];W[lb]
+;B[ib];W[ra];B[ri];W[hc];B[hb];W[ge];B[fe];W[pa];B[kb];W[ob]
+;B[la];W[na];B[ql];W[rk];B[gf];W[hf];B[af];W[ae];B[ag];W[ac]
+;B[gd];W[he];B[ij];W[ii];B[dj];W[gg];B[fq];W[gr];B[ff];W[eh]
+;B[ej];W[fh];B[gj];W[oa];B[ma];W[jc];B[jb];W[fk];B[hi];W[hh]
+;B[mg];W[mh];B[ni];W[mj];B[mk];W[nj];B[kj];W[jk];B[il];W[qg]
+;B[oh];W[sg];B[sh];W[rh];B[jp];W[kp];B[rg];W[sf];B[qj];W[rh]
+;B[lf];W[me];B[rg];W[eg];B[ef];W[rh];B[jq];W[ir];B[rg];W[ek]
+;B[dk];W[rh];B[kk];W[ji];B[rg];W[gi];B[hj];W[rh];B[lq];W[lp]
+;B[rg];W[ai];B[aj];W[rh];B[kg];W[lh];B[rg];W[sr];B[sq];W[rh]
+;B[hs];W[jr];B[rg];W[rl];B[sm];W[rh];B[kq];W[kr];B[rg];W[qo]
+;B[qn];W[rh];B[ad];W[bd];B[rg];W[rn];B[sn];W[rh];B[iq];W[hr]
+;B[rg];W[gc];B[hd];W[ic];B[fc];W[rh];B[jd];W[ie];B[rg];W[hn]
+;B[ei];W[rh];B[in];W[hm];B[go];W[jn];B[rg];W[ea];B[fa];W[da]
+;B[dh];W[rh];B[si];W[rg];B[rj];W[fi])

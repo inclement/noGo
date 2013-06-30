@@ -1,18 +1,34 @@
-(;BR[8d]DT[1976]EV[31st Honinbo 1976]KM[5.5]PB[Takemiya Masaki]PC[Japan]
-PW[Ishida Yoshio]RE[B+R]RO[3]TM[9h]WR[Honinbo];B[pd];W[dc];B[pp];W[dq];B[pj];
-W[nc];B[de];W[fd];B[cc];W[cb];B[cd];W[eb];B[ci];W[qc];B[qd];W[pc];B[od];W[oc];
-B[me];W[nq];B[lq];W[qq];B[qp];W[pq];B[op];W[nr];B[mo];W[qh];B[oh];W[qk];B[qj];
-W[rj];B[ri];W[rl];B[sj];W[sk];B[rk];W[nd];B[ne];W[rj];B[oq];W[or];B[rk];W[oe];
-B[sl];W[of];B[re];W[ng];B[lf];W[rc];B[qf];W[lg];B[kg];W[lh];B[nh];W[mh];B[jf];
-W[og];B[ph];W[pg];B[ki];W[lj];B[kk];W[rg];B[sf];W[ml];B[lm];W[qe];B[pe];W[qg];
-B[sg];W[oj];B[pi];W[pk];B[ql];W[pl];B[rm];W[kj];B[jj];W[li];B[ji];W[ni];B[nk];
-W[qm];B[ok];W[rl];B[om];W[sh];B[rh];W[rf];B[si];W[oi];B[qi];W[rn];B[ql];W[rd];
-B[se];W[rl];B[nj];W[mi];B[ql];W[sd];B[pm];W[pf];B[rp];W[rq];B[do];W[co];B[cn];
-W[cp];B[dn];W[fq];B[fe];W[ge];B[ff];W[gf];B[gg];W[hd];B[fg];W[cj];B[bj];W[bk];
-B[ck];W[fn];B[fo];W[cl];B[dj];W[dk];B[go];W[cj];B[sq];W[sr];B[ck];W[rl];B[ol];
-W[cj];B[ed];W[fc];B[ck];W[sm];B[ql];W[cj];B[gq];W[gn];B[fr];W[ej];B[ck];W[en];
-B[eo];W[cj];B[mg];W[mf];B[ck];W[ik];B[cj];W[jk];B[er];W[hj];B[lk];W[km];B[fl];
-W[kn];B[hn];W[lo];B[kh]C[165 moves complete.
- Black: 7hr 53m
- White: 8hr 54m.])
+(;
+EV[31st Honinbo 1976]
+RO[3]
+PB[Takemiya Masaki]
+BR[8d]
+PW[Ishida Yoshio]
+WR[Honinbo]
+TM[9h]
+KM[5.5]
+RE[B+R]
+DT[1976]
+PC[Japan]
 
+;B[pd];W[dc];B[pp];W[dq];B[pj];W[nc];B[de];W[fd];B[cc];W[cb]
+;B[cd];W[eb];B[ci];W[qc];B[qd];W[pc];B[od];W[oc];B[me];W[nq]
+;B[lq];W[qq];B[qp];W[pq];B[op];W[nr];B[mo];W[qh];B[oh];W[qk]
+;B[qj];W[rj];B[ri];W[rl];B[sj];W[sk];B[rk];W[nd];B[ne];W[rj]
+;B[oq];W[or];B[rk];W[oe];B[sl];W[of];B[re];W[ng];B[lf];W[rc]
+;B[qf];W[lg];B[kg];W[lh];B[nh];W[mh];B[jf];W[og];B[ph];W[pg]
+;B[ki];W[lj];B[kk];W[rg];B[sf];W[ml];B[lm];W[qe];B[pe];W[qg]
+;B[sg];W[oj];B[pi];W[pk];B[ql];W[pl];B[rm];W[kj];B[jj];W[li]
+;B[ji];W[ni];B[nk];W[qm];B[ok];W[rl];B[om];W[sh];B[rh];W[rf]
+;B[si];W[oi];B[qi];W[rn];B[ql];W[rd];B[se];W[rl];B[nj];W[mi]
+;B[ql];W[sd];B[pm];W[pf];B[rp];W[rq];B[do];W[co];B[cn];W[cp]
+;B[dn];W[fq];B[fe];W[ge];B[ff];W[gf];B[gg];W[hd];B[fg];W[cj]
+;B[bj];W[bk];B[ck];W[fn];B[fo];W[cl];B[dj];W[dk];B[go];W[cj]
+;B[sq];W[sr];B[ck];W[rl];B[ol];W[cj];B[ed];W[fc];B[ck];W[sm]
+;B[ql];W[cj];B[gq];W[gn];B[fr];W[ej];B[ck];W[en];B[eo];W[cj]
+;B[mg];W[mf];B[ck];W[ik];B[cj];W[jk];B[er];W[hj];B[lk];W[km]
+;B[fl];W[kn];B[hn];W[lo];B[kh]
+C[165 moves complete.
+ Black: 7hr 53m
+ White: 8hr 54m.]
+)
