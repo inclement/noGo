@@ -770,7 +770,10 @@ class GobanApp(App):
         for name in names:
             if name[:5] == 'Board':
                 board = self.manager.get_screen(name)
-                board.children[0].board.save_sgf()
+                try:
+                    board.children[0].board.save_sgf()
+                except IndexError:
+                    print 'Tried to save board that doesn\'t exist, maybe didn\'t load properly'
 
     def on_config_change(self, config, section, key, value):
         super(GobanApp,self).on_config_change(config,section,key,value)
