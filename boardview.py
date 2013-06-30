@@ -35,6 +35,7 @@ from kivy.animation import Animation
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
+Clock.max_iteration = 60
 
 from kivy.input.postproc import doubletap
 
@@ -209,6 +210,10 @@ class CommentBox(ScrollView):
     pre_text = StringProperty('')
     text = StringProperty('')
     board = ObjectProperty(None,allownone=True)
+    def on_size(self,*args):
+        print 'comment box size changed',self.size
+    def on_pos(self,*args):
+        print 'comment box pos changed',self.pos
     def on_touch_down(self,touch):
         super(CommentBox,self).on_touch_down(touch)
         if self.collide_point(*touch.pos):

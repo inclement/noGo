@@ -1432,13 +1432,13 @@
         cols: 1
         spacing: 10
         size_hint_y: None
-        size: self.parent.textbox.texture_size
+        height: thetb.texture_size[1]
 
         Label:
-                
             id: thetb
-            text: self.parent.parent.pre_text + self.parent.parent.text
+            text: root.pre_text + root.text
             markup: True
             text_size: self.width-10,None
+            size_hint: (1,None)
             size: self.parent.width-10,self.texture_size[1]
             

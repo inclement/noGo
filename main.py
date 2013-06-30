@@ -230,6 +230,9 @@ class NogoManager(ScreenManager):
         if self.current == 'Home' and self.homescreen_to_refresh:
             self.refresh_open_games()
             self.homescreen_to_refresh = False
+        if self.current == 'Collections Index' and self.collectionindex_to_refresh:
+            self.refresh_collections_index()
+            self.collectionindex_to_refresh = False
     
     def add_collection_refresh_reminder(self, collection):
         print 'Asked to remind collection refresh',collection
@@ -454,8 +457,8 @@ class NogoManager(ScreenManager):
         pbv = PhoneBoardView(collectionsgf=collectionsgf)
         pbv.board.collectionsgf = collectionsgf
 
-        # if platform() == 'android':
-        #     set_board_height(pbv.boardcontainer)
+        if platform() == 'android':
+            set_board_height(pbv.boardcontainer)
 
         gi = collectionsgf.gameinfo
         if 'gridsize' in gi:
@@ -815,13 +818,19 @@ class GobanApp(App):
             collection = selection[0].collection
         else:
             return False
+        oldcollection = collectionsgf.collection
         collectionsgf.delete()
         collectionsgf.collection = collection
         collectionsgf.filen = collectionsgf.get_default_filen() + '.sgf'
         collection.games.append(collectionsgf)
+        collection.save()
+        self.manager.add_collection_refresh_reminder(collection)
+        self.manager.add_collection_refresh_reminder(oldcollection)
+        self.manager.collectionindex_to_refresh = True
         if board is not None:
             board.get_game_info()
             board.save_sgf()
+            collectionsgf.save()
         
         
 def testconverter(j,*args):

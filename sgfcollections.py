@@ -258,6 +258,7 @@ class CollectionSgf(object):
         self.filen = filen
     def delete(self):
         self.collection.remove_sgf(self)
+        self.collection.save()
     def get_default_filen(self):
         #print 'asked for default filen',self.collection
         if self.collection is not None:
