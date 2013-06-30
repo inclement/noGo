@@ -53,22 +53,25 @@ class WidgetCache(object):
         else:
             print 'asked to cache stone colour that doesn\'t exist'
     def get_label(self,text):
+        print 'Asked for cached label with text',text
+        print self.labelcache
         lc = self.labelcache
         if lc.has_key(text):
+            #print 'Already have such a label!'
             labels = lc[text]
             label = labels.pop(0)
-            print 'got',label,'from',labels
+            #print 'got',label,'from',labels
             if len(labels) == 0:
                 lc.pop(text)
             return label
-        if len(lc) > 0:
-            alttext = lc.keys()[0]
-            labels = lc[alttext]
-            label = labels.pop(0)
-            if len(labels)==0:
-                lc.pop(alttext)
-            label.text = text
-            return label
+        # if len(lc) > 0:
+        #     alttext = lc.keys()[0]
+        #     labels = lc[alttext]
+        #     label = labels.pop(0)
+        #     if len(labels)==0:
+        #         lc.pop(alttext)
+        #     label.text = text
+        #     return label
         label = TextMarker(text=text)
         return label
     def cache_label(self,label):
