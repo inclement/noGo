@@ -14,6 +14,7 @@ from kivy.uix.listview import ListItemButton
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty, BoundedNumericProperty
 from kivy.app import App
 from kivy.event import EventDispatcher
+from kivy.utils import platform
 
 from helpers import embolden
 
@@ -181,7 +182,10 @@ class CollectionsList(EventDispatcher):
             print 'Collection list version not recognised.'
         return self
     def new_collection(self,newname):
-        dirn = './games/{0}'.format(newname)
+        if platform() == 'android':
+            dirn = '/sdcard/noGo/collections/{0}'.format(newname)
+        else:
+            dirn = './games/{0}'.format(newname)
         print 'Making dir for new collection:',dirn
         try:
             mkdir(dirn)

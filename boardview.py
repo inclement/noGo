@@ -351,6 +351,15 @@ class GuiBoard(Widget):
             print 'removing coordinates'
             self.remove_coordinates()
 
+    display_markers = BooleanProperty(True)
+    def on_display_markers(self,obj,val):
+        if val:
+            print 'adding markers'
+            self.retreat_one_move()
+            self.advance_one_move()
+        else:
+            self.clear_markers()
+
     # def add_widget(self,*args,**kwargs):
     #     print 'board add_widget called with...',args
     #     super(GuiBoard,self).add_widget(*args)
@@ -841,6 +850,7 @@ class GuiBoard(Widget):
         
     # Stone methods
     def follow_instructions(self,instructions,*args,**kwargs):
+        print 'self.display_markers is',self.display_markers
         print '### instructions are', instructions
 
         t1 = time()
@@ -873,7 +883,7 @@ class GuiBoard(Widget):
                 self.set_playmarker(pm)
         else:
             self.remove_playmarker()
-        if 'markers' in instructions:
+        if 'markers' in instructions and self.display_markers:
             markers = instructions['markers']
             print 'received markers:', markers
             for marker in markers:
@@ -1219,14 +1229,18 @@ class BoardContainer(StencilView):
                 self.add_widget(marker)
             elif self.board.navmode == 'Score':
                 coord = self.board.pos_to_coord(touch.pos)
-                changed, newscore = self.board.scoreboard.toggle_status_at(coord)
-                print changed, newscore
-                for coords in changed:
-                    self.board.toggle_ld_marker(coords)
-                if self.board.gameinfo.has_key('komi'):
-                    komi = float(self.board.gameinfo['komi'])
-                newscore -= komi
-                self.board.comment_pre_text = 'Score: %s\n-----\n' % (format_score(newscore))
+                print 'score: coord is',coord
+                if 0 <= coord[0] < self.board.gridsize and 0 <= coord[1] < self.board.gridsize:
+                    print 'coord accepted',coord
+                    changed, newscore = self.board.scoreboard.toggle_status_at(coord)
+                    print changed, newscore
+                    for coords in changed:
+                        self.board.toggle_ld_marker(coords)
+                    if self.board.gameinfo.has_key('komi'):
+                        komi = float(self.board.gameinfo['komi'])
+                    newscore -= komi
+                    self.board.comment_pre_text = 'Score: %s\n-----\n' % (format_score(newscore))
+                    print 'finished board modification for this coord'
             elif self.board.navmode == 'Zoom':
                 ani = Animation(gobanpos=(self.board.gobanpos[0]-100,self.board.gobanpos[1]-100),t='in_out_quad',duration=2) + Animation(gobanpos=self.board.gobanpos,t='in_out_quad',duration=2)
                 ani.start(self.board)

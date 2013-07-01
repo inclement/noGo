@@ -45,7 +45,7 @@ from random import choice
 from math import sin
 from functools import partial
 from glob import glob
-from os.path import abspath
+from os.path import abspath, exists
 from os import mkdir, rename
 from json import dump as jsondump, load as jsonload, dump as jsondump
 import json
@@ -220,6 +220,7 @@ class NogoManager(ScreenManager):
     # Settings properties to keep an eye on
     touchoffset = ListProperty([0,0])
     coordinates = BooleanProperty(False)
+    display_markers = BooleanProperty(True)
 
     collectionindex_to_refresh = BooleanProperty(False)
     homescreen_to_refresh = BooleanProperty(False)
@@ -492,6 +493,7 @@ class NogoManager(ScreenManager):
         pbv.spinner.text = mode
         pbv.board.touchoffset = self.touchoffset
         pbv.board.coordinates = self.coordinates
+        pbv.board.display_markers = self.display_markers
         tb = time()
         pbv.board.get_game_info()
         tc = time()
@@ -609,6 +611,19 @@ class NogoManager(ScreenManager):
                 curboard = self.get_screen(name)
                 curboard.children[0].board.touchoffset = newtouchoffset
 
+    def propagate_markerdisplay_mode(self,val):
+        if val == 'False':
+            val = False
+        elif val == 'True':
+            val = True
+        else:
+            val = int(val)
+        self.display_markers = bool(val)
+        print 'propagating markerdisplay_mode',self.display_markers
+        for name in self.screen_names:
+            if name[:5] == 'Board':
+                curboard = self.get_screen(name)
+                curboard.children[0].board.display_markers = bool(val)
     def propagate_coordinates_mode(self,val):
         if val == 'False':
             val = False
@@ -626,7 +641,7 @@ class NogoManager(ScreenManager):
         if val == 'phone':
             Window.rotation = 0
         elif val == 'tablet':
-            Window.rotation = 90
+            Window.rotation = 270
         else:
             Window.rotation = 0
 
@@ -682,6 +697,12 @@ class GobanApp(App):
 
         # Load collections
         self.collections = CollectionsList().from_file()
+
+        if platform() == 'android':
+            if not exists('/sdcard/noGo'):
+                mkdir('/sdcard/noGo')
+            if not exists('/sdcard/noGo/collections'):
+                mkdir('/sdcard/noGo/collections')
         
         # Construct GUI
         sm = NogoManager(transition=SlideTransition(direction='left'))
@@ -735,25 +756,31 @@ class GobanApp(App):
              "section": "Board",
              "key": "input_mode",
              "options": ["phone","tablet/stylus"]},
-            {"type": "bool",
-             "title": "Show coordinates",
-             "desc": "Whether or not to display coordinates on the board.",
-             "section": "Board",
-             "key": "coordinates",
-             "true": "auto"},
             {"type": "options",
              "title": "View mode",
              "desc": "Use compact phone view or expanded tablet view.",
              "section": "Board",
              "key": "view_mode",
              "options": ["phone","tablet"]},
+            {"type": "bool",
+             "title": "Show coordinates",
+             "desc": "Whether or not to display coordinates on the board.",
+             "section": "Board",
+             "key": "coordinates",
+             "true": "auto"},
+            {"type": "bool",
+             "title": "Show markers",
+             "desc": "Whether to display board markers (square, triangle, letters, numbers etc.) when navigating games.",
+             "section": "Board",
+             "key": "markers",
+             "true": "auto"},
             ])
         settings.add_json_panel('Board',
                                 self.config,
                                 data=jsondata)
 
     def build_config(self, config):
-        config.setdefaults('Board',{'input_mode':'phone','coordinates':False,'view_mode':'phone'})
+        config.setdefaults('Board',{'input_mode':'phone','view_mode':'phone','coordinates':False,'markers':True})
 
     def on_pause(self,*args,**kwargs):
         print 'App asked to pause'
@@ -785,6 +812,8 @@ class GobanApp(App):
         elif key == 'coordinates':
             print 'coordinates key pressed',config,section,key,value
             self.manager.propagate_coordinates_mode(int(value))
+        elif key == 'markers':
+            self.manager.propagate_markerdisplay_mode(int(value))
         else:
             super(GobanApp,self).on_config_change(config,section,key,value)
 

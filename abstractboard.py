@@ -37,7 +37,7 @@ class ScoreBoard(object):
             changed = self.propagate_alive()
         elif cur is None:
             return ([],self.get_score())
-        return (changed + [coord],self.get_score())
+        return (set(changed + [coord]),self.get_score())
     def propagate_dead(self):
         board = self.board
         changing = True

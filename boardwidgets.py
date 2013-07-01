@@ -15,6 +15,12 @@ class Stone(Widget):
     colourname = StringProperty('b')
     colour = ListProperty([1,1,1])
     imagepath = StringProperty('./black_stone.png')
+    innerel = ObjectProperty(None)
+    outerel = ObjectProperty(None)
+    # def __init__(self,*args,**kwargs):
+    #     super(Stone,self).__init__(*args,**kwargs)
+    #     self.innerel.texture.min_filter = 'linear_mipmap_linear'
+    #     self.outerel.texture.min_filter = 'linear_mipmap_linear'
     def set_colour(self,colour):
         if colour == 'black':
             self.colour = [0,0,0]
