@@ -879,8 +879,6 @@ def testconverter(j,*args):
     print 'info is',info
     return info
 
-            
 if __name__ == '__main__':
-
     app = GobanApp()
     app.run()
