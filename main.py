@@ -47,6 +47,7 @@ from functools import partial
 from glob import glob
 from os.path import abspath, exists
 from os import mkdir, rename
+from shutil import copyfile
 from json import dump as jsondump, load as jsonload, dump as jsondump
 import json
 from time import asctime, time
@@ -73,10 +74,6 @@ advancekeys = ['right','l']
 retreatkeys = ['left','h']
 nextvariationkeys = ['up','k']
 prevvariationkeys = ['down','j']
-
-
-
-
 
 trianglecodes = ['triangle','TR']
 squarecodes = ['square','SQ']
@@ -380,7 +377,7 @@ class NogoManager(ScreenManager):
     def new_board_dialog(self):
         print 'Opening new_board_dialog'
         dialog = NewBoardQuery(manager=self)
-        popup = Popup(content=dialog,title='Create new board...',size_hint=(0.85,0.85))
+        popup = Popup(content=dialog,title='Create new board...',size_hint=(0.85,0.9))
         popup.content.popup = popup
         collections_list = App.get_running_app().collections.collections
         collections_args_converter = get_collectioninfo_from_collection
@@ -695,14 +692,23 @@ class GobanApp(App):
         config = self.config
         print 'my config is',config
 
-        # Load collections
-        self.collections = CollectionsList().from_file()
-
+        # Get any json collection backups if on android
         if platform() == 'android':
             if not exists('/sdcard/noGo'):
                 mkdir('/sdcard/noGo')
             if not exists('/sdcard/noGo/collections'):
                 mkdir('/sdcard/noGo/collections')
+            if not exists('/sdcard/noGo/collections/unsaved'):
+                mkdir('/sdcard/noGo/collections/unsaved')
+            json_backups = glob('/sdcard/noGo/*.json')
+            for filen in json_backups:
+                name = filen.split('/')[-1]
+                copyfile(filen,'./'+name)
+           
+
+        # Load collections
+        self.collections = CollectionsList().from_file()
+
         
         # Construct GUI
         sm = NogoManager(transition=SlideTransition(direction='left'))
@@ -844,6 +850,8 @@ class GobanApp(App):
         else:
             unsaved = self.collections.new_collection('unsaved')
             self.manager.refresh_collections_index()
+        if platform() == 'android':
+            unsaved.defaultdir = '/sdcard/noGo/collections/unsaved/'
         return unsaved
     def move_collectionsgf(self,collectionsgf,selection,board=None):
         if len(selection) > 0:
@@ -876,4 +884,3 @@ if __name__ == '__main__':
 
     app = GobanApp()
     app.run()
-

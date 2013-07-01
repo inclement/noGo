@@ -142,7 +142,10 @@ class CollectionsList(EventDispatcher):
         return self.__str__()
     def save(self,filen='default'):
         if filen == 'default':
-            default_filen = '.' + '/collections_list.json'
+            if platform() == 'android':
+                default_filen = '/sdcard/noGo/collections_list.json'
+            else:
+                default_filen = '.' + '/collections_list.json'
             filen = default_filen
         colstr = self.serialise()
         with open(filen,'w') as fileh:
@@ -207,6 +210,10 @@ class Collection(EventDispatcher):
     games = ListProperty([])
     name = StringProperty('Collection')
     defaultdir = StringProperty('./games/unsaved/')
+    def __init__(self,*args,**kwargs):
+        if platform() == 'android':
+            self.defaultdir = '/sdcard/noGo/collections/unsaved/'
+        super(Collection,self).__init__(*args,**kwargs)
     def __str__(self):
         return 'SGF collection {0} with {1} games'.format(self.name,len(self.games))
     def __repr__(self):
@@ -232,7 +239,10 @@ class Collection(EventDispatcher):
     def serialise(self):
         return json.dumps([SERIALISATION_VERSION,self.as_list()])
     def save(self):
-        filen = '.' + '/' + self.name + '.json'
+        if platform() == 'android':
+            filen = '/sdcard/noGo/' + self.name + '.json'
+        else:
+            filen = '.' + '/' + self.name + '.json'
         with open(filen,'w') as fileh:
             fileh.write(self.serialise())
         return filen

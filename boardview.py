@@ -602,7 +602,7 @@ class GuiBoard(Widget):
     def get_new_comment(self,*args,**kwargs):
         print 'get new comment called'
         if self.comment_text == '[color=444444]Long press to add comment.[/color]':
-            popup = Popup(content=CommentInput(board=self,comment=''),title='Edit comment:',size_hint=(0.85,0.85))
+            popup = Popup(content=CommentInput(board=self,comment=''),title='Edit comment:',size_hint=(0.95,0.45),pos_hint={'top':0.95})
         else:
             popup = Popup(content=CommentInput(board=self,comment=self.comment_text),title='Edit comment:',size_hint=(0.85,0.55),pos=(0.075*Window.width, 0.95*Window.height))
         popup.content.popup = popup
