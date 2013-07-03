@@ -295,6 +295,10 @@ class GuiBoard(Widget):
     gameinfo = DictProperty({})
     collectionsgf = ObjectProperty(None,allownone=True)
 
+    board_path = StringProperty('./media/boards/none.png')
+    def on_board_path(self,*args,**kwargs):
+        print 'board path changed',args,kwargs
+
     cache = ObjectProperty(WidgetCache())
 
     # Save state
@@ -716,11 +720,14 @@ class GuiBoard(Widget):
             
 
     def marker_colour(self, coord):
-        print 'coord is',coord
         coord = tuple(coord)
         if self.stones.has_key(coord):
             stone_colour = self.stones[coord].colour
-            return [1-stone_colour[0],1-stone_colour[1],1-stone_colour[2]]
+            if stone_colour == 'black':
+                return [1,1,1]
+            else:
+                return [0,0,0]
+            #return [1-stone_colour[0],1-stone_colour[1],1-stone_colour[2]]
         else:
             return [0,0,0]
 
@@ -731,20 +738,16 @@ class GuiBoard(Widget):
 
     ## Playmarker
     def set_playmarker(self,coord):
-        print 'set_playmarker called'
         #self.remove_playmarker()
         #marker = Stone(size=self.stonesize,pos=self.coord_to_pos(coord))
         #marker = Label(size=self.stonesize, pos=self.coord_to_pos(coord),text='m')
         #marker = Label(text='m')
         if self.playmarker is not None:
-            print 'playmarker exists',self.playmarker
             marker = self.playmarker
             marker.size = self.stonesize
-            print 'marker pos is',marker.pos
             marker.pos = self.coord_to_pos(coord)
             self.remove_widget(marker)
             self.add_widget(marker)
-            print 'new marker pos is',marker.pos
         else:
             marker = PlayMarker(size=self.stonesize, pos=self.coord_to_pos(coord))
             self.playmarker = marker
@@ -864,7 +867,7 @@ class GuiBoard(Widget):
         if 'remove' in instructions:
             remove_stones = instructions['remove']
             for stone in remove_stones:
-                self.remove_stone(coord=stone[0],colour=colourname_to_colour(stone[1]))
+                self.remove_stone(coord=stone[0])
         if 'add' in instructions:
             add_stones = instructions['add']
             for stone in add_stones:
@@ -1078,8 +1081,11 @@ class GuiBoard(Widget):
         stonesize = self.stonesize
         t1 = time()
         try:
+            print 'asking cache for stone',colour
             stone = self.cache.get_stone(colour[0])
+            print 'got stone',stone,stone.colour,stone.stone_image
         except AttributeError:
+            print 'ATTRIBUTE ERROR!'
             stone = Stone() #size=stonesize, pos=self.coord_to_pos(coord))
             stone.set_colour(colour)
         stone.size = stonesize
@@ -1100,7 +1106,7 @@ class GuiBoard(Widget):
         if self.stones.has_key(coord):
             stone = self.stones.pop(coord)
             self.remove_widget(stone)
-            self.cache.cache_stone(stone,stone.colourname)
+            self.cache.cache_stone(stone,stone.colour)
         else:
             print 'Tried to remove stone that doesn\'t exist'
 
@@ -1113,6 +1119,12 @@ class GuiBoard(Widget):
         for coord in self.stones.keys():
             self.stones[coord].pos = self.coord_to_pos(coord)
             self.stones[coord].size = self.stonesize
+
+    def replace_stones(self):
+        for coord in self.stones.keys():
+            stone = self.stones.pop(coord)
+            self.remove_widget(stone)
+            self.add_stone(coord,stone.colour)
 
     def redraw_stones(self):
         for coord in self.stones.keys():

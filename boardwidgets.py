@@ -14,9 +14,10 @@ from kivy.uix.widget import Widget
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
 
 def get_stone_image_location(colour):
+    print '@@@@@@@@@@'
+    print 'called get_stone_image_location',colour
     try:
         stone_type = App.get_running_app().stone_type
-        screen_size = Window.size
     except IOError:
         stone_type = 'default'
 
@@ -41,24 +42,55 @@ def get_stone_image_location(colour):
             source = 'white_shell_100.png'
         else:
             source = 'white_simple_100.png'
+    print '...and returned',source
     return './media/stones/' + source
+
+class WhiteStoneDrawn(Widget):
+    colour = StringProperty('white')
+    stone_image = StringProperty('./media/stones/white_simple_100.png')
+
+class BlackStoneDrawn(Widget):
+    colour = StringProperty('black')
+    stone_image = StringProperty('./media/stones/black_shell_100.png')
+
+class WhiteStoneSimple(Widget):
+    colour = StringProperty('white')
+    stone_image = StringProperty('./media/stones/white_simple_100.png')
+
+class BlackStoneSimple(Widget):
+    colour = StringProperty('black')
+    stone_image = StringProperty('./media/stones/black_shell_100.png')
+
+class WhiteStoneShell(Widget):
+    colour = StringProperty('white')
+    stone_image = StringProperty('./media/stones/white_simple_100.png')
+
+class BlackStoneShell(Widget):
+    colour = StringProperty('black')
+    stone_image = StringProperty('./media/stones/black_shell_100.png')
 
 class Stone(Widget):
     colour = StringProperty('black')
-    stone_image = StringProperty('./media/stones/default_black.png')
-
-    # colourname = StringProperty('b')
-    # colour = ListProperty([1,1,1])
-    # imagepath = StringProperty('./black_stone.png')
-    # innerel = ObjectProperty(None)
-    # outerel = ObjectProperty(None)
+    stone_image = StringProperty('./media/stones/black_simple_100.png')
     # def __init__(self,*args,**kwargs):
+    #     print '""""""""'
+    #     print 'Stone inited',self
+    #     print args,kwargs
+    #     if 'stone_image' in kwargs:
+    #         self.stone_image = kwargs['stone_image']
     #     super(Stone,self).__init__(*args,**kwargs)
-    #     self.innerel.texture.min_filter = 'linear_mipmap_linear'
-    #     self.outerel.texture.min_filter = 'linear_mipmap_linear'
-    def set_colour(self,colour):
-        self.colour = colour
-        self.stone_image = get_stone_image_location(colour)
+    #     print 'and now',self.colour,self.stone_image
+    # def on_stone_image(self,*args,**kwargs):
+    #     print '%%%%%%%%%%%%%'
+    #     print 'stone at',self
+    #     print 'stone_image set to',self.stone_image
+    #     self.canvas.ask_update()
+    # def set_colour(self,colour):
+    #     print
+    #     print 'asked to set colour',colour
+    #     self.colour = colour
+    #     self.stone_image = get_stone_image_location(colour)
+    #     print 'stone_image',self.stone_image
 
 
 class KoMarker(Widget):

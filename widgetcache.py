@@ -9,7 +9,26 @@
 # You should have received a copy of the GNU General Public License along with noGo. If not, see http://www.gnu.org/licenses/gpl-3.0.txt
 
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
-from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone
+from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone, get_stone_image_location, BlackStoneSimple, WhiteStoneSimple, BlackStoneShell, WhiteStoneShell, BlackStoneDrawn, WhiteStoneDrawn
+
+from kivy.app import App
+def get_stone(colour):
+    stone_type = App.get_running_app().stone_type
+    print 'What kind of stone to get?',stone_type
+    if colour == 'white':
+        if stone_type == 'slate and shell':
+            return WhiteStoneShell()
+        elif stone_type == 'simple':
+            return WhiteStoneSimple()
+        else:
+            return WhiteStoneDrawn()
+    else:
+        if stone_type == 'slate and shell':
+            return BlackStoneShell()
+        elif stone_type == 'simple':
+            return BlackStoneSimple()
+        else:
+            return BlackStoneDrawn()
 
 class WidgetCache(object):
     # Cached board widgets
@@ -23,8 +42,8 @@ class WidgetCache(object):
         if len(bsc) > 0:
             stone = bsc.pop(0)
         else:
-            stone = Stone()
-            stone.set_colour('black')
+            stone = get_stone('black')
+            #stone.set_colour('black')
         return stone
     def cache_black_stone(self,stone):
         self.blackstonecache.append(stone)
@@ -33,8 +52,8 @@ class WidgetCache(object):
         if len(wsc) > 0:
             stone = wsc.pop(0)
         else:
-            stone = Stone()
-            stone.set_colour('white')
+            stone = get_stone('white')
+            #stone.set_colour('white')
         return stone
     def cache_white_stone(self,stone):
         self.whitestonecache.append(stone)
@@ -52,6 +71,9 @@ class WidgetCache(object):
             self.cache_white_stone(stone)
         else:
             print 'asked to cache stone colour that doesn\'t exist'
+    def purge_stone_cache(self):
+        self.blackstonecache = []
+        self.whitestonecache = []
     def get_label(self,text):
         print 'Asked for cached label with text',text
         print self.labelcache

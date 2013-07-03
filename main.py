@@ -80,6 +80,14 @@ squarecodes = ['square','SQ']
 circlecodes = ['circle','CR']
 crosscodes = ['cross','MA']
 textcodes = ['text','LB']
+def boardname_to_filepath(name):
+    if name == 'photo':
+        return './media/edphoto_full.png'
+    elif name == 'plain darker':
+        return './media/plain_light.png'
+    else:
+        return './media/none.png'
+
 def markercode_to_marker(markercode):
     if markercode in trianglecodes:
         return 'triangle'
@@ -218,6 +226,7 @@ class NogoManager(ScreenManager):
     touchoffset = ListProperty([0,0])
     coordinates = BooleanProperty(False)
     display_markers = BooleanProperty(True)
+    boardtype = StringProperty('./media/boards/none.png')
 
     collectionindex_to_refresh = BooleanProperty(False)
     homescreen_to_refresh = BooleanProperty(False)
@@ -490,7 +499,9 @@ class NogoManager(ScreenManager):
         pbv.spinner.text = mode
         pbv.board.touchoffset = self.touchoffset
         pbv.board.coordinates = self.coordinates
+        pbv.board.board_path = boardname_to_filepath(self.boardtype)
         pbv.board.display_markers = self.display_markers
+        pbv.board.cache = App.get_running_app().cache
         tb = time()
         pbv.board.get_game_info()
         tc = time()
@@ -607,7 +618,20 @@ class NogoManager(ScreenManager):
             if name[:5] == 'Board':
                 curboard = self.get_screen(name)
                 curboard.children[0].board.touchoffset = newtouchoffset
+    def propagate_boardtype_mode(self,name):
+        self.boardtype = name
+        board_file = boardname_to_filepath(name)
+        print 'propagating boardtype',name,board_file
+        for name in self.screen_names:
+            if name[:5] == 'Board':
+                curboard = self.get_screen(name)
+                curboard.children[0].board.board_path = board_file
 
+    def propagate_stonegraphics_mode(self):
+        for name in self.screen_names:
+            if name[:5] == 'Board':
+                curboard = self.get_screen(name)
+                curboard.children[0].board.replace_stones()
     def propagate_markerdisplay_mode(self,val):
         if val == 'False':
             val = False
@@ -682,6 +706,7 @@ class GobanApp(App):
     collections = ObjectProperty(CollectionsList())
 
     stone_type = StringProperty('default')
+    board_type = StringProperty('./media/boards/none.png')
 
     use_kivy_settings = False
 
@@ -728,6 +753,8 @@ class GobanApp(App):
         config = self.config
         sm.propagate_input_mode(config.getdefault('Board','input_mode','phone'))
         sm.propagate_coordinates_mode(config.getdefault('Board','coordinates','1'))
+        self.stone_type = config.getdefault('Board','stone_graphics','simple')
+        self.boardtype = config.getdefault('Board','board_graphics','simple')
 
         self.bind(on_start=self.post_build_init)
 
@@ -782,13 +809,25 @@ class GobanApp(App):
              "section": "Board",
              "key": "markers",
              "true": "auto"},
+            {"type": "options",
+             "title": "Stone graphics",
+             "desc": "What kind of stone graphics to use",
+             "section": "Board",
+             "key": "stone_graphics",
+             "options": ["simple","slate and shell","drawn"]},
+            {"type": "options",
+             "title": "Board graphics",
+             "desc": "What kind of board graphics to use",
+             "section": "Board",
+             "key": "board_graphics",
+             "options": ["plain light","plain darker","photo"]},
             ])
         settings.add_json_panel('Board',
                                 self.config,
                                 data=jsondata)
 
     def build_config(self, config):
-        config.setdefaults('Board',{'input_mode':'phone','view_mode':'phone','coordinates':False,'markers':True})
+        config.setdefaults('Board',{'input_mode':'phone','view_mode':'phone','coordinates':False,'markers':True,'stone_graphics':'simple','board_graphics':'plain light'})
 
     def on_pause(self,*args,**kwargs):
         print 'App asked to pause'
@@ -822,6 +861,12 @@ class GobanApp(App):
             self.manager.propagate_coordinates_mode(int(value))
         elif key == 'markers':
             self.manager.propagate_markerdisplay_mode(int(value))
+        elif key == 'stone_graphics':
+            self.stone_type = value
+            self.manager.propagate_stonegraphics_mode()
+        elif key == 'board_graphics':
+            self.board_type = value
+            self.manager.propagate_boardtype_mode(value)
         else:
             super(GobanApp,self).on_config_change(config,section,key,value)
 

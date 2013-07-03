@@ -1281,10 +1281,74 @@
         valign: 'middle'
         font_size: (0.7*self.height,'px')
 
+<WhiteStoneSimple>:
+    canvas:
+        Color:
+            rgba: [1,1,1,1]
+        Ellipse:
+            source: './media/stones/white_simple_100.png'
+            size: (self.size[0],self.size[1])
+            pos: self.pos
+
+<BlackStoneSimple>:
+    canvas:
+        Color:
+            rgba: [1,1,1,1]
+        Ellipse:
+            source: './media/stones/black_simple_100.png'
+            size: (self.size[0],self.size[1])
+            pos: self.pos
+
+<WhiteStoneShell>:
+    canvas:
+        Color:
+            rgba: [1,1,1,1]
+        Ellipse:
+            source: './media/stones/white_shell_100.png'
+            size: (self.size[0],self.size[1])
+            pos: self.pos
+
+<BlackStoneShell>:
+    canvas:
+        Color:
+            rgba: [1,1,1,1]
+        Ellipse:
+            source: './media/stones/black_shell_100_2.png'
+            size: (self.size[0],self.size[1])
+            pos: self.pos
+
+<WhiteStoneDrawn>:
+    canvas:
+        Color:
+            rgb: 0,0,0
+        Ellipse:
+            size: self.size
+            pos: self.pos
+
+        Color:
+            rgb: 1,1,1
+        Ellipse:
+            size: (0.9*self.size[0],0.9*self.size[1])
+            pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
+
+<BlackStoneDrawn>:
+    canvas:
+        Color:
+            rgb: 0,0,0
+        Ellipse:
+            size: self.size
+            pos: self.pos
+
+        Color:
+            rgb: 0,0,0
+        Ellipse:
+            size: (0.9*self.size[0],0.9*self.size[1])
+            pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
+
+
 <Stone>:
     canvas:
         Ellipse:
-            source: root.stone_image
             size: (0.9*self.size[0],0.9*self.size[1])
             pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
 
@@ -1323,7 +1387,7 @@
         Color:
             rgb: (0.980, 0.766, 0.402)
         Rectangle:
-            source: 'goban_full.jpg'
+            source: root.board_path
             pos: self.gobanpos
             size: self.gobansize
 
