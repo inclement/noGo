@@ -296,8 +296,10 @@ class GuiBoard(Widget):
     collectionsgf = ObjectProperty(None,allownone=True)
 
     board_path = StringProperty('./media/boards/none.png')
-    def on_board_path(self,*args,**kwargs):
-        print 'board path changed',args,kwargs
+#    def on_board_path(self,*args,**kwargs):
+#        print 'board path changed',args,kwargs
+#        import os
+#        print 'exists?', os.path.exists(self.board_path)
 
     cache = ObjectProperty(WidgetCache())
 

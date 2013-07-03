@@ -82,11 +82,13 @@ crosscodes = ['cross','MA']
 textcodes = ['text','LB']
 def boardname_to_filepath(name):
     if name == 'photo':
-        return './media/edphoto_full.png'
+        return './media/boards/edphoto_full.png'
+    elif name == 'zoomed photo':
+        return './media/boards/edphoto_section.png'
     elif name == 'plain darker':
-        return './media/plain_light.png'
+        return './media/boards/plain_light.png'
     else:
-        return './media/none.png'
+        return './media/boards/none.png'
 
 def markercode_to_marker(markercode):
     if markercode in trianglecodes:
@@ -820,7 +822,7 @@ class GobanApp(App):
              "desc": "What kind of board graphics to use",
              "section": "Board",
              "key": "board_graphics",
-             "options": ["plain light","plain darker","photo"]},
+             "options": ["plain light","plain darker","photo","zoomed photo"]},
             ])
         settings.add_json_panel('Board',
                                 self.config,
