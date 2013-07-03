@@ -23,7 +23,7 @@ source.include_exts = py,png,jpg,sgf,json,kv,txt,rst
 # version.filename = %(source.dir)s/main.py
 
 # (str) Application versionning (method 2)
-version = 0.1.3
+version = 0.1.5
 
 # (list) Application requirements
 requirements = pil,docutils,kivy

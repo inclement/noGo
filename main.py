@@ -681,6 +681,8 @@ class GobanApp(App):
     cache = ObjectProperty(WidgetCache())
     collections = ObjectProperty(CollectionsList())
 
+    stone_type = StringProperty('default')
+
     use_kivy_settings = False
 
     title = 'noGo'
@@ -824,7 +826,7 @@ class GobanApp(App):
             super(GobanApp,self).on_config_change(config,section,key,value)
 
     def new_collection_query(self):
-        popup = Popup(content=CollectionNameChooser(manager=self),title='Pick a collection name...',size_hint_x=0.85,size_hint_y=None,height=(130,'sp'))
+        popup = Popup(content=CollectionNameChooser(manager=self),title='Pick a collection name...',size_hint_x=0.95,size_hint_y=None,height=(130,'sp'),pos_hint={'top':0.85})
         popup.content.popup = popup
         popup.open()
     def new_collection(self,newname):

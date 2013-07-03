@@ -8,38 +8,58 @@
 
 # You should have received a copy of the GNU General Public License along with noGo. If not, see http://www.gnu.org/licenses/gpl-3.0.txt
 
+from kivy.app import App
+from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
 
+def get_stone_image_location(colour):
+    try:
+        stone_type = App.get_running_app().stone_type
+        screen_size = Window.size
+    except IOError:
+        stone_type = 'default'
+
+    # limiting_size = min(screen_size)
+    # stone_limiting_size = int(limiting_size/19.)
+    # if stone_limiting_size < 40:
+    #     size = '40'
+    # elif stone_limiting_size < 60:
+    #     stone = '60'
+    # elif stone_limiting_size < 80:
+    #     stone = '80'
+    # else:
+    #     stone = '100'
+        
+    if colour == 'black':
+        if stone_type == 'slate and shell':
+            source = 'black_shell_100.png'
+        else:
+            source = 'black_simple_100.png'
+    elif colour == 'white':
+        if stone_type == 'slate and shell':
+            source = 'white_shell_100.png'
+        else:
+            source = 'white_simple_100.png'
+    return './media/stones/' + source
+
 class Stone(Widget):
-    colourname = StringProperty('b')
-    colour = ListProperty([1,1,1])
-    imagepath = StringProperty('./black_stone.png')
-    innerel = ObjectProperty(None)
-    outerel = ObjectProperty(None)
+    colour = StringProperty('black')
+    stone_image = StringProperty('./media/stones/default_black.png')
+
+    # colourname = StringProperty('b')
+    # colour = ListProperty([1,1,1])
+    # imagepath = StringProperty('./black_stone.png')
+    # innerel = ObjectProperty(None)
+    # outerel = ObjectProperty(None)
     # def __init__(self,*args,**kwargs):
     #     super(Stone,self).__init__(*args,**kwargs)
     #     self.innerel.texture.min_filter = 'linear_mipmap_linear'
     #     self.outerel.texture.min_filter = 'linear_mipmap_linear'
     def set_colour(self,colour):
-        if colour == 'black':
-            self.colour = [0,0,0]
-            self.imagepath = './black_stone.png'
-            self.colourname = 'b'
-        elif colour == 'white':
-            self.colour = [1,1,1]
-            self.imagepath = './white_stone.png'
-            self.colourname = 'w'
-        else:
-            print 'colour doesn\'t exist'
-            # should raise exception
-    # Image:
-    #     x: self.parent.pos[0]
-    #     y: self.parent.pos[1]
-    #     width: self.parent.width
-    #     height: self.parent.height
-    #     source: self.parent.imagepath
-    #     mipmap: True
+        self.colour = colour
+        self.stone_image = get_stone_image_location(colour)
+
 
 class KoMarker(Widget):
     markercolour = ListProperty([0,0,0])

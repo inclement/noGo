@@ -3,6 +3,8 @@
 #:import la kivy.adapters.listadapter
 #:import lv kivy.uix.listview
 
+
+
 <NumberChooser>:
     orientation: 'horizontal'
     Button:
@@ -1281,15 +1283,8 @@
 
 <Stone>:
     canvas:
-        Color:
-            rgb: 0,0,0
         Ellipse:
-            size: self.size
-            pos: self.pos
-
-        Color:
-            rgb: self.colour
-        Ellipse:
+            source: root.stone_image
             size: (0.9*self.size[0],0.9*self.size[1])
             pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
 
@@ -1328,6 +1323,7 @@
         Color:
             rgb: (0.980, 0.766, 0.402)
         Rectangle:
+            source: 'goban_full.jpg'
             pos: self.gobanpos
             size: self.gobansize
 
