@@ -1,22 +1,40 @@
-(;BR[9d]DT[1970]EV[9th Meijin 1970]KM[5]PB[Fujisawa Shuko]PW[Rin Kaiho]RE[W+R]
-RO[2]WR[Meijin];B[pd];W[dc];B[dp];W[pq];B[ce];W[qo];B[fc];W[ed];B[fd];W[ef];
-B[dg];W[jd];B[ie];W[nc];B[bc];W[id];B[ge];W[eg];B[dh];W[gg];B[je];W[kd];B[ig];
-W[gi];B[ii];W[gk];B[ei];W[el];B[ik];W[gm];B[gp];W[qf];B[nd];W[md];B[oc];W[ne];
-B[od];W[mc];B[pf];W[pg];B[of];W[re];B[rd];W[qd];B[qc];W[qe];B[lf];W[qj];B[nq];
-W[df];B[cf];W[cl];B[cj];W[fi];B[oo];W[lq];B[qn];W[rn];B[ro];W[po];B[rp];W[pn];
-B[qm];W[rm];B[rl];W[ql];B[pm];W[rk];B[pl];W[qk];B[qq];W[pp];B[on];W[pr];B[or];
-W[om];B[ol];W[nm];B[op];W[nl];B[ok];W[nj];B[oj];W[oi];B[nk];W[oq];B[np];W[nr];
-B[mr];W[os];B[mq];W[lr];B[mk];W[lo];B[mn];W[rr];B[ls];W[ks];B[ms];W[ln];B[mm];
-W[ip];B[hl];W[ej];B[kr];W[kq];B[js];W[hm];B[gl];W[fl];B[im];W[ho];B[in];W[go];
-B[fp];W[cp];B[co];W[dq];B[do];W[cq];B[fm];W[en];B[er];W[eq];B[fr];W[bo];B[bn];
-W[ap];B[fo];W[fn];B[an];W[dr];B[br];W[ds];B[cm];W[bs];B[dm];W[em];B[dl];W[ni];
-B[ib];W[jb];B[ic];W[hd];B[gb];W[jc];B[nb];W[mb];B[ob];W[he];B[hf];W[gf];B[hc];
-W[gd];B[db];W[cb];B[eb];W[cc];B[rc];W[jl];B[il];W[ll];B[ml];W[ir];B[ph];W[og];
-B[oh];W[nh];B[qg];W[ng];B[qh];W[rg];B[rh];W[pi];B[sh];W[kj];B[jj];W[ki];B[lm];
-W[jh];B[kk];W[ih];B[bb];W[kn];B[cd];W[kl];B[km];W[lk];B[lj];W[jk];B[jm];W[kk];
-B[jq];W[jp];B[iq];W[jr];B[hq];W[ks];B[qr];W[rq];B[kr];W[ri];B[pe];W[ks];B[kp];
-W[lp];B[kr];W[sf];B[sd];W[ks];B[hn];W[gn];B[kr];W[si];B[se];W[ks];B[sl];W[sk];
-B[kr];W[qi];B[rf];W[ks];B[qp];W[qs];B[kr];W[qf];B[sg];W[ks];B[rs];W[ss];B[kr];
-W[ns];B[mj];W[ks];B[hh];W[lh];B[hi];W[hg];B[kr];W[fe];B[ca];W[ks];B[jo];W[ko];
-B[kr];W[hj];B[ij];W[ks];B[kg];W[kh];B[kr];W[dk];B[ck];W[ks];B[sn];W[sm];B[kr];
-W[fq];B[gq];W[ks];B[sr];W[sq];B[kr];C[264 moves complete.]W[dj])
+(;
+EV[9th Meijin 1970]
+RO[2]
+PB[Fujisawa Shuko]
+BR[9d]
+PW[Rin Kaiho]
+WR[Meijin]
+KM[5]
+RE[W+R]
+DT[1970]
+
+;B[pd];W[dc];B[dp];W[pq];B[ce];W[qo];B[fc];W[ed];B[fd];W[ef]
+;B[dg];W[jd];B[ie];W[nc];B[bc];W[id];B[ge];W[eg];B[dh];W[gg]
+;B[je];W[kd];B[ig];W[gi];B[ii];W[gk];B[ei];W[el];B[ik];W[gm]
+;B[gp];W[qf];B[nd];W[md];B[oc];W[ne];B[od];W[mc];B[pf];W[pg]
+;B[of];W[re];B[rd];W[qd];B[qc];W[qe];B[lf];W[qj];B[nq];W[df]
+;B[cf];W[cl];B[cj];W[fi];B[oo];W[lq];B[qn];W[rn];B[ro];W[po]
+;B[rp];W[pn];B[qm];W[rm];B[rl];W[ql];B[pm];W[rk];B[pl];W[qk]
+;B[qq];W[pp];B[on];W[pr];B[or];W[om];B[ol];W[nm];B[op];W[nl]
+;B[ok];W[nj];B[oj];W[oi];B[nk];W[oq];B[np];W[nr];B[mr];W[os]
+;B[mq];W[lr];B[mk];W[lo];B[mn];W[rr];B[ls];W[ks];B[ms];W[ln]
+;B[mm];W[ip];B[hl];W[ej];B[kr];W[kq];B[js];W[hm];B[gl];W[fl]
+;B[im];W[ho];B[in];W[go];B[fp];W[cp];B[co];W[dq];B[do];W[cq]
+;B[fm];W[en];B[er];W[eq];B[fr];W[bo];B[bn];W[ap];B[fo];W[fn]
+;B[an];W[dr];B[br];W[ds];B[cm];W[bs];B[dm];W[em];B[dl];W[ni]
+;B[ib];W[jb];B[ic];W[hd];B[gb];W[jc];B[nb];W[mb];B[ob];W[he]
+;B[hf];W[gf];B[hc];W[gd];B[db];W[cb];B[eb];W[cc];B[rc];W[jl]
+;B[il];W[ll];B[ml];W[ir];B[ph];W[og];B[oh];W[nh];B[qg];W[ng]
+;B[qh];W[rg];B[rh];W[pi];B[sh];W[kj];B[jj];W[ki];B[lm];W[jh]
+;B[kk];W[ih];B[bb];W[kn];B[cd];W[kl];B[km];W[lk];B[lj];W[jk]
+;B[jm];W[kk];B[jq];W[jp];B[iq];W[jr];B[hq];W[ks];B[qr];W[rq]
+;B[kr];W[ri];B[pe];W[ks];B[kp];W[lp];B[kr];W[sf];B[sd];W[ks]
+;B[hn];W[gn];B[kr];W[si];B[se];W[ks];B[sl];W[sk];B[kr];W[qi]
+;B[rf];W[ks];B[qp];W[qs];B[kr];W[qf];B[sg];W[ks];B[rs];W[ss]
+;B[kr];W[ns];B[mj];W[ks];B[hh];W[lh];B[hi];W[hg];B[kr];W[fe]
+;B[ca];W[ks];B[jo];W[ko];B[kr];W[hj];B[ij];W[ks];B[kg];W[kh]
+;B[kr];W[dk];B[ck];W[ks];B[sn];W[sm];B[kr];W[fq];B[gq];W[ks]
+;B[sr];W[sq];B[kr];W[dj]
+C[264 moves complete.]
+)
