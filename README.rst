@@ -30,3 +30,9 @@ Gomill is licensed under the MIT licence, see gomill/licence.rst for full text.
 Homepage: http://mjw.woodcraft.me.uk/gomill/doc/0.7.4/intro.html
 
 
+Thanks to...
+============
+
+EdLee (lifein19x19) for providing excellent board and stone pictures making up several of noGo's themes.
+
+Everyone who tested in any way, shape or form.
