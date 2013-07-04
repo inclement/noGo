@@ -9,7 +9,7 @@
 # You should have received a copy of the GNU General Public License along with noGo. If not, see http://www.gnu.org/licenses/gpl-3.0.txt
 
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
-from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone, get_stone_image_location, BlackStoneSimple, WhiteStoneSimple, BlackStoneShell, WhiteStoneShell, BlackStoneDrawn, WhiteStoneDrawn, WhiteStoneBorderedShell
+from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone, get_stone_image_location, BlackStoneSimple, WhiteStoneSimple, BlackStoneShell, WhiteStoneShell, BlackStoneDrawn, WhiteStoneDrawn, WhiteStoneBorderedShell, BlackStoneBorderedShell
 
 
 from kivy.app import App
@@ -29,7 +29,7 @@ def get_stone(colour):
         if stone_type == 'slate and shell':
             return BlackStoneShell()
         elif stone_type == 'bordered slate and shell':
-            return BlackStoneShell()
+            return BlackStoneBorderedShell()
         elif stone_type == 'simple':
             return BlackStoneSimple()
         else:

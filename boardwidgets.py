@@ -77,7 +77,11 @@ class WhiteStoneShell(Widget):
 
 class WhiteStoneBorderedShell(Widget):
     colour = StringProperty('white')
-    stone_image = StringProperty('./media/stones/white_borderedshell_100.png')
+    stone_image = StringProperty('./media/stones/white_borderedshell_100_2.png')
+
+class BlackStoneBorderedShell(Widget):
+    colour = StringProperty('black')
+    stone_image = StringProperty('./media/stones/black_borderedshell_100.png')
 
 class BlackStoneShell(Widget):
     colour = StringProperty('black')
