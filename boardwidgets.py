@@ -51,7 +51,7 @@ class WhiteStoneDrawn(Widget):
 
 class BlackStoneDrawn(Widget):
     colour = StringProperty('black')
-    stone_image = StringProperty('./media/stones/black_shell_100.png')
+    stone_image = StringProperty('./media/stones/white_simple_100.png')
 
 class WhiteStoneSimple(Widget):
     colour = StringProperty('white')
@@ -61,9 +61,23 @@ class BlackStoneSimple(Widget):
     colour = StringProperty('black')
     stone_image = StringProperty('./media/stones/black_shell_100.png')
 
+from random import choice
 class WhiteStoneShell(Widget):
     colour = StringProperty('white')
-    stone_image = StringProperty('./media/stones/white_simple_100.png')
+    stone_image = StringProperty('./media/stones/white_shell_100.png')
+    def __init__(self,*args,**kwargs):
+        super(WhiteStoneShell,self).__init__(*args,**kwargs)
+        self.stone_image = choice(['./media/stones/white_shell_100.png',
+                                   './media/stones/white_shell_100_2.png',
+                                   './media/stones/white_shell_100_3.png',
+                                   './media/stones/white_shell_100_4.png',
+                                   './media/stones/white_shell_100_5.png',
+                                   ])
+                                   
+
+class WhiteStoneBorderedShell(Widget):
+    colour = StringProperty('white')
+    stone_image = StringProperty('./media/stones/white_borderedshell_100.png')
 
 class BlackStoneShell(Widget):
     colour = StringProperty('black')

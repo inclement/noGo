@@ -1304,7 +1304,16 @@
         Color:
             rgba: [1,1,1,1]
         Ellipse:
-            source: './media/stones/white_shell_100.png'
+            source: root.stone_image
+            size: (self.size[0],self.size[1])
+            pos: self.pos
+
+<WhiteStoneBorderedShell>:
+    canvas:
+        Color:
+            rgba: [1,1,1,1]
+        Ellipse:
+            source: './media/stones/white_borderedshell_100.png'
             size: (self.size[0],self.size[1])
             pos: self.pos
 

@@ -81,10 +81,12 @@ circlecodes = ['circle','CR']
 crosscodes = ['cross','MA']
 textcodes = ['text','LB']
 def boardname_to_filepath(name):
-    if name == 'photo':
+    if name == 'full board photo':
         return './media/boards/edphoto_full.png'
-    elif name == 'zoomed photo':
+    elif name == 'board section photo 1':
         return './media/boards/edphoto_section.png'
+    elif name == 'board section photo 2':
+        return './media/boards/edphoto_section_2.png'
     elif name == 'plain darker':
         return './media/boards/plain_light.png'
     else:
@@ -816,13 +818,13 @@ class GobanApp(App):
              "desc": "What kind of stone graphics to use",
              "section": "Board",
              "key": "stone_graphics",
-             "options": ["simple","slate and shell","drawn"]},
+             "options": ["simple","slate and shell","bordered slate and shell","drawn"]},
             {"type": "options",
              "title": "Board graphics",
              "desc": "What kind of board graphics to use",
              "section": "Board",
              "key": "board_graphics",
-             "options": ["plain light","plain darker","photo","zoomed photo"]},
+             "options": ["plain light","plain darker","full board photo","board section photo 1","board section photo 2"]},
             ])
         settings.add_json_panel('Board',
                                 self.config,
