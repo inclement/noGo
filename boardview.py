@@ -810,8 +810,9 @@ class GuiBoard(Widget):
         gridspacing = self.gridspacing
         relx = (pos[0] - (self.gobanpos[0] + self.boardindent[0])) / gridspacing
         rely = (pos[1] - (self.gobanpos[1] + self.boardindent[1])) / gridspacing
-        relx += self.touchoffset[0]
-        rely += self.touchoffset[1]
+        if self.navmode != 'Score':
+            relx += self.touchoffset[0]
+            rely += self.touchoffset[1]
         realcoord = (int(round(relx)),int(round(rely)))
         if self.flip_horiz:
             realcoord[0] = self.game.size - 1 - realcoord[0]
