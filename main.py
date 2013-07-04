@@ -82,7 +82,7 @@ crosscodes = ['cross','MA']
 textcodes = ['text','LB']
 def boardname_to_filepath(name):
     if name == 'full board photo':
-        return './media/boards/edphoto_full.png'
+        return './media/boards/edphoto_full_small2.png'
     elif name == 'board section photo 1':
         return './media/boards/edphoto_section.png'
     elif name == 'lightened board photo 1':
@@ -761,6 +761,7 @@ class GobanApp(App):
         sm.propagate_coordinates_mode(config.getdefault('Board','coordinates','1'))
         self.stone_type = config.getdefault('Board','stone_graphics','simple')
         self.boardtype = config.getdefault('Board','board_graphics','simple')
+        sm.propagate_boardtype_mode(self.boardtype)
 
         self.bind(on_start=self.post_build_init)
 
@@ -820,7 +821,7 @@ class GobanApp(App):
              "desc": "What kind of stone graphics to use",
              "section": "Board",
              "key": "stone_graphics",
-             "options": ["simple","slate and shell","bordered slate and shell","drawn"]},
+             "options": ["simple","slate and shell","bordered slate and shell","drawn by noGo"]},
             {"type": "options",
              "title": "Board graphics",
              "desc": "What kind of board graphics to use",
@@ -833,7 +834,7 @@ class GobanApp(App):
                                 data=jsondata)
 
     def build_config(self, config):
-        config.setdefaults('Board',{'input_mode':'phone','view_mode':'phone','coordinates':False,'markers':True,'stone_graphics':'simple','board_graphics':'plain light'})
+        config.setdefaults('Board',{'input_mode':'phone','view_mode':'phone','coordinates':False,'markers':True,'stone_graphics':'slate and shell','board_graphics':'board section photo 1'})
 
     def on_pause(self,*args,**kwargs):
         print 'App asked to pause'
