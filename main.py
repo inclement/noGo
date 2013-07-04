@@ -89,7 +89,7 @@ def boardname_to_filepath(name):
         return './media/boards/edphoto_section_light.png'
     elif name == 'board section photo 2':
         return './media/boards/edphoto_section_2.png'
-    elif name == 'plain darker':
+    elif name == 'plain dark':
         return './media/boards/plain_light.png'
     else:
         return './media/boards/none.png'
@@ -826,7 +826,7 @@ class GobanApp(App):
              "desc": "What kind of board graphics to use",
              "section": "Board",
              "key": "board_graphics",
-             "options": ["plain light","plain darker","full board photo","board section photo 1","lightened board photo 1","board section photo 2"]},
+             "options": ["plain light","plain dark","full board photo","board section photo 1","lightened board photo 1","board section photo 2"]},
             ])
         settings.add_json_panel('Board',
                                 self.config,
