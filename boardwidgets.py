@@ -53,6 +53,14 @@ class BlackStoneDrawn(Widget):
     colour = StringProperty('black')
     stone_image = StringProperty('./media/stones/white_simple_100.png')
 
+class WhiteStoneStylised(Widget):
+    colour = StringProperty('white')
+    stone_image = StringProperty('./media/stones/white_stylised_100.png')
+
+class BlackStoneStylised(Widget):
+    colour = StringProperty('black')
+    stone_image = StringProperty('./media/stones/white_stylised_100.png')
+
 class WhiteStoneSimple(Widget):
     colour = StringProperty('white')
     stone_image = StringProperty('./media/stones/white_simple_100.png')

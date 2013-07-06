@@ -1128,6 +1128,7 @@ class GuiBoard(Widget):
             stone = self.stones.pop(coord)
             self.remove_widget(stone)
             self.add_stone(coord,stone.colour)
+        self.update_playmarker()
 
     def redraw_stones(self):
         for coord in self.stones.keys():

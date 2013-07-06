@@ -827,7 +827,7 @@ class GobanApp(App):
              "desc": "What kind of stone graphics to use",
              "section": "Board",
              "key": "stone_graphics",
-             "options": ["simple","slate and shell","bordered slate and shell","drawn by noGo"]},
+             "options": ["simple","slate and shell","stylised","bordered slate and shell","drawn by noGo"]},
             ])
         settings.add_json_panel('Board',
                                 self.config,

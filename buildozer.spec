@@ -63,6 +63,8 @@ android.permissions = VIBRATE
 # (str) Android entry point, default is ok for Kivy-based app
 #android.entrypoint = org.renpy.android.PythonActivity
 
+android.manifest.intent_filters = sgf_intent_filters.xml
+
 [buildozer]
 
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
