@@ -1163,7 +1163,7 @@ class GuiBoard(Widget):
     def remove_starpoint(self,coord=(1,1),*args,**kwargs):
         if self.starpoints.has_key(coord):
             sp = self.starpoints.pop(coord)
-            self.remove_widget(ssp)
+            self.remove_widget(sp)
         else:
             print 'Tried to remove starpoint that doesn\'t exist'
 

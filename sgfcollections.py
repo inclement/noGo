@@ -229,7 +229,8 @@ class Collection(EventDispatcher):
         self.defaultdir = defaultdir
         for game in games:
             try:
-                self.games.append(CollectionSgf(collection=self).load(game))
+                colsgf = CollectionSgf(collection=self).load(game)
+                self.games.append(colsgf)
             except IOError:
                 print 'Tried to load sgf that doesn\'t seem to exist. Skipping.'
         #self.games = map(lambda j: CollectionSgf(collection=self).load(j),games)
@@ -250,11 +251,15 @@ class Collection(EventDispatcher):
         filen = '.' + '/' + self.name + '.json'
         return filen
     def from_file(self,filen):
+        print 'Trying to load collection from',filen
         with open(filen,'r') as fileh:
             jsonstr = fileh.read()
-        version,selflist = json.loads(jsonstr)
-        selflist = jsonconvert(selflist)
-        return self.from_list(selflist)
+        print 'File contents are',jsonstr
+        try:
+            version,selflist = json.loads(jsonstr)
+            selflist = jsonconvert(selflist)
+            return self.from_list(selflist)
+        except ValueError:
     def add_game(self,can_change_name=True):
         game = CollectionSgf(collection=self,can_change_name=can_change_name)
         game.filen = game.get_default_filen() + '.sgf'
@@ -308,11 +313,17 @@ class CollectionSgf(object):
         filen = self.filen + '.json'
         return filen
     def load(self,filen):
+        print 'Trying to load collectionsgf from',filen
         with open(filen,'r') as fileh:
             jsonstr = fileh.read()
-        version, selfdict = json.loads(jsonstr)
-        selfdict = jsonconvert(selfdict)
-        self.from_dict(selfdict)
+        print 'the loaded jsonstr is',jsonstr
+        try:
+            version, selfdict = json.loads(jsonstr)
+            selfdict = jsonconvert(selfdict)
+            self.from_dict(selfdict)
+        except:
+            print 'SUPER SGFCOLLECTION LOAD FAILURE'
+            return None
         return self
     def set_gameinfo(self,info,resave=True):
         self.gameinfo = info

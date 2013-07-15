@@ -10,6 +10,11 @@
 
 # You should have received a copy of the GNU General Public License along with noGo. If not, see http://www.gnu.org/licenses/gpl-3.0.txt
 
+print 'DEBUG STUFF'
+import os
+print 'THIS DIR'
+print os.listdir('.')
+
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle, Ellipse
@@ -46,11 +51,11 @@ from math import sin
 from functools import partial
 from glob import glob
 from os.path import abspath, exists
-from os import mkdir, rename
+from os import mkdir, rename, environ, getenv
 from shutil import copyfile
 from json import dump as jsondump, load as jsonload, dump as jsondump
 import json
-from time import asctime, time
+from time import asctime, time, sleep
 
 from gomill import sgf, boards
 from abstractboard import *
@@ -67,6 +72,8 @@ import sys
 # from kivy.config import Config
 # Config.set('graphics', 'width', '400')
 # Config.set('graphics', 'height', '600')
+
+
 
 
 # Keybindings
@@ -237,6 +244,21 @@ class NogoManager(ScreenManager):
     collectionindex_to_refresh = BooleanProperty(False)
     homescreen_to_refresh = BooleanProperty(False)
     collections_to_refresh = ListProperty([])
+
+    def open_from_intentpath(self,path):
+        print 'asked to open_from_intentpath',path
+        names = self.screen_names
+        for name in names:
+            if name[:5] == 'Board':
+                board = self.get_screen(name)
+                try:
+                    if board.children[0].board.collectionsgf.filen == path:
+                        self.switch_and_set_back(self,name)
+                        return
+                except IndexError:
+                    print 'Tried to go to board that doesn\'t exist, maybe didn\'t load properly'
+        print 'path not already open, opening'
+        self.new_board(from_file=path,mode='Navigate')
 
     def on_current(self,*args,**kwargs):
         super(NogoManager,self).on_current(*args,**kwargs)
@@ -414,6 +436,7 @@ class NogoManager(ScreenManager):
         load_from_file = False
 
         print '%% NEW BOARD'
+        print with_collectionsgf, in_collection, from_file
         t1 = time()
 
         # Get a collection and collectionsgf to contain and represent the board 
@@ -436,6 +459,7 @@ class NogoManager(ScreenManager):
         else:
             collection = App.get_running_app().get_default_collection()
             collectionsgf = collection.add_game()
+            print 'Made new collectionsgf for the game',collectionsgf
             load_from_file = False
             if from_file != '':
                 load_from_file = True
@@ -511,6 +535,7 @@ class NogoManager(ScreenManager):
         tb = time()
         pbv.board.get_game_info()
         tc = time()
+        print 'Got to save...'
         pbv.board.save_sgf()
         td = time()
         self.boards.append(name)
@@ -719,6 +744,8 @@ class GobanApp(App):
     title = 'noGo'
     name = 'noGo'
 
+    prev_opened_file = StringProperty('')
+
     def build(self):
         # Load config
         print 'user data dir is', self.user_data_dir
@@ -735,8 +762,11 @@ class GobanApp(App):
                 mkdir('/sdcard/noGo/collections/unsaved')
             json_backups = glob('/sdcard/noGo/*.json')
             for filen in json_backups:
-                name = filen.split('/')[-1]
-                copyfile(filen,'./'+name)
+                with open(filen,'r') as fileh:
+                    filestr = fileh.read()
+                if len(filestr) > 1:
+                    name = filen.split('/')[-1]
+                    copyfile(filen,'./'+name)
            
 
         # Load collections
@@ -765,8 +795,42 @@ class GobanApp(App):
 
         self.bind(on_start=self.post_build_init)
 
+        if platform() == 'android':
+            from android import activity
+            activity.bind(on_new_intent=self.on_intent)
+            
+
         return sm
 
+    def on_intent(self,intent):
+        print '!!!!!'
+        print 'on_intent called'
+        action = intent.getAction()
+        print 'action is',action
+        # if action == 'android.intent.action.VIEW':
+        #     sleep(0.5)
+        #     path = intent.getData().getPath()
+        #     print 'going for path',path
+        #     self.manager.open_from_intentpath(path)
+
+    # def on_start(self,*args,**kwargs):
+    #     print '\nON_START',args,kwargs,'\n'
+    #     print 'environment',environ.get('PYTHON_OPENFILE')
+    #     open_file = getenv('PYTHON_OPENFILE','').replace('%20',' ')
+    #     print 'open_file is',open_file
+    #     if open_file != '' and open_file != self.prev_opened_file:
+    #         self.manager.open_from_intentpath(open_file)
+    #     super(GobanApp,self).on_start(*args,**kwargs)
+
+    # def on_resume(self,*args,**kwargs):
+    #     # print 'ON_RESUME',args,kwargs
+    #     # print 'environment',environ.get('PYTHON_OPENFILE')
+    #     # open_file = getenv('PYTHON_OPENFILE','').replace('%20',' ')
+    #     # print 'open_file is',open_file
+    #     # if open_file != '' and open_file != self.prev_opened_file:
+    #     #     self.prev_opened_file = open_file
+    #     #     self.manager.new_board(from_file=open_file,mode='Navigate')
+    #     super(GobanApp,self).on_resume(*args,**kwargs)
 
     def get_application_config(self):
         if platform() == 'android':
