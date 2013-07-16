@@ -1,24 +1,14 @@
-(;
-EV[Meijin match 1975, game 6]
-PB[Ishida]
-PW[Otake]
-RE[W+R (152 moves)]
-DT[1975-10-29,30]
-SO[Go review winter 1976]
-
-;B[qd];W[cq];B[ec];W[qp];B[od];W[cc];B[de];W[ce];B[df];W[eb]
-;B[fc];W[cf];B[dg];W[dd];B[ed];W[db];B[op];W[pn];B[ql];W[pi]
-;B[qo];W[po];B[pp];W[qn];B[qq];W[ro];B[rq];W[ol];B[lq];W[qh]
-;B[cg];W[cn];B[lc];W[jq];B[gp];W[jo];B[lo];W[no];B[mp];W[gn]
-;B[en];W[ep];B[ip];W[jp];B[dp];W[dq];B[hn];W[gm];B[in];W[kn]
-;B[jl];W[hl];B[il];W[ln];B[ll];W[kk];B[kl];W[hj];B[jj];W[mm]
-;B[dl];W[dj];B[cm];W[dn];B[dm];W[fe];B[fg];W[fj];B[fl];W[eo]
-;B[gl];W[hm];B[hk];W[em];B[fn];W[gk];B[ik];W[fm];B[el];W[fo]
-;B[bj];W[bi];B[ci];W[gg];B[bf];W[be];B[ig];W[fh];B[bh];W[he]
-;B[ie];W[hg];B[id];W[ih];B[jg];W[eg];B[jn];W[qc];B[pc];W[kr]
-;B[lr];W[hq];B[hp];W[gq];B[nh];W[nj];B[mj];W[rd];B[qe];W[rb]
-;B[re];W[pb];B[ob];W[ni];B[mi];W[oh];B[ng];W[mk];B[lk];W[gc]
-;B[ee];W[ck];B[bl];W[ic];B[jc];W[bk];B[ak];W[af];B[fb];W[gb]
-;B[dc];W[cj];B[ai];W[bb];B[hc];W[gd];B[bn];W[bo];B[ao];W[ib]
-;B[bp];W[jb];B[kc];W[co];B[bq];W[br];B[ar];W[bs];B[ei];W[ej]
-;B[eh];W[di])
+(;DT[1975-10-29,30]EV[Meijin match 1975, game 6]PB[Ishida]PW[Otake]
+RE[W+R (152 moves)]SO[Go review winter 1976];B[qd];W[cq];B[ec];W[qp];B[od];
+W[cc];B[de];W[ce];B[df];W[eb];B[fc];W[cf];B[dg];W[dd];B[ed];W[db];B[op];W[pn];
+B[ql];W[pi];B[qo];W[po];B[pp];W[qn];B[qq];W[ro];B[rq];W[ol];B[lq];W[qh];B[cg];
+W[cn];B[lc];W[jq];B[gp];W[jo];B[lo];W[no];B[mp];W[gn];B[en];W[ep];B[ip];W[jp];
+B[dp];W[dq];B[hn];W[gm];B[in];W[kn];B[jl];W[hl];B[il];W[ln];B[ll];W[kk];B[kl];
+W[hj];B[jj];W[mm];B[dl];W[dj];B[cm];W[dn];B[dm];W[fe];B[fg];W[fj];B[fl];W[eo];
+B[gl];W[hm];B[hk];W[em];B[fn];W[gk];B[ik];W[fm];B[el];W[fo];B[bj];W[bi];B[ci];
+W[gg];B[bf];W[be];B[ig];W[fh];B[bh];W[he];B[ie];W[hg];B[id];W[ih];B[jg];W[eg];
+B[jn];W[qc];B[pc];W[kr];B[lr];W[hq];B[hp];W[gq];B[nh];W[nj];B[mj];W[rd];B[qe];
+W[rb];B[re];W[pb];B[ob];W[ni];B[mi];W[oh];B[ng];W[mk];B[lk];W[gc];B[ee];W[ck];
+B[bl];W[ic];B[jc];W[bk];B[ak];W[af];B[fb];W[gb];B[dc];W[cj];B[ai];W[bb];B[hc];
+W[gd];B[bn];W[bo];B[ao];W[ib];B[bp];W[jb];B[kc];W[co];B[bq];W[br];B[ar];W[bs];
+B[ei];W[ej];B[eh];W[di])

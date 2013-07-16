@@ -795,9 +795,9 @@ class GobanApp(App):
 
         self.bind(on_start=self.post_build_init)
 
-        if platform() == 'android':
-            from android import activity
-            activity.bind(on_new_intent=self.on_intent)
+        # if platform() == 'android':
+        #     from android import activity
+        #     activity.bind(on_new_intent=self.on_intent)
             
 
         return sm
@@ -807,11 +807,13 @@ class GobanApp(App):
         print 'on_intent called'
         action = intent.getAction()
         print 'action is',action
-        # if action == 'android.intent.action.VIEW':
-        #     sleep(0.5)
-        #     path = intent.getData().getPath()
-        #     print 'going for path',path
-        #     self.manager.open_from_intentpath(path)
+        if action == 'android.intent.action.VIEW':
+            print 'Trying to act on intent'
+            sleep(0.2)
+            print 'Slept briefly'
+            path = intent.getData().getPath()
+            print 'going for path',path
+            self.manager.open_from_intentpath(path)
 
     # def on_start(self,*args,**kwargs):
     #     print '\nON_START',args,kwargs,'\n'

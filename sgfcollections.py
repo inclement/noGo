@@ -255,11 +255,9 @@ class Collection(EventDispatcher):
         with open(filen,'r') as fileh:
             jsonstr = fileh.read()
         print 'File contents are',jsonstr
-        try:
-            version,selflist = json.loads(jsonstr)
-            selflist = jsonconvert(selflist)
-            return self.from_list(selflist)
-        except ValueError:
+        version,selflist = json.loads(jsonstr)
+        selflist = jsonconvert(selflist)
+        return self.from_list(selflist)
     def add_game(self,can_change_name=True):
         game = CollectionSgf(collection=self,can_change_name=can_change_name)
         game.filen = game.get_default_filen() + '.sgf'
@@ -313,10 +311,10 @@ class CollectionSgf(object):
         filen = self.filen + '.json'
         return filen
     def load(self,filen):
-        print 'Trying to load collectionsgf from',filen
+        #print 'Trying to load collectionsgf from',filen
         with open(filen,'r') as fileh:
             jsonstr = fileh.read()
-        print 'the loaded jsonstr is',jsonstr
+        #print 'the loaded jsonstr is',jsonstr
         try:
             version, selfdict = json.loads(jsonstr)
             selfdict = jsonconvert(selfdict)
