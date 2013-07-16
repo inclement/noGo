@@ -23,7 +23,7 @@ source.include_exts = py,png,jpg,sgf,json,kv,txt,rst
 # version.filename = %(source.dir)s/main.py
 
 # (str) Application versionning (method 2)
-version = 0.2.0
+version = 0.2.1
 
 # (list) Application requirements
 requirements = pil,docutils,kivy
@@ -64,7 +64,7 @@ android.permissions = VIBRATE
 #android.entrypoint = org.renpy.android.PythonActivity
 
 
-# android.manifest.intent_filters = sgf_intent_filters.xml
+android.manifest.intent_filters = sgf_intent_filters.xml
 
 [buildozer]
 

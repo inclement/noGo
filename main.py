@@ -51,7 +51,7 @@ from math import sin
 from functools import partial
 from glob import glob
 from os.path import abspath, exists
-from os import mkdir, rename, environ, getenv
+from os import mkdir, rename, environ, getenv, putenv
 from shutil import copyfile
 from json import dump as jsondump, load as jsonload, dump as jsondump
 import json
@@ -253,7 +253,8 @@ class NogoManager(ScreenManager):
                 board = self.get_screen(name)
                 try:
                     if board.children[0].board.collectionsgf.filen == path:
-                        self.switch_and_set_back(self,name)
+                        print 'filen is correct, name is',name
+                        self.switch_and_set_back(name)
                         return
                 except IndexError:
                     print 'Tried to go to board that doesn\'t exist, maybe didn\'t load properly'
@@ -437,6 +438,7 @@ class NogoManager(ScreenManager):
 
         print '%% NEW BOARD'
         print with_collectionsgf, in_collection, from_file
+        print type(from_file)
         t1 = time()
 
         # Get a collection and collectionsgf to contain and represent the board 
@@ -495,7 +497,8 @@ class NogoManager(ScreenManager):
         pbv.board.collectionsgf = collectionsgf
 
         if platform() == 'android':
-            set_board_height(pbv.boardcontainer)
+            #set_board_height(pbv.boardcontainer)
+            pbv.boardcontainer.set_board_height()
 
         gi = collectionsgf.gameinfo
         if 'gridsize' in gi:
@@ -556,6 +559,8 @@ class NogoManager(ScreenManager):
 
         print '%%%%',t8-t1,t2-t1,t3-t2,t4-t3,t5-t4,t6-t5,t65-t6,t7-t65,t8-t7
         print '%%%%',tg-ta,tb-ta,tc-tb,td-tc,te-td,tf-te,tg-tf
+        # if platform() == 'android':
+        #     Clock.schedule_once(pbv.boardcontainer.set_board_height,1)
         
     # def new_board(self,in_collection=None,mode='Play',from_file='',gridsize=19,handicap=0):
     #     if in_collection is None:
@@ -795,34 +800,49 @@ class GobanApp(App):
 
         self.bind(on_start=self.post_build_init)
 
-        # if platform() == 'android':
-        #     from android import activity
-        #     activity.bind(on_new_intent=self.on_intent)
+        if platform() == 'android':
+            from android import activity
+            activity.bind(on_new_intent=self.on_intent)
             
 
         return sm
 
     def on_intent(self,intent):
+        print 'INTENT'
+        print 'INTENT'
+        print 'INTENT'
+        print 'INTENT'
+        print 'INTENT'
         print '!!!!!'
         print 'on_intent called'
         action = intent.getAction()
         print 'action is',action
         if action == 'android.intent.action.VIEW':
             print 'Trying to act on intent'
-            sleep(0.2)
+            #sleep(5)
             print 'Slept briefly'
             path = intent.getData().getPath()
             print 'going for path',path
-            self.manager.open_from_intentpath(path)
+            #self.manager.go_home()
+            Clock.schedule_once(lambda j: self.manager.open_from_intentpath(path),0.5)
+            #self.manager.open_from_intentpath(path)
+    # def on_resume(self,*args):
+    #     print 'RESUMED'
+    #     print 'RESUMED'
+    #     print 'RESUMED'
+    #     print 'RESUMED'
+    #     print 'RESUMED'
+        
 
-    # def on_start(self,*args,**kwargs):
-    #     print '\nON_START',args,kwargs,'\n'
-    #     print 'environment',environ.get('PYTHON_OPENFILE')
-    #     open_file = getenv('PYTHON_OPENFILE','').replace('%20',' ')
-    #     print 'open_file is',open_file
-    #     if open_file != '' and open_file != self.prev_opened_file:
-    #         self.manager.open_from_intentpath(open_file)
-    #     super(GobanApp,self).on_start(*args,**kwargs)
+    def on_start(self,*args,**kwargs):
+        print '\nON_START',args,kwargs,'\n'
+        print 'environment',environ.get('PYTHON_OPENFILE')
+        open_file = getenv('PYTHON_OPENFILE','').replace('%20',' ')
+        print 'open_file is',open_file
+        if open_file != '':
+            putenv('PYTHON_OPENFILE','')
+            Clock.schedule_once(lambda j: self.manager.open_from_intentpath(open_file),0.5)
+        super(GobanApp,self).on_start(*args,**kwargs)
 
     # def on_resume(self,*args,**kwargs):
     #     # print 'ON_RESUME',args,kwargs
@@ -893,7 +913,7 @@ class GobanApp(App):
              "desc": "What kind of stone graphics to use",
              "section": "Board",
              "key": "stone_graphics",
-             "options": ["simple","slate and shell","stylised","bordered slate and shell","drawn by noGo"]},
+             "options": ["simple","slate and shell","bordered slate and shell","drawn by noGo"]},
             ])
         settings.add_json_panel('Board',
                                 self.config,

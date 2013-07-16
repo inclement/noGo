@@ -1223,6 +1223,19 @@ class BoardContainer(StencilView):
         #     self._keyboard_closed, self)
         # self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
+    def set_board_height(self,*args):
+        if platform() == 'android':
+            width = Window.width
+            height = Window.height
+            print 'window height,width',height,width
+            if height > width:
+                boardheight = width
+                self.height = boardheight
+                self.size_hint_y = None
+                print 'selfboardcontainer size',self.size,self.size_hint
+    
+            
+
     def on_size(self,*args,**kwargs):
         self.set_boardsize()
         self.set_boardpos()

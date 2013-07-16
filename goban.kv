@@ -1193,7 +1193,7 @@
                 on_release: self.parent.parent.parent.popup.dismiss()
             Button:
                 text: "Load"
-                on_press: root.manager.new_board(from_file=filechooser.selection[0],mode='Navigate')
+                on_press: root.manager.open_from_intentpath(filechooser.selection[0])
                 on_release: self.parent.parent.parent.popup.dismiss()
 
 <ButtonTest>:

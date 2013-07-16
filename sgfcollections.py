@@ -254,7 +254,7 @@ class Collection(EventDispatcher):
         print 'Trying to load collection from',filen
         with open(filen,'r') as fileh:
             jsonstr = fileh.read()
-        print 'File contents are',jsonstr
+        #print 'File contents are',jsonstr
         version,selflist = json.loads(jsonstr)
         selflist = jsonconvert(selflist)
         return self.from_list(selflist)
