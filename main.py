@@ -824,7 +824,7 @@ class GobanApp(App):
             path = intent.getData().getPath()
             print 'going for path',path
             #self.manager.go_home()
-            Clock.schedule_once(lambda j: self.manager.open_from_intentpath(path),0.5)
+            Clock.schedule_once(lambda j: self.manager.open_from_intentpath(path),1.1)
             #self.manager.open_from_intentpath(path)
     # def on_resume(self,*args):
     #     print 'RESUMED'
@@ -841,7 +841,7 @@ class GobanApp(App):
         print 'open_file is',open_file
         if open_file != '':
             putenv('PYTHON_OPENFILE','')
-            Clock.schedule_once(lambda j: self.manager.open_from_intentpath(open_file),0.5)
+            Clock.schedule_once(lambda j: self.manager.open_from_intentpath(open_file),1.1)
         super(GobanApp,self).on_start(*args,**kwargs)
 
     # def on_resume(self,*args,**kwargs):

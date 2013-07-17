@@ -52,6 +52,7 @@ from json import dump as jsondump, load as jsonload, dump as jsondump
 import json
 from time import asctime, time, strftime
 
+from shutil import copyfile
 
 from gomill import sgf, boards
 from abstractboard import *
@@ -449,6 +450,19 @@ class GuiBoard(Widget):
         # except AttributeError:
         #     print 'Tried to refresh collectionsgf before it was created'
 
+
+    def email_sgf(self):
+        if platform() == 'android':
+            import android
+            self.save_sgf()
+            filen = self.collectionsgf.filen
+            copyfile(filen,'/sdcard/noGo/email_sgf.sgf')
+            filen = '/sdcard/noGo/email_sgf.sgf'
+            android.action_send('application/x-go-sgf', filename=filen)
+        else:
+            print 'Asked to email sgf'
+            print '...request ignored. Only supported on android'
+            
     def view_game_info(self):
         gi = GameInfo(board=self)
         gi.populate_from_gameinfo(self.gameinfo)

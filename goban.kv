@@ -1119,6 +1119,12 @@
     Button:
         size_hint_y: None
         height: (50,'sp')
+        text: 'Email sgf'
+        on_press: root.board.email_sgf()
+        on_release: root.select('item0')
+    Button:
+        size_hint_y: None
+        height: (50,'sp')
         text: 'Game info'
         on_press: root.board.view_game_info()
         on_release: root.select('item1')
