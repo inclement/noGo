@@ -10,6 +10,14 @@ noGo is a work in progress, and any questions, bug reports, requests, suggestion
    :alt: Sample board screenshot
 
 
+Distribution
+============
+
+noGo is primarily intended for android, though the source here should work on any desktop with the necessary libraries available (mainly kivy). If building for android, the buildozer tool (https://github.com/kivy/buildozer) makes things very easy.
+
+The app is mainly distributed on the Play store at https://play.google.com/store/apps/details?id=net.inclem.nogo . It may also be available in other app stores, let me know if there's one you'd like me to submit to.
+
+
 Licensing
 =========
 

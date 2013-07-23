@@ -17,4 +17,5 @@ Config panel layout improvements
 Remember opened games
 Game tree
 Double tap for game open
+General speed improvements (benchmark: kogos?)
 
