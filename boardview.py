@@ -25,14 +25,14 @@ from kivy.uix.scatter import Scatter
 from kivy.uix.spinner import Spinner, SpinnerOption
 from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.popup import Popup
+from kivy.uix.slider import Slider
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.screenmanager import *
 from kivy.adapters.listadapter import ListAdapter
-#from kivy.uix.listview import ListView, ListItemButton
-from mylistview import ListView, ListItemButton
+from kivy.uix.listview import ListView, ListItemButton
 from kivy.utils import platform
 from kivy.animation import Animation
-from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
+from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty, BoundedNumericProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
 Clock.max_iteration = 60
@@ -207,6 +207,9 @@ class PlayerDetails(BoxLayout):
         elif self.bstone.collide_point(*touch.pos):
             self.board.next_to_play = 'b'
 
+class GameSlider(Slider):
+    pass
+
 class CommentBox(ScrollView):
     pre_text = StringProperty('')
     text = StringProperty('')
@@ -222,6 +225,17 @@ class CommentBox(ScrollView):
                 callback = self.board.get_new_comment
                 Clock.schedule_once(callback,1.1)
                 touch.ud['event'] = callback
+            board = self.board
+            if board.autoplaying:
+                if touch.x > self.x + 0.5*self.width:
+                    board.inc_autoplay()
+                else:
+                    board.dec_autoplay()
+            elif board.navmode == 'Navigate':
+                if touch.x > board.x + 0.5*board.width:
+                    board.advance_one_move()
+                else:
+                    board.retreat_one_move()
     def on_touch_move(self,touch):
         super(CommentBox,self).on_touch_move(touch)
         if (touch.x - touch.ox)**2 + (touch.y - touch.oy)**2 > 25:
@@ -296,6 +310,10 @@ class GuiBoard(Widget):
     gameinfo = DictProperty({})
     collectionsgf = ObjectProperty(None,allownone=True)
 
+    autoplaying = BooleanProperty(False)
+    autoplay_dts = [0.2, 0.3, 0.4, 0.5, 0.75, 1.0, 2, 4, 6, 10]
+    autoplay_index = BoundedNumericProperty(2,min=0,max=9)
+
     board_path = StringProperty('./media/boards/none.png')
 #    def on_board_path(self,*args,**kwargs):
 #        print 'board path changed',args,kwargs
@@ -303,6 +321,10 @@ class GuiBoard(Widget):
 #        print 'exists?', os.path.exists(self.board_path)
 
     cache = ObjectProperty(WidgetCache())
+
+    # Game tree index
+    current_node_index = NumericProperty(0)
+    current_branch_length = NumericProperty(0)
 
     # Save state
     user_saved = BooleanProperty(False)
@@ -325,6 +347,7 @@ class GuiBoard(Widget):
     next_to_play = StringProperty('e')
 
 
+    permanent_text = StringProperty('')
     comment_pre_text = StringProperty('')
     comment_text = StringProperty('')
     # def on_comment_pre_text(self,*args):
@@ -404,12 +427,43 @@ class GuiBoard(Widget):
         else:
             self.next_to_play = 'b'
 
-    def start_autoplay(self,*args,**kwargs):
-        Clock.schedule_interval(self.advance_one_move,0.25)
-        self.pre_text = '[b]Autoplay[/b] activated. Tap on the navigation buttons (or the board in navigation mode) to stop autoplaying.'
+    def start_autoplay(self,*args,**kwargs ):
+        print 'starting_autoplay'
+        self.advance_one_move()
+        if 'message' in kwargs:
+            message = kwargs['message']
+        else:
+            message = True
+        interval = self.autoplay_dts[self.autoplay_index]
+        Clock.schedule_interval(self.advance_one_move, interval)
+        if message:
+            self.permanent_text = '[b]Autoplay[/b] activated. Tap either side of this box to speed up or slow down autoplay, or any navigation button to stop. Current speed = [b]{}[/b] seconds between stones\n'.format(interval)
+        else:
+            self.permanent_text = '[color=dddddd]Autoplaying with [b]{}[/b] seconds between stones[/color]\n'.format(interval)
+        print 'started autoplay, permanent text is'
+        print self.permanent_text
+        self.autoplaying = True
+    def toggle_autoplay(self,*args,**kwargs):
+        if self.autoplaying:
+            self.stop_autoplay()
+        else:
+            self.start_autoplay()
+    def inc_autoplay(self,*args):
+        if self.autoplay_index < 9:
+            self.autoplay_index += 1
+    def dec_autoplay(self,*args):
+        if self.autoplay_index > 0:
+            self.autoplay_index -= 1
+    def on_autoplay_index(self,*args,**kwargs):
+        print 'on_autoplay_index',self.autoplay_index
+        self.stop_autoplay()
+        self.start_autoplay(message=False)
     def stop_autoplay(self,*args,**kwargs):
+        print 'stopping autoplay'
+        self.permanent_text = ''
         try:
             Clock.unschedule(self.advance_one_move)
+            self.autoplaying = False
         except:
             pass
 
@@ -621,6 +675,7 @@ class GuiBoard(Widget):
 
     def get_new_comment(self,*args,**kwargs):
         print 'get new comment called'
+        self.retreat_one_move()
         if self.comment_text == '[color=444444]Long press to add comment.[/color]':
             popup = Popup(content=CommentInput(board=self,comment=''),title='Edit comment:',size_hint=(0.95,0.45),pos_hint={'top':0.95})
         else:
@@ -956,15 +1011,13 @@ class GuiBoard(Widget):
         if 'saved' in instructions:
             self.has_unsaved_data = False
 
-        t5 = time()
+        if 'nodeindex' in instructions:
+            index, length = instructions['nodeindex']
+            self.current_node_index = index
+            self.current_branch_length = length
 
-        tottime = t5-t1
-        # print '## Follow instruction times'
-        # print '## Total', t5-t1
-        # print '## Reset', t2-t1, (t2-t1)/tottime
-        # print '## Add remove empty', t3-t2, (t3-t2)/tottime
-        # print '## Playmarker, positions etc.', t4-t3, (t4-t3)/tottime
-        # print '## Comment and saved', t5-t4, (t5-t4)/tottime
+        # self.comment_pre_text = 'indexstuff %d %d' % (self.current_node_index, self.current_branch_length)
+
 
     def get_player_details(self,*args,**kwargs):
         wname, bname = self.abstractboard.get_player_names()
@@ -993,6 +1046,7 @@ class GuiBoard(Widget):
             instructions = self.abstractboard.advance_position()
             self.follow_instructions(instructions)
         else:
+            self.stop_autoplay()
             if platform() == 'android':
                 import android
                 android.vibrate(0.1)
@@ -1006,6 +1060,7 @@ class GuiBoard(Widget):
         # print '%% Children exist', t2-t1
         # print '%% Follow instructions', t3-t2
         # print '%%'
+        print 'node index',self.abstractboard.current_node_index()
 
     def time_start(self):
         print 'time_start called'
@@ -1255,8 +1310,8 @@ class BoardContainer(StencilView):
         self.set_boardpos()
 
     def on_touch_down(self,touch):
-        self.board.stop_autoplay()
         if self.collide_point(*touch.pos):
+            self.board.stop_autoplay()
             if self.board.navmode == 'Navigate':
                 if touch.x > self.x + 0.5*self.width:
                     self.board.advance_one_move()

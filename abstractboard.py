@@ -580,6 +580,8 @@ class AbstractBoard(object):
         board = boards.Board(self.game.size)
         board, instructions = apply_node_to_board(board,self.curnode)
         self.boards[self.curnode] = board
+        node_index = self.current_node_index()
+        instructions.update({'nodeindex': node_index})
         return instructions
 
     def jump_to_varbranch(self):
@@ -610,6 +612,9 @@ class AbstractBoard(object):
 
         self.boards[newnode] = newboard
 
+        node_index = self.current_node_index()
+        instructions.update({'nodeindex': node_index})
+
         return instructions
 
 
@@ -633,6 +638,9 @@ class AbstractBoard(object):
 
         nonstone_instructions = get_nonstone_from_node(newnode)
         instructions.update(nonstone_instructions)
+
+        node_index = self.current_node_index()
+        instructions.update({'nodeindex': node_index})
 
         return instructions
 
@@ -668,7 +676,36 @@ class AbstractBoard(object):
         nonstone_instructions = get_nonstone_from_node(node)
         instructions.update(nonstone_instructions)
         self.build_varcache_to_node(node)
+
+        node_index = self.current_node_index()
+        instructions.update({'nodeindex': node_index})
+
         return instructions
+
+
+    def get_current_var_tree(self):
+        node = self.curnode
+        before = []
+        while node.parent is not None:
+            node = node.parent
+            before.append(node)
+        
+        node = self.curnode
+        after = []
+        while len(node) > 0:
+            if self.varcache.has_key(node):
+                node = node[self.varcache[node]]
+            else:
+                node = node[0]
+            after.append(node)
+        return (len(before), before + [self.curnode] + after)
+
+    def current_node_index(self):
+        curnode = self.curnode
+        index, sequence = self.get_current_var_tree()
+        # index = sequence.index(curnode)
+        return (index, len(sequence))
+        
 
     def toggle_background_stone(self,coords,colour='b',force='toggle'):
         curnode = self.curnode
