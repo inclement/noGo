@@ -13,6 +13,7 @@ from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle, Ellipse
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
@@ -58,7 +59,7 @@ from gomill import sgf, boards
 from abstractboard import *
 from sgfcollections import CollectionChooserButton, get_collectioninfo_from_collection
 from widgetcache import WidgetCache
-from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone
+from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone, WhiteStoneSimple, BlackStoneSimple
 
 import sys
 
@@ -132,6 +133,34 @@ def get_move_marker_colour(col):
         return [0,0,0,0.5]
     else:
         return [0.5,0.5,0.5,0.5]
+
+class GameTree(ScrollView):
+    board = ObjectProperty(None, allownone=True)
+    abstractboard = ObjectProperty(None, allownone=True)
+
+    nodes = DictProperty({})
+    positions = DictProperty({})
+    widgets = DictProperty({})
+
+    def build(self):
+        sgf = abstractboard.game
+        rootnode = sgf.get_root()
+        mainseq = sgf.get_main_sequence()
+
+        nodes = {}
+        positions = {}
+        widgets = {}
+
+
+class GameTreeLayout(FloatLayout):
+    pass
+
+class GameTreeWhite(AnchorLayout):
+    pass
+class GameTreeBlack(AnchorLayout):
+    pass
+class GameTreeEmpty(AnchorLayout):
+    pass
 
 class LDMarker(Widget):
     pass
@@ -232,7 +261,10 @@ class CommentBox(ScrollView):
                     board.inc_autoplay()
                 else:
                     board.dec_autoplay()
-            elif board.navmode == 'Navigate':
+            elif board.navmode == 'Navigate' and self.text == '[color=444444]Long press to add comment.[/color]':
+                print 'selftext'
+                print self.pre_text
+                print self.text
                 if touch.x > board.x + 0.5*board.width:
                     board.advance_one_move()
                 else:
@@ -577,10 +609,9 @@ class GuiBoard(Widget):
         self.follow_instructions(instructions)
 
     def jump_to_node_by_number(self,number):
-        print 'asked to jump to node',number,'from',self.current_node_index
+        #print 'asked to jump to node',number,'from',self.current_node_index
         if int(number) != self.current_node_index:
             instructions = self.abstractboard.jump_to_leaf_number(number)
-            print '...instructions are', instructions
             self.follow_instructions(instructions)
         else:
             print '...but already at that node!'

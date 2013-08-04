@@ -24,6 +24,7 @@ import os
 import json
 import time
 import shutil
+import random
 
 SERIALISATION_VERSION = 2
 
@@ -218,6 +219,8 @@ class Collection(EventDispatcher):
         return 'SGF collection {0} with {1} games'.format(self.name,len(self.games))
     def __repr__(self):
         return self.__str__()
+    def random_sgf(self):
+        return random.choice(self.games)
     def remove_sgf(self,sgf):
         if sgf in self.games:
             self.games.remove(sgf)

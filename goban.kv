@@ -3,6 +3,38 @@
 #:import la kivy.adapters.listadapter
 #:import lv kivy.uix.listview
 
+<GameTreeBlack>:
+    padding: 2
+    width: (20,'sp')
+    height: (20,'sp')
+    BlackStoneSimple
+<GameTreeWhite>:
+    padding: 2
+    width: (20,'sp')
+    height: (20,'sp')
+    WhiteStoneSimple
+<GameTreeEmpty>:
+    passing: 2
+    width: (20,'sp')
+    height: (20,'sp')
+    SquareMarker
+    
+
+<TreeRow>:
+    width: sum([child.width for child in self.children])
+    height: (20,'sp')
+
+<GameTree>:
+    layout: fl
+    canvas.before:
+        Color:
+            rgb: (0,0,0.8)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    GameTreeLayout:
+        id: fl
+
 <CarouselRightArrow>:
     background_normal: 'media/black_pixel.png'
     background_down: 'media/blue_press_pixel.png'
@@ -542,7 +574,7 @@
         orientation: 'horizontal'
         size_hint: (1.,0.1)
         Button:
-            size_hint: (0.25,1.)
+            size_hint: (0.22222,1.)
             text: 'Delete'
             halign: 'center'
             valign: 'middle'
@@ -551,19 +583,26 @@
             background_down: 'media/blue_press_pixel.png'
         VDividerLine
         Button:
-            size_hint: (0.25,1.)
+            size_hint: (0.22222,1.)
             text: 'New game'
             on_release: root.managedby.new_board(in_collection=root.collection)
             halign: 'center'
             valign: 'middle'
-            background_normal: 'media/green_pixel.png'
+            background_normal: 'media/blue_pixel.png'
             background_down: 'media/blue_press_pixel.png'
         VDividerLine
         Button:
-            size_hint: (0.5,1.)
-            text: 'Open selected game'
+            size_hint: (0.22222,1.)
+            text: 'Random game'
+            on_release: root.managedby.new_board(with_collectionsgf=root.collection.random_sgf(),mode='Navigate')
+            background_normal: 'media/orange_pixel.png'
+            background_down: 'media/blue_press_pixel.png'
+        VDividerLine
+        Button:
+            size_hint: (0.3333,1.)
+            text: 'Open selected'
             on_press: root.managedby.board_from_gamechooser(gl.adapter.selection)
-            background_normal: 'media/black_pixel.png'
+            background_normal: 'media/green_pixel.png'
             background_down: 'media/blue_press_pixel.png'
 
 <CollectionChooserButton>:

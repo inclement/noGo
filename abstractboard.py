@@ -709,15 +709,9 @@ class AbstractBoard(object):
     def jump_to_leaf_number(self, number):
         curnode = self.curnode
         index, sequence = self.get_current_var_tree()
-        print 'sequence is',len(sequence)
-        print 'number is',number
         if number < len(sequence):
-            print 'number fits'
             node = sequence[number]
-            print 'chose node',repr(node)
-            print 'sequence to here is',sequence[:number]
             instructions = self.jump_to_node(node)
-            print 'instructions are for node',repr(node),sequence.index(node)
             return instructions
         else:
             return {}
