@@ -74,12 +74,12 @@ class WidgetCache(object):
         else:
             print 'asked for stone colour that doesn\'t exist'
     def cache_stone(self,stone,colour):
-        if colour == 'b':
+        if colour in ['b','black']:
             self.cache_black_stone(stone)
-        elif colour == 'w':
+        elif colour in ['w','white']:
             self.cache_white_stone(stone)
         else:
-            print 'asked to cache stone colour that doesn\'t exist'
+            print 'asked to cache stone colour that doesn\'t exist', stone, colour
     def purge_stone_cache(self):
         self.blackstonecache = []
         self.whitestonecache = []

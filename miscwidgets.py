@@ -1,6 +1,12 @@
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
+
+class CarouselRightArrow(Button):
+    pass
+class CarouselLeftArrow(Button):
+    pass
 
 class VDividerLine(Widget):
     vgap = NumericProperty(0.2)

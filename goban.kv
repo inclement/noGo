@@ -3,7 +3,30 @@
 #:import la kivy.adapters.listadapter
 #:import lv kivy.uix.listview
 
+<CarouselRightArrow>:
+    background_normal: 'media/black_pixel.png'
+    background_down: 'media/blue_press_pixel.png'
+    canvas:
+        Color:
+            rgb: (0.2,0.2,0.2)
+        Line:
+            width: 2
+            cap: 'square'
+            points: [self.x+0.2*self.width, self.y+0.2*self.height, self.x+0.8*self.width, self.y+0.5*self.height, self.x+0.2*self.width, self.y+0.8*self.height]
 
+<CarouselLeftArrow>:
+    background_normal: 'media/black_pixel.png'
+    background_down: 'media/blue_press_pixel.png'
+    canvas:
+        Color:
+            rgb: (0.2,0.2,0.2)
+        Line:
+            width: 2
+            cap: 'square'
+            points: [self.x+0.8*self.width, self.y+0.2*self.height, self.x+0.2*self.width, self.y+0.5*self.height, self.x+0.8*self.width, self.y+0.8*self.height]
+
+<GameSlider>:
+    step: 1
 
 <NumberChooser>:
     orientation: 'horizontal'
@@ -1062,11 +1085,9 @@
     BoxLayout:
         size_hint: (1.0,0.2)
         orientation: 'horizontal'
-        Button:
+        CarouselLeftArrow:
             size_hint_x: None
             width: (20,'sp')
-            background_normal: 'media/black_pixel.png'
-            background_down: 'media/blue_press_pixel.png'
             on_press: comcar.load_previous()
         Carousel:
             loop: True
@@ -1080,19 +1101,18 @@
             BoxLayout:
                 Widget:
                     size_hint_x: None
-                    width: (15,'sp')
+                    width: (10,'sp')
                 GameSlider:
                     min: 0
                     max: bc.board.current_branch_length - 1
                     value: bc.board.current_node_index
+                    on_value: bc.board.jump_to_node_by_number(int(self.value))
                 Widget:
                     size_hint_x: None
-                    width: (15,'sp')
-        Button:
+                    width: (10,'sp')
+        CarouselRightArrow:
             size_hint_x: None
             width: (20,'sp')
-            background_normal: 'media/black_pixel.png'
-            background_down: 'media/blue_press_pixel.png'
             on_press: comcar.load_next()
 
     DividerLine

@@ -668,7 +668,6 @@ class AbstractBoard(object):
 
     def jump_to_node(self,node):
         #return {'add':[((randint(0,18),randint(0,18)),['w','b'][randint(0,1)])]}
-        print 'passed return'
         oldboard = self.boards[self.curnode]
         self.curnode = node
         newboard = self.get_or_build_board(node)
@@ -689,7 +688,8 @@ class AbstractBoard(object):
         while node.parent is not None:
             node = node.parent
             before.append(node)
-        
+        before = before[::-1]
+
         node = self.curnode
         after = []
         while len(node) > 0:
@@ -705,6 +705,22 @@ class AbstractBoard(object):
         index, sequence = self.get_current_var_tree()
         # index = sequence.index(curnode)
         return (index, len(sequence))
+
+    def jump_to_leaf_number(self, number):
+        curnode = self.curnode
+        index, sequence = self.get_current_var_tree()
+        print 'sequence is',len(sequence)
+        print 'number is',number
+        if number < len(sequence):
+            print 'number fits'
+            node = sequence[number]
+            print 'chose node',repr(node)
+            print 'sequence to here is',sequence[:number]
+            instructions = self.jump_to_node(node)
+            print 'instructions are for node',repr(node),sequence.index(node)
+            return instructions
+        else:
+            return {}
         
 
     def toggle_background_stone(self,coords,colour='b',force='toggle'):

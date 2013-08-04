@@ -61,7 +61,7 @@ from gomill import sgf, boards
 from abstractboard import *
 from boardview import GuiBoard, BoardContainer, PhoneBoardView, GuessPopup, SaveQuery, MySpinnerOption
 from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone
-from miscwidgets import VDividerLine, DividerLine, WhiteStoneImage, BlackStoneImage
+from miscwidgets import VDividerLine, DividerLine, WhiteStoneImage, BlackStoneImage, CarouselRightArrow, CarouselLeftArrow
 from info import InfoPage
 from homepage import HomeScreen, OpenSgfDialog
 from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton, GameChooserButton, DeleteSgfQuestion, CollectionsList, Collection, CollectionSgf, get_collectioninfo_from_collection

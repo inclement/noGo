@@ -208,7 +208,8 @@ class PlayerDetails(BoxLayout):
             self.board.next_to_play = 'b'
 
 class GameSlider(Slider):
-    pass
+    def on_value(self, *args):
+        print 'gameslider value changed to',self.value
 
 class CommentBox(ScrollView):
     pre_text = StringProperty('')
@@ -574,6 +575,15 @@ class GuiBoard(Widget):
     def back_to_varbranch(self):
         instructions = self.abstractboard.jump_to_varbranch()
         self.follow_instructions(instructions)
+
+    def jump_to_node_by_number(self,number):
+        print 'asked to jump to node',number,'from',self.current_node_index
+        if int(number) != self.current_node_index:
+            instructions = self.abstractboard.jump_to_leaf_number(number)
+            print '...instructions are', instructions
+            self.follow_instructions(instructions)
+        else:
+            print '...but already at that node!'
 
     def take_stone_input(self,coords):
         if tuple(coords) not in self.stones:
@@ -1153,9 +1163,7 @@ class GuiBoard(Widget):
         stonesize = self.stonesize
         t1 = time()
         try:
-            print 'asking cache for stone',colour
             stone = self.cache.get_stone(colour[0])
-            print 'got stone',stone,stone.colour,stone.stone_image
         except AttributeError:
             print 'ATTRIBUTE ERROR!'
             stone = Stone() #size=stonesize, pos=self.coord_to_pos(coord))
