@@ -761,7 +761,8 @@ class AbstractBoard(object):
             if coords in ae:
                 ae.remove(coords)
         curnode.set_setup_stones(ab,aw,ae)
-        self.rebuild_curboard()
+        if curnode.parent is not None:
+            self.rebuild_curboard()
     def rebuild_curboard(self):
         if self.curnode in self.boards:
             curboard = self.boards.pop(self.curnode)
@@ -783,7 +784,8 @@ class AbstractBoard(object):
                 ae.add(coords)
                 #curboard.board[coords[0]][coords[1]] = None
         curnode.set_setup_stones(ab,aw,ae)
-        self.rebuild_curboard()
+        if curnode.parent is not None:
+            self.rebuild_curboard()
 
     def clear_markers_at(self, coords):
         node = self.curnode

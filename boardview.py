@@ -1270,7 +1270,7 @@ class GuiBoard(Widget):
 
     def toggle_background_stone(self, coords, colour):
         print 'toggling background stone'
-        if self.abstractboard.curnode.get_move()[0] is not None:
+        if self.abstractboard.curnode.get_move()[0] is not None or self.abstractboard.curnode.parent is None:
             print 'current move is not None, so making new variation'
             instructions = self.abstractboard.add_new_node(None, None)
             print 'instructions for jumping are', instructions
