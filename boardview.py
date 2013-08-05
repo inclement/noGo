@@ -18,6 +18,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.togglebutton import ToggleButton
+from kivy.uix.carousel import Carousel
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.stencilview import StencilView
@@ -64,9 +65,9 @@ from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, Circle
 import sys
 
 navigate_text = '[b]Navigation mode[/b] selected. Tap on the right side of the board to advance the game, or the left to move back.'
-edit_text = '[b]Edit mode[/b] selected. Use the edit tools below the board to add SGF markers and cut/paste variations.'
+edit_text = '[b]Edit mode[/b] selected. Use the edit tools below the board to add/remove SGF markers and stones.'
 score_text = '[b]Score mode[/b] selected. Tap on groups to toggle them as dead/alive.'
-play_text = '[b]Play mode[/b] selected. Press, move and release on the board to play stones. Pressing back and replaying a move will give the option of whether to replace the next move or to create a new variation.'
+play_text = '[b]Play mode[/b] selected. Press, move and release on the board to play stones. Pressing back and replaying a move will give the option of whether to replace the next move or to create a new variation. Edit tools can be accessed with the arrows by the comment box, or via the separate Edit mode..'
 guess_text = '[b]Guess mode[/b] selected. Try to play stones that match the existing game. A marker indicates how good the guess was, and if correct the game advances.'
 zoom_text = '[b]Zoom mode[/b] selected. Experimental.'
 
@@ -133,6 +134,16 @@ def get_move_marker_colour(col):
         return [0,0,0,0.5]
     else:
         return [0.5,0.5,0.5,0.5]
+
+class BoardCarousel(Carousel):
+    board = ObjectProperty()
+    board_navmode = StringProperty('')
+    def on_board_navmode(self,*args):
+        navmode = self.board_navmode
+        if navmode == 'Edit':
+            self.index = 2 
+        elif navmode in ['Navigate','Play']:
+            self.index = 0
 
 class GameTree(ScrollView):
     board = ObjectProperty(None, allownone=True)
@@ -344,6 +355,8 @@ class MakeSquareMarker(EditMarker):
 class MakeCircleMarker(EditMarker):
     pass
 class MakeCrossMarker(EditMarker):
+    pass
+class MakeEmptyMarker(EditMarker):
     pass
     
 
@@ -647,7 +660,8 @@ class GuiBoard(Widget):
 
     def take_stone_input(self,coords):
         coords = tuple(coords)
-        if self.navmode == 'Play':
+        if self.navmode in ['Play','Edit']:
+            print 'TAKING STONE INPUT',coords,self.navmode
             if self.input_mode == 'play':
                 if tuple(coords) not in self.stones:
                     existingvars = map(lambda j: j.get_move(),self.abstractboard.curnode)
@@ -814,6 +828,9 @@ class GuiBoard(Widget):
             self.comment_pre_text = navigate_text + '\n-----\n'
         elif mode == 'Play':
             self.comment_pre_text = play_text + '\n-----\n'
+            self.input_mode = 'play'
+        elif mode == 'Edit':
+            self.comment_pre_text = edit_text + '\n-----\n'
         elif mode == 'Score':
             self.make_scoreboard()
             score = self.scoreboard.get_score()
@@ -1439,7 +1456,7 @@ class BoardContainer(StencilView):
                     self.remove_widget(self.makemovemarker)
                 self.makemovemarker = marker
                 self.add_widget(marker)
-            elif self.board.navmode == 'Play':
+            elif self.board.navmode in ['Play','Edit']:
                 print 'Touch down at', self.board.pos_to_coord(touch.pos)
                 print 'next to play is',self.board.next_to_play
                 inputmode = self.board.input_mode
@@ -1456,6 +1473,8 @@ class BoardContainer(StencilView):
                     marker = MakeMoveMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour('b'))
                 elif inputmode == 'wstone':
                     marker = MakeMoveMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour('w'))
+                elif inputmode == 'estone':
+                    marker = MakeEmptyMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour('w'))
                 else:
                     marker = MakeMoveMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
                 
@@ -1550,6 +1569,7 @@ class BoardContainer(StencilView):
 class EditPanel(GridLayout):
     board = ObjectProperty()
     board_to_play = StringProperty('e')
+    board_navmode = StringProperty('Navigate')
     wplay_button = ObjectProperty(None,allownone=True)
     bplay_button = ObjectProperty(None,allownone=True)
     current_mode = OptionProperty('bwplay',options=['bwplay',
@@ -1561,6 +1581,8 @@ class EditPanel(GridLayout):
                                                     'bstone',
                                                     'wstone',
                                                     'estone'])
+    def on_board_navmode(self,*args):
+        navmode = self.board_navmode
     def on_current_mode(self,*args):
         mode = self.current_mode
         board = self.board
