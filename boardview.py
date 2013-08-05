@@ -673,6 +673,12 @@ class GuiBoard(Widget):
                 self.toggle_marker('circle',coords)
             elif self.input_mode == 'mark_cro':
                 self.toggle_marker('cross',coords)
+            elif self.input_mode == 'bstone':
+                self.toggle_background_stone(coords,'b')
+            elif self.input_mode == 'wstone':
+                self.toggle_background_stone(coords,'w')
+            elif self.input_mode == 'estone':
+                self.toggle_background_stone(coords,'e')
             
         elif self.navmode == 'Guess':
             if tuple(coords) not in self.stones:
@@ -719,10 +725,10 @@ class GuiBoard(Widget):
             self.remove_widget(self.guesspopup)
             self.guesspopup = None
 
-    def toggle_background_stone(self,coords,colour='b',force='toggle'):
-        instructions = self.abstractboard.toggle_background_stone(coords,colour,force)
-        print 'toggle background got instructions',instructions
-        self.follow_instructions(instructions)
+    # def toggle_background_stone(self,coords,colour='b',force='toggle'):
+    #     instructions = self.abstractboard.toggle_background_stone(coords,colour,force)
+    #     print 'toggle background got instructions',instructions
+    #     self.follow_instructions(instructions)
 
     def toggle_marker(self, mtype, coords):
         self.abstractboard.clear_markers_at(coords)
@@ -1024,9 +1030,10 @@ class GuiBoard(Widget):
 
         t1 = time()
         
-        self.clear_transient_widgets()
-        self.reset_uielements()
-        self.remove_guess_popup()
+        if 'donotclear' not in instructions:
+            self.clear_transient_widgets()
+            self.reset_uielements()
+            self.remove_guess_popup()
 
         t2 = time()
         
@@ -1170,7 +1177,8 @@ class GuiBoard(Widget):
             self.clear_ld_markers()
             self.make_scoreboard()
         instructions = self.abstractboard.retreat_position()
-        self.follow_instructions(instructions)
+        if instructions is not None:
+            self.follow_instructions(instructions)
 
     def jump_to_start(self,*args,**kwargs):
         instructions = self.abstractboard.jump_to_node(self.abstractboard.game.root)
@@ -1243,6 +1251,18 @@ class GuiBoard(Widget):
         if self.coordinates:
             self.add_coordinates()
 
+    def toggle_background_stone(self, coords, colour):
+        print 'toggling background stone'
+        if self.abstractboard.curnode.get_move()[0] is not None:
+            print 'current move is not None, so making new variation'
+            instructions = self.abstractboard.add_new_node(None, None)
+            print 'instructions for jumping are', instructions
+            self.follow_instructions(instructions)
+        instructions = self.abstractboard.toggle_background_stone(coords, colour)
+        print 'instructions for toggling background stone are',instructions
+        instructions.update({'donotclear':True})
+        self.follow_instructions(instructions)
+
     def add_stone(self,coord=(1,1),colour='black',*args,**kwargs):
         stonesize = self.stonesize
         t1 = time()
@@ -1267,6 +1287,8 @@ class GuiBoard(Widget):
         # print '@@ add widget', t4-t3, (t4-t3)/(t4-t1)
 
     def remove_stone(self,coord=(1,1),*args,**kwargs):
+        print 'asked to remove at coord',coord
+        print 'available stones are',self.stones
         if self.stones.has_key(coord):
             stone = self.stones.pop(coord)
             self.remove_widget(stone)
@@ -1430,6 +1452,10 @@ class BoardContainer(StencilView):
                     marker = MakeCircleMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
                 elif inputmode == 'mark_cro':
                     marker = MakeCrossMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
+                elif inputmode == 'bstone':
+                    marker = MakeMoveMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour('b'))
+                elif inputmode == 'wstone':
+                    marker = MakeMoveMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour('w'))
                 else:
                     marker = MakeMoveMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
                 

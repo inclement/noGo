@@ -624,7 +624,7 @@ class AbstractBoard(object):
         if curnode.parent is not None:
             newnode = self.curnode.parent
         else:
-            return {}
+            return None
 
         self.curnode = newnode
         if self.boards.has_key(newnode):
@@ -738,11 +738,11 @@ class AbstractBoard(object):
         elif curstone == 'b':
             self.remove_add_stone(coords,'b')
             self.add_add_stone(coords,'e')
-            instructions['remove'].append(coords)
+            instructions['remove'].append((coords,'b'))
         elif curstone == 'w':
             self.remove_add_stone(coords,'w')
             self.add_add_stone(coords,'e')
-            instructions['remove'].append(coords)
+            instructions['remove'].append((coords,'w'))
 
         return instructions
             
@@ -750,6 +750,7 @@ class AbstractBoard(object):
     def remove_add_stone(self,coords,colour='b'):
         curnode = self.curnode
         ab,aw,ae = curnode.get_setup_stones()
+        curboard = self.boards[self.curnode]
         if colour == 'b':
             if coords in ab:
                 ab.remove(coords)
@@ -760,19 +761,29 @@ class AbstractBoard(object):
             if coords in ae:
                 ae.remove(coords)
         curnode.set_setup_stones(ab,aw,ae)
+        self.rebuild_curboard()
+    def rebuild_curboard(self):
+        if self.curnode in self.boards:
+            curboard = self.boards.pop(self.curnode)
+        self.build_boards_to_node(self.curnode)
     def add_add_stone(self,coords,colour='b'):
         curnode = self.curnode
+        curboard = self.boards[curnode]
         ab,aw,ae = curnode.get_setup_stones()
         if colour == 'b':
             if coords not in ab:
                 ab.add(coords)
+                #curboard.board[coords[0]][coords[1]] = 'b'
         elif colour == 'w':
             if coords not in aw:
                 aw.add(coords)
+                #curboard.board[coords[0]][coords[1]] = 'w'
         else:
             if coords not in ae:
                 ae.add(coords)
+                #curboard.board[coords[0]][coords[1]] = None
         curnode.set_setup_stones(ab,aw,ae)
+        self.rebuild_curboard()
 
     def clear_markers_at(self, coords):
         node = self.curnode
@@ -833,19 +844,23 @@ class AbstractBoard(object):
 
     def add_new_node(self,coord,colour,newmainline=False,jump=True,disallowsuicide=False):
         curboard = self.boards[self.curnode]
-        if curboard.board[coord[0]][coord[1]] is not None:
-            print 'Addition denied, stone already exists!'
-            return {}
+        if coord is not None:
+            if curboard.board[coord[0]][coord[1]] is not None:
+                print 'Addition denied, stone already exists!'
+                return {}
         curnode = self.curnode
-        for entry in self.curnode:
-            ecolour,ecoord = entry.get_move()
-            if ecolour == colour and ecoord[0] == coord[0] and ecoord[1] == coord[1]:
-                return self.jump_to_node(entry)
+        if coord is not None:
+            for entry in self.curnode:
+                ecolour,ecoord = entry.get_move()
+                if ecolour == colour and ecoord[0] == coord[0] and ecoord[1] == coord[1]:
+                    return self.jump_to_node(entry)
         if not newmainline:
             newnode = self.curnode.new_child()
         else: 
             newnode = self.curnode.new_child(0)
-        newnode.set_move(colour,coord)
+        if coord is not None:
+            newnode.set_move(colour,coord)
+        print 'newnode is',newnode
         if jump:
             instructions = self.jump_to_node(newnode)
             instructions.update({'unsaved':True})
