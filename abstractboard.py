@@ -773,10 +773,62 @@ class AbstractBoard(object):
             if coords not in ae:
                 ae.add(coords)
         curnode.set_setup_stones(ab,aw,ae)
-        
-            
-                
-                
+
+    def clear_markers_at(self, coords):
+        node = self.curnode
+        properties = node.properties()
+        if 'TR' in properties:
+            node_markers = node.find_property('TR')
+            if coords in node_markers:
+                node_markers.remove(coords)
+                if node_markers:
+                    node.set('TR',node_markers)
+                else:
+                    node.unset('TR')
+        if 'SQ' in properties:
+            node_markers = node.find_property('SQ')
+            if coords in node_markers:
+                node_markers.remove(coords)
+                if node_markers:
+                    node.set('SQ',node_markers)
+                else:
+                    node.unset('SQ')
+        if 'CR' in properties:
+            node_markers = node.find_property('CR')
+            if coords in node_markers:
+                node_markers.remove(coords)
+                if node_markers:
+                    node.set('CR',node_markers)
+                else:
+                    node.unset('CR')
+        if 'MA' in properties:
+            node_markers = node.find_property('MA')
+            if coords in node_markers:
+                node_markers.remove(coords)
+                if node_markers:
+                    node.set('MA',node_markers)
+                else:
+                    node.unset('MA')
+
+    def add_marker_at(self, mtype, coords):
+        node = self.curnode
+        properties = node.properties()
+        code = None
+        if mtype == 'triangle':
+            code = 'TR'
+        elif mtype == 'square':
+            code = 'SQ'
+        elif mtype == 'circle':
+            code = 'CR'
+        elif mtype == 'cross':
+            code = 'MA'
+        if code is not None:
+            if code in properties:
+                node_markers = node.find_property(code)
+            else:
+                node_markers = set()
+            node_markers.add(coords)
+            node.set(code,node_markers)
         
 
     def add_new_node(self,coord,colour,newmainline=False,jump=True,disallowsuicide=False):

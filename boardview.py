@@ -312,7 +312,7 @@ starposs = {19:[(3,3),(3,9),(3,15),(9,3),(9,9),(9,15),(15,3),(15,9),(15,15)],
             13:[(3,3),(3,9),(9,3),(9,9),(6,6)],
             9:[(2,2),(6,2),(2,6),(6,6),(4,4)]}
 
-class MakeMoveMarker(Widget):
+class EditMarker(Widget):
     coord = ListProperty((0,0))
     board = ObjectProperty(None)
     colour = ListProperty((1,1,1,0.5))
@@ -326,6 +326,26 @@ class MakeMoveMarker(Widget):
             return newpos
         else:
             return (0,0)
+class MakeMoveMarker(EditMarker):
+    def set_position_from_coord(self,coord):
+        if self.board is not None:
+            if not (0<=coord[0]<self.board.gridsize and 0<=coord[1]<self.board.gridsize):
+                self.colour[3] = 0.0
+            else:
+                self.colour[3] = 0.75
+            newpos = self.board.coord_to_pos(self.coord)
+            return newpos
+        else:
+            return (0,0)
+class MakeTriangleMarker(EditMarker):
+    pass
+class MakeSquareMarker(EditMarker):
+    pass
+class MakeCircleMarker(EditMarker):
+    pass
+class MakeCrossMarker(EditMarker):
+    pass
+    
 
 class PickNewVarType(FloatLayout):
     board = ObjectProperty(None)
@@ -342,6 +362,15 @@ class GuiBoard(Widget):
     guesses = ListProperty([0,0])
     gameinfo = DictProperty({})
     collectionsgf = ObjectProperty(None,allownone=True)
+
+    input_mode = OptionProperty('play',options=['play',
+                                                'mark_tri',
+                                                'mark_squ',
+                                                'mark_cir',
+                                                'mark_cro',
+                                                'bstone',
+                                                'wstone',
+                                                'estone'])
 
     autoplaying = BooleanProperty(False)
     autoplay_dts = [0.2, 0.3, 0.4, 0.5, 0.75, 1.0, 2, 4, 6, 10]
@@ -617,24 +646,36 @@ class GuiBoard(Widget):
             print '...but already at that node!'
 
     def take_stone_input(self,coords):
-        if tuple(coords) not in self.stones:
-            if self.navmode == 'Play':
-                existingvars = map(lambda j: j.get_move(),self.abstractboard.curnode)
-                alreadyexists = False
-                for entry in existingvars:
-                    if entry[0] == self.next_to_play and entry[1][0] == coords[0] and entry[1][1] == coords[1]:
-                        instructions = self.abstractboard.jump_to_node(self.abstractboard.curnode[existingvars.index(entry)])
-                        print 'entry already exists!'
-                        self.follow_instructions(instructions)
-                        return True
-                children_exist = self.abstractboard.do_children_exist()
-                if not children_exist:
-                    self.add_new_stone(coords)
-                else:
-                    popup = Popup(content=PickNewVarType(board=self,coord=coords),title='Do you want to...',size_hint=(0.85,0.85))
-                    popup.content.popup = popup
-                    popup.open()
-            elif self.navmode == 'Guess':
+        coords = tuple(coords)
+        if self.navmode == 'Play':
+            if self.input_mode == 'play':
+                if tuple(coords) not in self.stones:
+                    existingvars = map(lambda j: j.get_move(),self.abstractboard.curnode)
+                    alreadyexists = False
+                    for entry in existingvars:
+                        if entry[0] == self.next_to_play and entry[1][0] == coords[0] and entry[1][1] == coords[1]:
+                            instructions = self.abstractboard.jump_to_node(self.abstractboard.curnode[existingvars.index(entry)])
+                            print 'entry already exists!'
+                            self.follow_instructions(instructions)
+                            return True
+                    children_exist = self.abstractboard.do_children_exist()
+                    if not children_exist:
+                        self.add_new_stone(coords)
+                    else:
+                        popup = Popup(content=PickNewVarType(board=self,coord=coords),title='Do you want to...',size_hint=(0.85,0.85))
+                        popup.content.popup = popup
+                        popup.open()
+            elif self.input_mode == 'mark_tri':
+                self.toggle_marker('triangle',coords)
+            elif self.input_mode == 'mark_squ':
+                self.toggle_marker('square',coords)
+            elif self.input_mode == 'mark_cir':
+                self.toggle_marker('circle',coords)
+            elif self.input_mode == 'mark_cro':
+                self.toggle_marker('cross',coords)
+            
+        elif self.navmode == 'Guess':
+            if tuple(coords) not in self.stones:
                 self.guesses[1] += 1
                 nextcoords = self.abstractboard.get_next_coords()
                 if nextcoords[0] is not None and nextcoords[1] is not None:
@@ -682,6 +723,18 @@ class GuiBoard(Widget):
         instructions = self.abstractboard.toggle_background_stone(coords,colour,force)
         print 'toggle background got instructions',instructions
         self.follow_instructions(instructions)
+
+    def toggle_marker(self, mtype, coords):
+        self.abstractboard.clear_markers_at(coords)
+        if self.boardmarkers.has_key(coords):
+            self.remove_marker(coords)
+        else:
+            self.abstractboard.add_marker_at(mtype,coords)
+            self.add_marker(coords, mtype)
+
+
+            
+        
 
     def add_new_stone(self,coords,newtype='newvar'):
         print 'Called add_new_stone', coords, newtype
@@ -1356,10 +1409,31 @@ class BoardContainer(StencilView):
                     self.board.advance_one_move()
                 else:
                     self.board.retreat_one_move()
-            elif self.board.navmode in ['Play','Guess']:
+            elif self.board.navmode == 'Guess':
                 print 'Touch down at', self.board.pos_to_coord(touch.pos)
                 print 'next to play is',self.board.next_to_play
                 marker = MakeMoveMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
+                if self.makemovemarker is not None:
+                    self.remove_widget(self.makemovemarker)
+                self.makemovemarker = marker
+                self.add_widget(marker)
+            elif self.board.navmode == 'Play':
+                print 'Touch down at', self.board.pos_to_coord(touch.pos)
+                print 'next to play is',self.board.next_to_play
+                inputmode = self.board.input_mode
+                print 'inputmode is',inputmode
+                if inputmode == 'mark_tri':
+                    marker = MakeTriangleMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
+                elif inputmode == 'mark_squ':
+                    marker = MakeSquareMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
+                elif inputmode == 'mark_cir':
+                    marker = MakeCircleMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
+                elif inputmode == 'mark_cro':
+                    marker = MakeCrossMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
+                else:
+                    marker = MakeMoveMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
+                
+                print 'marker is',marker
                 if self.makemovemarker is not None:
                     self.remove_widget(self.makemovemarker)
                 self.makemovemarker = marker
@@ -1448,6 +1522,10 @@ class BoardContainer(StencilView):
         self.boardpos = [self.pos[0] + 1 + 0.5*sparewidth,self.pos[1] + 1 + 0.5*spareheight]
 
 class EditPanel(GridLayout):
+    board = ObjectProperty()
+    board_to_play = StringProperty('e')
+    wplay_button = ObjectProperty(None,allownone=True)
+    bplay_button = ObjectProperty(None,allownone=True)
     current_mode = OptionProperty('bwplay',options=['bwplay',
                                                     'wbplay',
                                                     'triangle',
@@ -1457,6 +1535,39 @@ class EditPanel(GridLayout):
                                                     'bstone',
                                                     'wstone',
                                                     'estone'])
+    def on_current_mode(self,*args):
+        mode = self.current_mode
+        board = self.board
+        if mode == 'bwplay':
+            board.next_to_play = 'b'
+            board.input_mode = 'play'
+        elif mode == 'wbplay':
+            board.next_to_play = 'w'
+            board.input_mode = 'play'
+        elif mode == 'triangle':
+            board.input_mode = 'mark_tri'
+        elif mode == 'square':
+            board.input_mode = 'mark_squ'
+        elif mode == 'circle':
+            board.input_mode = 'mark_cir'
+        elif mode == 'cross':
+            board.input_mode = 'mark_cro'
+        elif mode == 'bstone':
+            board.input_mode = 'bstone'
+        elif mode == 'wstone':
+            board.input_mode = 'wstone'
+        elif mode == 'estone':
+            board.input_mode = 'estone'
+    def on_board_to_play(self,*args):
+        toplay = self.board_to_play
+        if toplay == 'w' and self.bplay_button.state == 'down':
+            self.wplay_button.state = 'down'
+            self.bplay_button.state = 'normal'
+        elif toplay == 'b' and self.wplay_button.state == 'down':
+            self.bplay_button.state = 'down'
+            self.wplay_button.state = 'normal'
+
+        
 
 class CommentInput(BoxLayout):
     board = ObjectProperty(None)

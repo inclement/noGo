@@ -3,6 +3,56 @@
 #:import la kivy.adapters.listadapter
 #:import lv kivy.uix.listview
 
+<EditMarker>:
+    pos: self.set_position_from_coord(self.coord)
+    size: self.board.stonesize
+    canvas.before:
+        Color:
+            rgb: (0.095,0,0.434)
+        Line:
+            points: [self.board.x,self.y + 0.5*self.height,self.board.x + self.board.width,self.y + 0.5*self.height]
+            width: 2.
+            cap: 'none'
+        Line:
+            points: [self.x + 0.5*self.width,self.board.y,self.x + 0.5*self.width,self.board.y + self.board.height]
+            width: 2.
+            cap: 'none'
+
+<MakeTriangleMarker>:
+    colour: (0.1,0.1,0.9,1.0)
+    canvas:
+        Color:
+            rgba: self.colour
+        Triangle:
+            points: [self.x + 0.1*self.width, self.y+0.22*self.height, self.x+0.9*self.width, self.y+0.22*self.height, self.x+0.5*self.width,self.y+0.99*self.height]
+<MakeSquareMarker>:
+    colour: (0.1,0.1,0.9,1.0)
+    canvas:
+        Color:
+            rgba: self.colour
+        Rectangle:
+            pos: (self.x+0.1*self.width, self.y+0.1*self.height)
+            size: (0.8*self.width, 0.8*self.height)
+<MakeCircleMarker>:
+    colour: (0.1,0.1,0.9,1.0)
+    canvas:
+        Color:
+            rgba: self.colour
+        Ellipse:
+            pos: (self.x+0.1*self.width, self.y+0.1*self.width)
+            size: (0.8*self.width, 0.8*self.height)
+<MakeCrossMarker>:
+    colour: (0.1,0.1,0.9,1.0)
+    canvas:
+        Color:
+            rgba: self.colour
+        Line:
+            width: 2
+            points: [self.x+0.1*self.width, self.y+0.1*self.height, self.x+0.9*self.width, self.y+0.9*self.height]
+        Line:
+            width: 2
+            points: [self.x+0.1*self.width, self.y+0.9*self.height, self.x+0.9*self.width, self.y+0.1*self.height]
+
 <GameTreeBlack>:
     padding: 2
     width: (20,'sp')
@@ -218,9 +268,12 @@
 
 <EditPanel>:
     rows: 2
+    wplay_button: wb
+    bplay_button: bb
     ToggleButton:
         group: 'editbuttons'
         on_press: root.current_mode = 'bwplay'
+        id: bb
         Image:
             x: self.parent.x + 0.05*self.parent.width
             y: self.parent.y + 0.05*self.parent.height
@@ -271,6 +324,7 @@
     ToggleButton:
         group: 'editbuttons'
         on_press: root.current_mode = 'wbplay'
+        id: wb
         Image:
             x: self.parent.x + 0.05*self.parent.width
             y: self.parent.y + 0.05*self.parent.height
@@ -308,6 +362,10 @@
             height: 0.9*self.parent.height
             mipmap: True
             source: './media/edit_wstone-1.png'
+    Button:
+        text: 'comment'
+        font_size: (13,'sp')
+        on_press: root.board.get_new_comment()
             
 
 <CollectionNameChooser>:
@@ -390,14 +448,14 @@
             halign: 'center'
             valign: 'middle'
             on_release: app.new_collection_query()
-            background_normal: 'media/green_pixel.png'
+            background_normal: 'media/blue_pixel.png'
             background_down: 'media/blue_press_pixel.png'
         VDividerLine
         Button:
             size_hint: (0.5,1.)
             text: 'View selected collection'
             on_release: root.managedby.view_or_open_collection(collections.adapter.selection)
-            background_normal: 'media/black_pixel.png'
+            background_normal: 'media/green_pixel.png'
             background_down: 'media/blue_press_pixel.png'
 
 <PrintyButton>:
@@ -1149,6 +1207,9 @@
                 Widget:
                     size_hint_x: None
                     width: (10,'sp')
+            EditPanel:
+                board: bc.board
+                board_to_play: bc.board.next_to_play
         CarouselRightArrow:
             size_hint_x: None
             width: (20,'sp')
