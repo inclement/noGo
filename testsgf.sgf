@@ -3,6 +3,6 @@ PW[White Player]RU[Japanese]ST[2]SZ[19];B[pd]C[comment on 2nd move];W[dp];B[pp]
 ;TR[pd][pj][rj]W[dc];B[de]SQ[dc][pd][pi][qi][pj][qj]TR[de];
 CR[do][eo][dp][ep][op][pp][qp][dq][eq]W[ce];B[dd]
 LB[cb:37][db:36][eb:35][cc:38][dc:12][ec:34][oc:27][pc:26][qc:25][bd:39][cd:40][ed:33][od:28][pd:13][qd:24][be:41][ce:M][de:N][ee:32][oe:21][pe:22][qe:23][bf:42][cf:29][df:30][ef:31][no:P][oo:15][po:16][qo:17][dp:L][op:O][pp:14][qp:18][eq:A][fq:B][gq:C][hq:D][iq:E][jq:F][kq:G][lq:H][mq:I][nq:J][oq:K][pq:20][qq:19][er:1][fr:2][gr:3][hr:4][ir:5][jr:6][kr:7][lr:8][mr:9][nr:10][or:11]
-;W[cd];B[ec];W[df];B[cc];W[db];B[bc]CR[cf]LB[kn:A]SQ[cb](;TR[fd]W[eb];B[fd];
+;W[cd];B[ec];W[df](;B[cc];W[db];B[bc]CR[cf]LB[kn:A]SQ[cb](;TR[fd]W[eb];B[fd];
 W[fc];B[cf];W[ed];B[ee];W[fe];B[ef];W[gd];B[dg])(;AB[qq]AW[qn][oo][nq];W[qf];
-B[qe];W[pf];B[nd];W[qi]))
+B[qe];W[pf];B[nd];W[qi]))(;AE[mo]))

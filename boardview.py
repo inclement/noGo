@@ -1583,6 +1583,20 @@ class EditPanel(GridLayout):
                                                     'estone'])
     def on_board_navmode(self,*args):
         navmode = self.board_navmode
+        if navmode == 'Play':
+            self.unset_all_buttons()
+            # next_to_play = self.board_to_play
+            # if next_to_play == 'w':
+            #     print 'changing button to down',self.children[-6]
+            #     self.children[5].state = 'down'
+            # elif next_to_play == 'b':
+            #     print 'changing button to down',self.children[-1]
+            #     self.children[0].state = 'down'
+    def unset_all_buttons(self,*args):
+        l = ToggleButton.get_widgets('editbuttons')
+        for button in l:
+            button.state = 'normal'
+        del l
     def on_current_mode(self,*args):
         mode = self.current_mode
         board = self.board

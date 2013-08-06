@@ -720,6 +720,7 @@ class AbstractBoard(object):
     def toggle_background_stone(self,coords,colour='b',force='toggle'):
         curnode = self.curnode
  
+        # This if no longer necessary, handled in boardview?
         curmove = curnode.get_move()
         if curmove[0] is not None:
             curnode = self.curnode.new_child()
@@ -734,7 +735,8 @@ class AbstractBoard(object):
         curstone = curboard.board[coords[0]][coords[1]]
         if curstone == None:
             self.add_add_stone(coords,colour)
-            instructions['add'].append((coords,colour))
+            if colour != 'e':
+                instructions['add'].append((coords,colour))
         elif curstone == 'b':
             self.remove_add_stone(coords,'b')
             self.add_add_stone(coords,'e')

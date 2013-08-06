@@ -23,9 +23,6 @@
     canvas:
         Color:
             rgba: self.colour
-        Ellipse:
-            pos: (self.x+0.1*self.width, self.y+0.1*self.width)
-            size: (0.8*self.width, 0.8*self.height)
         Line:
             width: 2
             points: [self.x+0.1*self.width, self.y+0.1*self.height, self.x+0.9*self.width, self.y+0.9*self.height]
@@ -305,7 +302,7 @@
             width: 0.9*self.parent.width
             height: 0.9*self.parent.height
             mipmap: True
-            source: './media/edit_triangle-1.png'
+            source: './media/edit_triangle-2.png'
     ToggleButton:
         group: 'editbuttons'
         on_press: root.current_mode = 'square'
@@ -315,7 +312,7 @@
             width: 0.9*self.parent.width
             height: 0.9*self.parent.height
             mipmap: True
-            source: './media/edit_square-1.png'
+            source: './media/edit_square-2.png'
     ToggleButton:
         group: 'editbuttons'
         on_press: root.current_mode = 'bstone'
@@ -356,7 +353,7 @@
             width: 0.9*self.parent.width
             height: 0.9*self.parent.height
             mipmap: True
-            source: './media/edit_circle-1.png'
+            source: './media/edit_circle-2.png'
     ToggleButton:
         group: 'editbuttons'
         on_press: root.current_mode = 'cross'
@@ -366,7 +363,7 @@
             width: 0.9*self.parent.width
             height: 0.9*self.parent.height
             mipmap: True
-            source: './media/edit_cross-1.png'
+            source: './media/edit_cross-2.png'
     ToggleButton:
         group: 'editbuttons'
         on_press: root.current_mode = 'wstone'
@@ -666,7 +663,7 @@
         VDividerLine
         Button:
             size_hint: (0.22222,1.)
-            text: 'Random game'
+            text: 'Random'
             on_release: root.managedby.new_board(with_collectionsgf=root.collection.random_sgf(),mode='Navigate')
             background_normal: 'media/orange_pixel.png'
             background_down: 'media/blue_press_pixel.png'
@@ -1695,8 +1692,6 @@
 <CommentBox>:
     textbox: thetb
     do_scroll_x: False
-    scroll_distance: 1
-    scroll_timeout: 1000
 
     on_text: self.scroll_y = 1; self.scroll_timeout=0; self.scroll_timeout = 55
 
