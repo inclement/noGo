@@ -1,10 +1,21 @@
-(;DT[1982-07-14]EV[7th Gosei title match]KM[5.5]PB[Cho Chikun, Meijin]
-PC[Kanazawa New Grand Hotel]PW[Otake Hideo, Gosei]RE[W+R]RO[1];B[dp];W[pq];
-B[dc];W[qc];B[ci];W[jd];B[po];W[qo];B[qn];W[qp];B[pm];W[nq];B[qf];W[pj];B[pd];
-W[pc];B[nd];W[oc];B[nf];W[od];B[oe];W[me];B[ne];W[mc];B[nj];W[ok];B[nk];W[ol];
-B[nm];W[ql];B[rm];W[nl];B[ml];W[ni];B[oi];W[mm];B[om];W[oj];B[mk];W[qh];B[oh];
-W[rl];B[mn];W[lm];B[ln];W[km];B[kn];W[nh];B[jm];W[kl];B[lj];W[og];B[nc];W[nb];
-B[md];W[lc];B[mb];W[lb];B[jl];W[kk];B[ji];W[cn];B[mi];W[ng];B[mg];W[mh];B[lh];
-W[lg];B[mf];W[kh];B[li];W[pg];B[kg];W[ij];B[jk];W[ck];B[dn];W[dm];B[co];W[en];
-B[do];W[bn];B[em];W[dl];B[fm];W[bo];B[mr];W[fq];B[er];W[fr];B[eq];W[jq];B[or];
-W[pr];B[oq];W[fp];B[bp];W[fn];B[ro];W[rp];B[rr];W[so])
+(;
+EV[7th Gosei title match]
+RO[1]
+PB[Cho Chikun, Meijin]
+PW[Otake Hideo, Gosei]
+KM[5.5]
+RE[W+R]
+DT[1982-07-14]
+PC[Kanazawa New Grand Hotel]
+
+;B[dp];W[pq];B[dc];W[qc];B[ci];W[jd];B[po];W[qo];B[qn];W[qp]
+;B[pm];W[nq];B[qf];W[pj];B[pd];W[pc];B[nd];W[oc];B[nf];W[od]
+;B[oe];W[me];B[ne];W[mc];B[nj];W[ok];B[nk];W[ol];B[nm];W[ql]
+;B[rm];W[nl];B[ml];W[ni];B[oi];W[mm];B[om];W[oj];B[mk];W[qh]
+;B[oh];W[rl];B[mn];W[lm];B[ln];W[km];B[kn];W[nh];B[jm];W[kl]
+;B[lj];W[og];B[nc];W[nb];B[md];W[lc];B[mb];W[lb];B[jl];W[kk]
+;B[ji];W[cn];B[mi];W[ng];B[mg];W[mh];B[lh];W[lg];B[mf];W[kh]
+;B[li];W[pg];B[kg];W[ij];B[jk];W[ck];B[dn];W[dm];B[co];W[en]
+;B[do];W[bn];B[em];W[dl];B[fm];W[bo];B[mr];W[fq];B[er];W[fr]
+;B[eq];W[jq];B[or];W[pr];B[oq];W[fp];B[bp];W[fn];B[ro];W[rp]
+;B[rr];W[so])

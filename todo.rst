@@ -1,5 +1,3 @@
-
-
 # Bugfixes
 Background colour change for top entries of listviews
 Images not loaded during start from intent
@@ -18,4 +16,8 @@ Remember opened games
 Game tree
 Double tap for game open
 General speed improvements (benchmark: kogos?)
+
+# Requests
+
+Change colours of buttons (done?)
 
