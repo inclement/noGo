@@ -1,28 +1,15 @@
-(;
-FF[3]
-ID[88/2]
-PB[Kobayashi Koichi]
-BR[9d]
-PW[Kato Masao]
-WR[9d]
-RE[B+R]
-DT[1988-09-20,21]
-
-;B[pd];W[dp];B[pq];W[dc];B[de];W[ee];B[cc];W[dd];B[cd];W[ef]
-;B[cf];W[cg];B[bg];W[ch];B[df];W[dg];B[be];W[eg];B[po];W[nc]
-;B[jd];W[qf];B[pf];W[pg];B[of];W[qe];B[oc];W[nd];B[pe];W[ke]
-;B[je];W[kf];B[jf];W[kg];B[qd];W[jg];B[gc];W[qh];B[lc];W[me]
-;B[hf];W[hh];B[jq];W[io];B[hp];W[ho];B[gp];W[go];B[fp];W[fo]
-;B[ep];W[eo];B[dq];W[cq];B[dr];W[cp];B[bi];W[kp];B[kq];W[qm]
-;B[pm];W[pl];B[om];W[qn];B[qo];W[bh];B[ah];W[cj];B[ql];W[qk]
-;B[rl];W[rk];B[ol];W[pk];B[bj];W[ob];B[pb];W[mb];B[oa];W[na]
-;B[nb];W[af];B[ag];W[ob];B[pa];W[ck];B[kl];W[ic];B[jc];W[ib]
-;B[hd];W[eb];B[fb];W[fc];B[gb];W[la];B[lb];W[od];B[nb];W[ip]
-;B[iq];W[ob];B[pc];W[ma];B[jb];W[ja];B[ed];W[gd];B[fd];W[ge]
-;B[hc];W[fe];B[db];W[ec];B[ea];W[km];B[lk];W[lm];B[og];W[he]
-;B[id];W[kj];B[ph];W[qg];B[kk];W[ml];B[ig];W[ih];B[mk];W[nk]
-;B[mi];W[nh];B[ni];W[nj];B[li];W[mh];B[oi];W[oh];B[ok];W[oj]
-;B[pi];W[qi];B[lh];W[mg];B[jm];W[jn];B[jh];W[kh];B[ji];W[ki]
-;B[jj];W[ik];B[jk];W[lg];B[hi];W[gi];B[mf];W[le];B[hj];W[gj]
-;B[gk];W[fk];B[il];W[hm];B[hk];W[im];B[ne];W[md];B[fl];W[ek]
-;B[gl];W[mc];B[el];W[dl];B[kd])
+(;FF[3]BR[9d]DT[1988-09-20,21]ID[88/2]PB[Kobayashi Koichi]PW[Kato Masao]RE[B+R]
+WR[9d];B[pd];W[dp];B[pq];W[dc];B[de];W[ee];B[cc];W[dd];B[cd];W[ef];B[cf];W[cg];
+B[bg];W[ch];B[df];W[dg];B[be];W[eg];B[po];W[nc];B[jd];W[qf];B[pf];W[pg];B[of];
+W[qe];B[oc];W[nd];B[pe];W[ke];B[je];W[kf];B[jf];W[kg];B[qd];W[jg];B[gc];W[qh];
+B[lc];W[me];B[hf];W[hh];B[jq];W[io];B[hp];W[ho];B[gp];W[go];B[fp];W[fo];B[ep];
+W[eo];B[dq];W[cq];B[dr];W[cp];B[bi];W[kp];B[kq];W[qm];B[pm];W[pl];B[om];W[qn];
+B[qo];W[bh];B[ah];W[cj];B[ql];W[qk];B[rl];W[rk];B[ol];W[pk];B[bj];W[ob];B[pb];
+W[mb];B[oa];W[na];B[nb];W[af];B[ag];W[ob];B[pa];W[ck];B[kl];W[ic];B[jc];W[ib];
+B[hd];W[eb];B[fb];W[fc];B[gb];W[la];B[lb];W[od];B[nb];W[ip];B[iq];W[ob];B[pc];
+W[ma];B[jb];W[ja];B[ed];W[gd];B[fd];W[ge];B[hc];W[fe];B[db];W[ec];B[ea];W[km];
+B[lk];W[lm];B[og];W[he];B[id];W[kj];B[ph];W[qg];B[kk];W[ml];B[ig];W[ih];B[mk];
+W[nk];B[mi];W[nh];B[ni];W[nj];B[li];W[mh];B[oi];W[oh];B[ok];W[oj];B[pi];W[qi];
+B[lh];W[mg];B[jm];W[jn];B[jh];W[kh];B[ji];W[ki];B[jj];W[ik];B[jk];W[lg];B[hi];
+W[gi];B[mf];W[le];B[hj];W[gj];B[gk];W[fk];B[il];W[hm];B[hk];W[im];B[ne];W[md];
+B[fl];W[ek];B[gl];W[mc];B[el];W[dl];B[kd])

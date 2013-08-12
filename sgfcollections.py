@@ -196,7 +196,8 @@ class CollectionsList(EventDispatcher):
         except OSError:
             print 'File exists! Add an error popup.'
         col = Collection(name=newname,defaultdir=dirn)
-        self.collections.append(col)
+        col.save()
+        self.collections = [col] + self.collections
         self.save()
         return col
     def delete_collection(self,name):
@@ -219,8 +220,6 @@ class Collection(EventDispatcher):
         return 'SGF collection {0} with {1} games'.format(self.name,len(self.games))
     def __repr__(self):
         return self.__str__()
-    def random_sgf(self):
-        return random.choice(self.games)
     def remove_sgf(self,sgf):
         if sgf in self.games:
             self.games.remove(sgf)
@@ -267,6 +266,8 @@ class Collection(EventDispatcher):
         self.games.append(game)
         self.save()
         return game
+    def random_sgf(self):
+        return random.choice(self.games)
 
 
 

@@ -868,7 +868,7 @@ class GobanApp(App):
         win = Window
         win.bind(on_keyboard=self.my_key_handler)
 
-        Clock.schedule_interval(self.save_all_boards,60)
+        Clock.schedule_interval(self.save_all_boards,150)
 
     def my_key_handler(self,window,keycode1,keycode2,text,modifiers):
         if keycode1 == 27 or keycode1 == 1001:

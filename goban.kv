@@ -285,6 +285,7 @@
     ToggleButton:
         group: 'editbuttons'
         on_press: root.current_mode = 'bwplay'
+        background_normal: 'media/black_pixel.png'
         id: bb
         Image:
             x: self.parent.x + 0.05*self.parent.width
@@ -296,6 +297,7 @@
     ToggleButton:
         group: 'editbuttons'
         on_press: root.current_mode = 'triangle'
+        background_normal: 'media/black_pixel.png'
         Image:
             x: self.parent.x + 0.05*self.parent.width
             y: self.parent.y + 0.05*self.parent.height
@@ -306,6 +308,7 @@
     ToggleButton:
         group: 'editbuttons'
         on_press: root.current_mode = 'square'
+        background_normal: 'media/black_pixel.png'
         Image:
             x: self.parent.x + 0.05*self.parent.width
             y: self.parent.y + 0.05*self.parent.height
@@ -316,6 +319,7 @@
     ToggleButton:
         group: 'editbuttons'
         on_press: root.current_mode = 'bstone'
+        background_normal: 'media/black_pixel.png'
         Image:
             x: self.parent.x + 0.05*self.parent.width
             y: self.parent.y + 0.05*self.parent.height
@@ -326,6 +330,7 @@
     ToggleButton:
         group: 'editbuttons'
         on_press: root.current_mode = 'estone'
+        background_normal: 'media/black_pixel.png'
         Image:
             x: self.parent.x + 0.05*self.parent.width
             y: self.parent.y + 0.05*self.parent.height
@@ -336,6 +341,7 @@
     ToggleButton:
         group: 'editbuttons'
         on_press: root.current_mode = 'wbplay'
+        background_normal: 'media/black_pixel.png'
         id: wb
         Image:
             x: self.parent.x + 0.05*self.parent.width
@@ -347,6 +353,7 @@
     ToggleButton:
         group: 'editbuttons'
         on_press: root.current_mode = 'circle'
+        background_normal: 'media/black_pixel.png'
         Image:
             x: self.parent.x + 0.05*self.parent.width
             y: self.parent.y + 0.05*self.parent.height
@@ -357,6 +364,7 @@
     ToggleButton:
         group: 'editbuttons'
         on_press: root.current_mode = 'cross'
+        background_normal: 'media/black_pixel.png'
         Image:
             x: self.parent.x + 0.05*self.parent.width
             y: self.parent.y + 0.05*self.parent.height
@@ -367,6 +375,7 @@
     ToggleButton:
         group: 'editbuttons'
         on_press: root.current_mode = 'wstone'
+        background_normal: 'media/black_pixel.png'
         Image:
             x: self.parent.x + 0.05*self.parent.width
             y: self.parent.y + 0.05*self.parent.height
@@ -378,6 +387,7 @@
         text: 'comment'
         font_size: (13,'sp')
         on_press: root.board.get_new_comment()
+        background_normal: 'media/black_pixel.png'
             
 
 <CollectionNameChooser>:
@@ -664,7 +674,7 @@
         Button:
             size_hint: (0.22222,1.)
             text: 'Random'
-            on_release: root.managedby.new_board(with_collectionsgf=root.collection.random_sgf(),mode='Navigate')
+            on_release: root.managedby.new_board(with_collectionsgf=root.collection.random_sgf(),mode='Navigate') if len(root.collection.games) >= 1 else None
             background_normal: 'media/orange_pixel.png'
             background_down: 'media/blue_press_pixel.png'
         VDividerLine
@@ -911,7 +921,7 @@
         Color:
             rgb: self.colour
         Line:
-            points: [self.x, self.y + 0.5*self.vgap*self.height, self.x, self.y + (1-0.5*self.vgap)*self.height]
+            points: [self.x + 0.5*self.width, self.y + 0.5*self.vgap*self.height, self.x+0.5*self.width, self.y + (1-0.5*self.vgap)*self.height]
             width: self.linewidth
         
 <DividerLine>:
@@ -1063,100 +1073,6 @@
     boardcontainer: bc
     board: bc.board
     spinner: navspinner
-    orientation: 'horizontal'
-
-    BoxLayout:
-        orientation: 'vertical'
-        size_hint: (0.30, 1.)
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: (1.,0.1)
-
-            Button:
-                size_hint: (0.15,1.0)
-                on_release: self.parent.parent.managedby.go_home()
-                background_normal: 'media/black_pixel.png'
-                background_down: 'media/blue_press_pixel.png'
-                Image:
-                    width: self.parent.width
-                    y: self.parent.y + 0.05*self.parent.height
-                    height: 0.9*self.parent.height
-                    source: 'media/back-1.png'
-                    keep_ratio: True
-                    mipmap: True
-            PlayerDetails:
-                id: pd
-                board: bc.board
-                size_hint: (0.75,1.0)
-
-                wtext: bc.board.wname
-                wrank: bc.board.wrank
-                btext: bc.board.bname
-                brank: bc.board.brank
-                next_to_play: bc.board.next_to_play
-                on_next_to_play: self.set_to_play(self.next_to_play)
-
-            Spinner:
-                id: navspinner
-                text: 'Navigate'
-                values: ['Navigate','Play','Edit','Score','Guess']
-                size_hint: (0.25,1.0)
-                on_text: bc.board.set_navmode(self,self.text)
-                option_cls: main.MySpinnerOption
-        DividerLine
-        CommentBox:
-            size_hint: (1.0,0.9)
-            id: thecb
-            text: bc.board.permanent_text + bc.board.comment_pre_text + bc.board.comment_text
-            board: bc.board
-
-    BoxLayout:
-        orientation: 'vertical'
-        size_hint: (0.65, 1.)
-        BoardContainer:
-            id: bc
-            size_hint: (1.,0.65)
-
-            uielements: {'varbutton': [btn_nextvar]}
-    BoxLayout:
-        orientation: 'vertical'
-        size_hint: (0.05, 1.)
-
-        Button:
-            id: btn_varbranch
-            text: 'Var branch'
-            on_release: bc.board.back_to_varbranch()
-            background_normal: 'media/black_pixel.png'
-            background_down: 'media/blue_press_pixel.png'
-        PrevButton:
-            id: btn_prevmove
-            on_press: bc.board.retreat_one_move()
-            background_normal: 'media/black_pixel.png'
-            background_down: 'media/blue_press_pixel.png'
-        Button:
-            id: btn_nextvar
-            text: 'Next var\n (1 / 1)'
-            on_press: bc.board.time_start();bc.board.next_variation()
-            on_release: bc.board.time_stop()
-            background_normal: 'media/dull_pixel.png'
-            background_down: 'media/blue_press_pixel.png'
-        NextButton:
-            board: bc.board
-            id: btn_nextmove
-            on_press: bc.board.time_start();bc.board.advance_one_move()
-            on_release: bc.board.time_stop()
-            background_normal: 'media/black_pixel.png'
-            background_down: 'media/blue_press_pixel.png'
-        GameOptionsButton:
-            id: btn_options
-            board: root.board
-            background_normal: 'media/black_pixel.png'
-            background_down: 'media/blue_press_pixel.png'
-
-<PhoneBoardView>:
-    boardcontainer: bc
-    board: bc.board
-    spinner: navspinner
 
     orientation: 'vertical'
 
@@ -1269,6 +1185,141 @@
             board: root.board
             background_normal: 'media/black_pixel.png'
             background_down: 'media/blue_press_pixel.png'
+
+<PhoneBoardView>:
+    boardcontainer: bc
+    board: bc.board
+    spinner: navspinner
+
+    orientation: 'vertical'
+
+    BoxLayout:
+        orientation: 'horizontal'
+        Widget:
+            size_hint_x: None
+            width: sp(6)
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_x: 0.5
+            CommentBox:
+                id: thecb
+                padding: (0,sp(6))
+                text: bc.board.permanent_text + bc.board.comment_pre_text + bc.board.comment_text
+                board: bc.board
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: (100,'sp')
+                CarouselLeftArrow:
+                    size_hint_x: None
+                    width: (20,'sp')
+                    on_press: comcar.load_previous()
+                BoardCarousel:
+                    board: bc.board
+                    board_navmode: bc.board.navmode
+                    loop: True
+                    id: comcar
+                    scroll_timeout: 0
+                    min_move: 0.001
+                    BoxLayout:
+                        Widget:
+                            size_hint_x: None
+                            width: (10,'sp')
+                        GameSlider:
+                            min: 0
+                            max: bc.board.current_branch_length - 1
+                            value: bc.board.current_node_index
+                            on_value: bc.board.jump_to_node_by_number(int(self.value))
+                        Widget:
+                            size_hint_x: None
+                            width: (10,'sp')
+                    EditPanel:
+                        id: boardedit
+                        board: bc.board
+                        board_to_play: bc.board.next_to_play
+                        board_navmode: bc.board.navmode
+                CarouselRightArrow:
+                    size_hint_x: None
+                    width: (20,'sp')
+                    on_press: comcar.load_next()
+
+        VDividerLine:
+            size_hint_x: None
+            width: (6,'sp')
+        BoxLayout:
+            orientation: 'vertical'
+
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint: (1.,None)
+                height: (40,'sp')
+
+                TabletPlayerDetails:
+                    id: pd
+                    board: bc.board
+                    size_hint_y: None
+                    height: (50,'sp')
+
+                    wtext: bc.board.wname
+                    wrank: bc.board.wrank
+                    btext: bc.board.bname
+                    brank: bc.board.brank
+                    next_to_play: bc.board.next_to_play
+                    on_next_to_play: self.set_to_play(self.next_to_play)
+
+
+            BoardContainer:
+                id: bc
+                size_hint: (1.,0.80)
+
+                uielements: {'varbutton': [btn_nextvar]}
+
+
+            DividerLine
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint: (1.0,None)
+                height: (50,'sp')
+
+                VarBranchButton:
+                    id: btn_varbranch
+                    on_release: bc.board.back_to_varbranch()
+                VDividerLine
+                PrevButton:
+                    id: btn_prevmove
+                    on_press: bc.board.time_start();bc.board.retreat_one_move()
+                    on_release: bc.board.time_stop()
+                    background_normal: 'media/black_pixel.png'
+                    background_down: 'media/blue_press_pixel.png'
+                VDividerLine
+                Button:
+                    id: btn_nextvar
+                    text: 'Next var\n (1 / 1)'
+                    on_press: bc.board.time_start();bc.board.next_variation()
+                    on_release: bc.board.time_stop()
+                    background_normal: 'media/dull_pixel.png'
+                    background_down: 'media/blue_press_pixel.png'
+                VDividerLine
+                NextButton:
+                    board: bc.board
+                    id: btn_nextmove
+                    on_press: bc.board.time_start();bc.board.advance_one_move()
+                    on_release: bc.board.time_stop()
+                    background_normal: 'media/black_pixel.png'
+                    background_down: 'media/blue_press_pixel.png'
+                VDividerLine
+                GameOptionsButton:
+                    id: btn_options
+                    board: root.board
+                    background_normal: 'media/black_pixel.png'
+                    background_down: 'media/blue_press_pixel.png'
+                VDividerLine
+                Spinner:
+                    id: navspinner
+                    text: 'Navigate'
+                    values: ['Navigate','Play','Edit','Score','Guess']
+                    on_text: bc.board.set_navmode(self,self.text)
+                    option_cls: main.MySpinnerOption
                 
         
 <GameOptions>:
@@ -1617,6 +1668,71 @@
         pos: self.parent.boardpos
         uielements: self.parent.uielements
 
+<TabletPlayerDetails>:
+    orientation: 'horizontal'
+    spacing: 1
+    wstone: white_stone
+    bstone: black_stone
+    
+    BoxLayout:
+        orientation: 'horizontal'
+        Widget:
+            id: white_stone
+            size: self.parent.height, self.parent.height
+            size_hint: None, None
+            canvas:
+                Color:
+                    rgba: (0.2,0.2,0.2,1)
+                Ellipse:
+                    pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
+                    size: (0.9*self.height,0.9*self.height)
+                Color:
+                    rgb: (1,1,1)
+                Ellipse:
+                    pos: self.pos[0] + 0.1*self.width, self.pos[1] + 0.1*self.height
+                    size: (0.8*self.height,0.8*self.height)
+                Color:
+                    rgba: self.parent.parent.wtoplaycolour
+                Ellipse:
+                    pos: self.pos[0] + 0.35*self.width, self.pos[1] + 0.35*self.height
+                    size: 0.3*self.width,0.3*self.height
+        Label:
+            text: ''.join(('',self.parent.parent.wtext,' ',self.parent.parent.wrank,''))
+            font_size: (20,'sp')
+            markup: True
+            text_size: self.width-20, self.height
+            halign: 'left'
+            valign: 'middle'
+
+        Label:
+            text: ''.join(('',self.parent.parent.btext,' ',self.parent.parent.brank,''))
+            font_size: (20,'sp')
+            markup: True
+            text_size: self.width-20, self.height
+            halign: 'right'
+            valign: 'middle'
+        Widget:
+            id: black_stone
+            size: self.parent.height, self.parent.height
+            canvas:
+                Color:
+                    rgba: (0.8,0.8,0.8,1)
+                Ellipse:
+                    pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
+                    size: (0.9*self.height,0.9*self.height)
+                Color:
+                    rgb: (0,0,0)
+                Ellipse:
+                    pos: self.pos[0] + 0.1*self.width, self.pos[1] + 0.1*self.height
+                    size: (0.8*self.height,0.8*self.height)
+                Color:
+                    rgba: self.parent.parent.btoplaycolour
+                Ellipse:
+                    pos: self.pos[0] + 0.35*self.width, self.pos[1] + 0.35*self.height
+                    size: 0.3*self.width,0.3*self.height
+            size: self.parent.height, self.parent.height
+            size_hint: None, None
+
 <PlayerDetails>:
     orientation: 'vertical'
     spacing: 1
@@ -1692,6 +1808,7 @@
 <CommentBox>:
     textbox: thetb
     do_scroll_x: False
+    padding: (0,0)
 
     on_text: self.scroll_y = 1; self.scroll_timeout=0; self.scroll_timeout = 55
 
@@ -1699,12 +1816,13 @@
         cols: 1
         spacing: 10
         size_hint_y: None
-        height: max(thetb.texture_size[1],sp(100))
+        height: max(thetb.texture_size[1],max(sp(100), thetb.height))
 
         Label:
             id: thetb
             text: root.pre_text + root.text
             markup: True
+            padding: root.padding
             text_size: self.width-10,None
             size_hint: (1,None)
             size: self.parent.width-10,self.texture_size[1]

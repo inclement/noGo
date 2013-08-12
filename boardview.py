@@ -219,6 +219,34 @@ class GuessPopup(Widget):
     colour = ListProperty([1,0,0])
     pass
 
+class TabletPlayerDetails(BoxLayout):
+    wstone = ObjectProperty(None)
+    bstone = ObjectProperty(None)
+    board = ObjectProperty(None)
+    wtext = StringProperty('W player')
+    wrank = StringProperty('')
+    btext = StringProperty('B player')
+    brank = StringProperty('')
+    next_to_play = StringProperty('')
+    wtoplaycolour = ListProperty([0,1,0,1])
+    btoplaycolour = ListProperty([0,1,0,1])
+    def set_to_play(self,player):
+        print 'set_to_play called!',player
+        if player == 'w':
+            self.wtoplaycolour = [0,0.8,0,1]
+            self.btoplaycolour = [0,0.8,0,0]
+        elif player == 'b':
+            self.btoplaycolour = [0,0.8,0,1]
+            self.wtoplaycolour = [0,0.8,0,0]
+        else:
+            self.wtoplaycolour = [0,0.8,0,0]
+            self.btoplaycolour = [0,0.8,0,0]
+    def on_touch_down(self,touch):
+        if self.wstone.collide_point(*touch.pos):
+            self.board.next_to_play = 'w'
+        elif self.bstone.collide_point(*touch.pos):
+            self.board.next_to_play = 'b'
+
 class PlayerDetails(BoxLayout):
     wstone = ObjectProperty(None)
     bstone = ObjectProperty(None)
@@ -255,6 +283,7 @@ class CommentBox(ScrollView):
     pre_text = StringProperty('')
     text = StringProperty('')
     board = ObjectProperty(None,allownone=True)
+    padding = ListProperty([0,0])
     def on_size(self,*args):
         print 'comment box size changed',self.size
     def on_pos(self,*args):
@@ -276,7 +305,7 @@ class CommentBox(ScrollView):
                 print 'selftext'
                 print self.pre_text
                 print self.text
-                if touch.x > board.x + 0.5*board.width:
+                if touch.x > self.x + 0.5*self.width:
                     board.advance_one_move()
                 else:
                     board.retreat_one_move()
@@ -300,6 +329,9 @@ class TabletBoardView(BoxLayout):
     boardcontainer = ObjectProperty(None,allownone=True)
     board = ObjectProperty(None,allownone=True)
     spinner = ObjectProperty(None,allownone=True)
+    collectionsgf = ObjectProperty(None,allownone=True)
+    def rottest(self,num):
+        Window.rotation = num
 
 class PhoneBoardView(BoxLayout):
     managedby = ObjectProperty(None,allownone=True)
@@ -489,7 +521,7 @@ class GuiBoard(Widget):
         self.reset_abstractboard()
 
     def add_handicap_stones(self,num):
-        print 'asked to add handicap stones',num
+        #print 'asked to add handicap stones',num
         if handicap_positions.has_key(self.gridsize):
             stone_positions = handicap_positions[self.gridsize]
             if stone_positions.has_key(num):
@@ -549,7 +581,7 @@ class GuiBoard(Widget):
         self.set_game_info(gi)
 
     def set_game_info(self,info):
-        print 'asked to set with info',info
+        #print 'asked to set with info',info
         self.abstractboard.set_gameinfo(info)
         self.get_game_info()
         #App.get_running_app().manager.refresh_open_games()
@@ -779,13 +811,13 @@ class GuiBoard(Widget):
         popup.open()
 
     def load_sgf_from_file(self,path,filen):
-        print 'asked to load from',path,filen
+        #print 'asked to load from',path,filen
         self.abstractboard.load_sgf_from_file(filen[0])
-        print 'loaded abstractboard from file'
+        #print 'loaded abstractboard from file'
         self.permanent_filepath = self.abstractboard.filepath
-        print 'set permanent filepath'
+        #print 'set permanent filepath'
         self.reset_abstractboard()
-        print 'reset abstractboard'
+        #print 'reset abstractboard'
 
     def get_new_comment(self,*args,**kwargs):
         print 'get new comment called'
@@ -1071,7 +1103,7 @@ class GuiBoard(Widget):
 
         if 'playmarker' in instructions:
             pm = instructions['playmarker']
-            print 'Asked to draw pm at', pm
+            #print 'Asked to draw pm at', pm
             if pm is not None:
                 self.set_playmarker(pm)
         else:
@@ -1304,8 +1336,8 @@ class GuiBoard(Widget):
         # print '@@ add widget', t4-t3, (t4-t3)/(t4-t1)
 
     def remove_stone(self,coord=(1,1),*args,**kwargs):
-        print 'asked to remove at coord',coord
-        print 'available stones are',self.stones
+        #print 'asked to remove at coord',coord
+        #print 'available stones are',self.stones
         if self.stones.has_key(coord):
             stone = self.stones.pop(coord)
             self.remove_widget(stone)
