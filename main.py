@@ -240,6 +240,7 @@ class NogoManager(ScreenManager):
     coordinates = BooleanProperty(False)
     display_markers = BooleanProperty(True)
     boardtype = StringProperty('./media/boards/none.png')
+    view_mode = StringProperty('phone')
 
     collectionindex_to_refresh = BooleanProperty(False)
     homescreen_to_refresh = BooleanProperty(False)
@@ -695,6 +696,7 @@ class NogoManager(ScreenManager):
                 curboard.children[0].board.coordinates = bool(val)
             
     def propagate_view_mode(self,val):
+        self.view_mode = val
         if val == 'phone':
             Window.rotation = 0
         elif val == 'tablet':

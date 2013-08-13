@@ -165,10 +165,10 @@
 
 <GameOptionsButton>:
     Image:
-        x: self.parent.x
+        center_x: self.parent.center_x
         y: self.parent.y+0.2*self.parent.height
         height: 0.6*self.parent.height
-        width: self.parent.width
+        width: max(self.parent.width,(10,'sp'))
         source: 'media/options_button_white-1.png'
         mipmap: True
 
@@ -441,6 +441,7 @@
         id: collections
         scroll_distance: 1
         scroll_timeout: 1000
+        size_hint_y: 0.9
     
     DividerLine
     BoxLayout:
@@ -622,6 +623,7 @@
         id: gl
         scroll_distance: 1
         scroll_timeout: 1000
+        size_hint_y: 0.9
     DividerLine
     BoxLayout:
         orientation: 'horizontal'
@@ -1439,50 +1441,59 @@
                 size_hint: (1.,0.80)
 
                 uielements: {'varbutton': [btn_nextvar]}
-            BoxLayout:
-                orientation: 'horizontal'
-                size_hint: (1.0,None)
-                height: (50,'sp')
-
-                VarBranchButton:
-                    id: btn_varbranch
-                    on_release: bc.board.back_to_varbranch()
-                VDividerLine
-                PrevButton:
-                    id: btn_prevmove
-                    on_press: bc.board.time_start();bc.board.retreat_one_move()
-                    on_release: bc.board.time_stop()
-                    background_normal: 'media/black_pixel.png'
-                    background_down: 'media/blue_press_pixel.png'
-                VDividerLine
-                Button:
-                    id: btn_nextvar
-                    text: 'Next var\n (1 / 1)'
-                    on_press: bc.board.time_start();bc.board.next_variation()
-                    on_release: bc.board.time_stop()
-                    background_normal: 'media/dull_pixel.png'
-                    background_down: 'media/blue_press_pixel.png'
-                VDividerLine
-                NextButton:
-                    board: bc.board
-                    id: btn_nextmove
-                    on_press: bc.board.time_start();bc.board.advance_one_move()
-                    on_release: bc.board.time_stop()
-                    background_normal: 'media/black_pixel.png'
-                    background_down: 'media/blue_press_pixel.png'
-                VDividerLine
-                GameOptionsButton:
-                    id: btn_options
-                    board: root.board
-                    background_normal: 'media/black_pixel.png'
-                    background_down: 'media/blue_press_pixel.png'
-                VDividerLine
-                Spinner:
-                    id: navspinner
-                    text: 'Navigate'
-                    values: ['Navigate','Play','Edit','Score','Guess']
-                    on_text: bc.board.set_navmode(self,self.text)
-                    option_cls: main.MySpinnerOption
+        Widget:
+            size_hint_x: None
+            width: 4
+        VDividerLine:
+            vgap: 0
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_x: None
+            width: (80,'dp')
+            Spinner:
+                id: navspinner
+                text: 'Navigate'
+                values: ['Navigate','Play','Edit','Score','Guess']
+                on_text: bc.board.set_navmode(self,self.text)
+                option_cls: main.MySpinnerOption
+            DividerLine:
+                linewidth: 1
+            GameOptionsButton:
+                id: btn_options
+                board: root.board
+                background_normal: 'media/black_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
+            DividerLine:
+                linewidth: 1
+            VarBranchButton:
+                id: btn_varbranch
+                on_release: bc.board.back_to_varbranch()
+            DividerLine:
+                linewidth: 1
+            Button:
+                id: btn_nextvar
+                text: 'Next var\n (1 / 1)'
+                on_press: bc.board.time_start();bc.board.next_variation()
+                on_release: bc.board.time_stop()
+                background_normal: 'media/dull_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
+            DividerLine:
+                linewidth: 1
+            PrevButton:
+                id: btn_prevmove
+                on_press: bc.board.time_start();bc.board.retreat_one_move()
+                on_release: bc.board.time_stop()
+                background_normal: 'media/black_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
+            DividerLine:
+                linewidth: 1
+            NextButton:
+                board: bc.board
+                id: btn_nextmove
+                on_press: bc.board.time_start();bc.board.advance_one_move()
+                on_release: bc.board.time_stop()
+                background_normal: 'media/black_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
                 
         
 <GameOptions>:
