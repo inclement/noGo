@@ -934,8 +934,7 @@
             points: [self.x + 0.5*self.hgap*self.width, self.y + 0.5*self.height, self.x + (1-0.5*self.hgap)*self.width, self.y + 0.5*self.height]
             width: self.linewidth
     
-
-<HomeScreen>:
+<TabletHomeScreen>:
     id: homeroot
     orientation: 'vertical'
     gamesview: opengames
@@ -1068,6 +1067,147 @@
             on_release: root.managedby.set_current_from_opengameslist(opengames.adapter.selection)
             background_normal: 'media/black_pixel.png'
             background_down: 'media/blue_press_pixel.png'
+
+<HomeScreen>:
+    id: homeroot
+    orientation: 'horizontal'
+    gamesview: opengames
+    opengames: opengames
+    pb: pb
+
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_x: 0.5
+        BoxLayout:
+            size_hint_y: None
+            height: (150,'dp')
+            orientation: 'horizontal'
+            Button:
+                height: self.parent.height
+                width: self.parent.height
+                size_hint: (None,None)
+                on_release: root.managedby.open_help()
+                background_normal: 'media/black_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
+                Label:
+                    pos: self.parent.pos
+                    size: self.parent.size
+                    font_size: (0.9*self.height,'px')
+                    text_size: self.size
+                    halign: 'center'
+                    valign: 'middle'
+                    text: '?'
+            Image:
+                mipmap: True
+                source: 'media/logo_big.png'
+            Button:
+                height: self.parent.height
+                width: self.parent.height
+                size_hint: (None,None)
+                on_release: root.managedby.app.open_settings()
+                background_normal: 'media/black_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
+                Image:
+                    x: self.parent.x
+                    y: self.parent.y+0.2*self.parent.height
+                    height: 0.6*self.parent.height
+                    width: self.parent.width
+                    source: 'media/options_button_white-1.png'
+                    mipmap: True
+
+        DividerLine:
+            height: (10,'sp')
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: (1.,0.25)
+            Button:
+                on_press: homeroot.managedby.switch_and_set_back('Collections Index')
+                background_normal: 'media/black_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size: self.parent.size
+                    pos: self.parent.pos
+                    Image:
+                        source: './media/collection_logo_white-1.png'
+                        mipmap: True
+                        size_hint: (1.,1.)
+                    Label:
+                        text: 'Collections'
+                        halign: 'center'
+                        valign: 'middle'
+                        height: (30,'sp')
+                        size_hint: (1.,None)
+            DividerLine
+            Button:
+                on_release: homeroot.managedby.new_board_dialog()
+                background_normal: 'media/black_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size: self.parent.size
+                    pos: self.parent.pos
+                    Image:
+                        source: './media/finallogo_newboard2_white-1.png'
+                        mipmap: True
+                        size_hint: (1.,1.)
+                    Label:
+                        text: 'New board'
+                        halign: 'center'
+                        valign: 'middle'
+                        height: (30,'sp')
+                        size_hint: (1.,None)
+            DividerLine
+            Button:
+                on_release: homeroot.managedby.open_sgf_dialog()
+                background_normal: 'media/black_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size: self.parent.size
+                    pos: self.parent.pos
+                    Image:
+                        source: './media/open_sgf_logo_white-1.png'
+                        mipmap: True
+                        size_hint: (1.,1.)
+                    Label:
+                        text: 'SGF from file'
+                        halign: 'center'
+                        valign: 'middle'
+                        height: (30,'sp')
+                        size_hint: (1.,None)
+
+    VDividerLine
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_x: 0.5
+        Label:
+            text: 'Currently open games:'
+            size_hint: (1.,0.05)
+        DividerLine
+        MyListView:
+            id: opengames
+            scroll_distance: 1
+            scroll_timeout: 1000
+            size_hint: (1.,0.60)
+            adapter: la.ListAdapter(data=root.managedby.boards,args_converter = lambda c,j: main.get_game_chooser_info_from_boardname(root.managedby,j), selection_mode='single', allow_empty_selection=True,cls=main.OpenChooserButton)
+            selection: self.adapter.selection
+        DividerLine
+        BoxLayout:
+            size_hint: (1.,0.1)
+            orientation: 'horizontal'
+            Button:
+                text: 'Close selected game.'
+                on_release: root.managedby.close_board_from_selection(opengames.adapter.selection)
+                background_normal: 'media/black_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
+            VDividerLine
+            Button:
+                id: pb
+                text: 'Switch to selected game.'
+                on_release: root.managedby.set_current_from_opengameslist(opengames.adapter.selection)
+                background_normal: 'media/black_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
 
 <TabletBoardView>:
     boardcontainer: bc
