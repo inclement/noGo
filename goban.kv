@@ -442,19 +442,10 @@
         scroll_distance: 1
         scroll_timeout: 1000
     
-    Widget:
-        size_hint:(1.,None)
-        height: (2,'sp')
-        canvas:
-            Color:
-                rgb: (0.195,0.641,0.805)
-            Line:
-                points: [self.x + 0.05*self.width, self.y + 0.5*self.height, self.x + 0.95*self.width, self.y + 0.5*self.height]
-                width: 2
-                cap: 'square'
+    DividerLine
     BoxLayout:
         orientation: 'horizontal'
-        size_hint: (1.,0.1)
+        size_hint_y: 0.1
         Button:
             size_hint: (0.25,1.)
             text: 'Delete\ncollection'
@@ -626,33 +617,15 @@
         font_size: (25,'sp')
         textsize: self.size
         valign: 'middle'
-    Widget:
-        size_hint:(1.,None)
-        height: (2,'sp')
-        canvas:
-            Color:
-                rgb: (0.195,0.641,0.805)
-            Line:
-                points: [self.x + 0.05*self.width, self.y + 0.5*self.height, self.x + 0.95*self.width, self.y + 0.5*self.height]
-                width: 2
-                cap: 'square'
+    DividerLine
     ListView:
         id: gl
         scroll_distance: 1
         scroll_timeout: 1000
-    Widget:
-        size_hint:(1.,None)
-        height: (2,'sp')
-        canvas:
-            Color:
-                rgb: (0.195,0.641,0.805)
-            Line:
-                points: [self.x + 0.05*self.width, self.y + 0.5*self.height, self.x + 0.95*self.width, self.y + 0.5*self.height]
-                width: 2
-                cap: 'square'
+    DividerLine
     BoxLayout:
         orientation: 'horizontal'
-        size_hint: (1.,0.1)
+        size_hint_y: 0.1
         Button:
             size_hint: (0.22222,1.)
             text: 'Delete'
@@ -933,6 +906,16 @@
         Line:
             points: [self.x + 0.5*self.hgap*self.width, self.y + 0.5*self.height, self.x + (1-0.5*self.hgap)*self.width, self.y + 0.5*self.height]
             width: self.linewidth
+
+<DividerLine>:
+    height: (2,'sp')
+    size_hint_y: None
+    canvas:
+        Color:
+            rgb: self.colour
+        Line:
+            points: [self.x + 0.5*self.hgap*self.width, self.y + 0.5*self.height, self.x + (1-0.5*self.hgap)*self.width, self.y + 0.5*self.height]
+            width: self.linewidth
     
 <TabletHomeScreen>:
     id: homeroot
@@ -1128,17 +1111,27 @@
                     orientation: 'horizontal'
                     size: self.parent.size
                     pos: self.parent.pos
-                    Image:
-                        source: './media/collection_logo_white-1.png'
-                        mipmap: True
-                        size_hint: (1.,1.)
+                    Widget:
+                        size_hint_x: 0.1
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_x: 0.6
+                        Widget:
+                            size_hint_y: 0.1
+                        Image:
+                            source: './media/collection_logo_white-1.png'
+                            mipmap: True
+                            size_hint: (1.,1.)
+                        Widget:
+                            size_hint_y: 0.1
                     Label:
                         text: 'Collections'
                         halign: 'center'
                         valign: 'middle'
-                        height: (30,'sp')
-                        size_hint: (1.,None)
-            DividerLine
+                        text_size: self.size
+                        font_size: 0.2*self.height
+            DividerLine:
+                linewidth: 1
             Button:
                 on_release: homeroot.managedby.new_board_dialog()
                 background_normal: 'media/black_pixel.png'
@@ -1147,17 +1140,27 @@
                     orientation: 'horizontal'
                     size: self.parent.size
                     pos: self.parent.pos
-                    Image:
-                        source: './media/finallogo_newboard2_white-1.png'
-                        mipmap: True
-                        size_hint: (1.,1.)
+                    Widget:
+                        size_hint_x: 0.1
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_x: 0.6
+                        Widget:
+                            size_hint_y: 0.1
+                        Image:
+                            source: './media/finallogo_newboard2_white-1.png'
+                            mipmap: True
+                            size_hint: (1.,1.)
+                        Widget:
+                            size_hint_y: 0.1
                     Label:
                         text: 'New board'
                         halign: 'center'
                         valign: 'middle'
-                        height: (30,'sp')
-                        size_hint: (1.,None)
-            DividerLine
+                        text_size: self.size
+                        font_size: 0.2*self.height
+            DividerLine:
+                linewidth: 1
             Button:
                 on_release: homeroot.managedby.open_sgf_dialog()
                 background_normal: 'media/black_pixel.png'
@@ -1166,16 +1169,25 @@
                     orientation: 'horizontal'
                     size: self.parent.size
                     pos: self.parent.pos
-                    Image:
-                        source: './media/open_sgf_logo_white-1.png'
-                        mipmap: True
-                        size_hint: (1.,1.)
+                    Widget:
+                        size_hint_x: 0.1
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_x: 0.6
+                        Widget:
+                            size_hint_y: 0.1
+                        Image:
+                            source: './media/open_sgf_logo_white-1.png'
+                            mipmap: True
+                            size_hint: (1.,1.)
+                        Widget:
+                            size_hint_y: 0.1
                     Label:
                         text: 'SGF from file'
                         halign: 'center'
                         valign: 'middle'
-                        height: (30,'sp')
-                        size_hint: (1.,None)
+                        text_size: self.size
+                        font_size: 0.2*self.height
 
     VDividerLine
     BoxLayout:
@@ -1386,19 +1398,25 @@
         VDividerLine:
             size_hint_x: None
             width: (6,'sp')
+            vgap: 0
         BoxLayout:
             orientation: 'vertical'
+
+            Widget:
+                size_hint_y: None
+                height: (5,'sp')
 
             BoxLayout:
                 orientation: 'horizontal'
                 size_hint: (1.,None)
-                height: (40,'sp')
+                height: (50,'sp')
 
+                Widget:
+                    size_hint_x: None
+                    width: (5,'sp')
                 TabletPlayerDetails:
                     id: pd
                     board: bc.board
-                    size_hint_y: None
-                    height: (50,'sp')
 
                     wtext: bc.board.wname
                     wrank: bc.board.wrank
@@ -1406,16 +1424,21 @@
                     brank: bc.board.brank
                     next_to_play: bc.board.next_to_play
                     on_next_to_play: self.set_to_play(self.next_to_play)
+                Widget:
+                    size_hint_x: None
+                    width: (5,'sp')
 
+            Widget:
+                size_hint_y: None
+                height: (5,'sp')
+            DividerLine
+                height: (5,'sp')
 
             BoardContainer:
                 id: bc
                 size_hint: (1.,0.80)
 
                 uielements: {'varbutton': [btn_nextvar]}
-
-
-            DividerLine
             BoxLayout:
                 orientation: 'horizontal'
                 size_hint: (1.0,None)
@@ -1464,6 +1487,18 @@
         
 <GameOptions>:
     dismiss_on_select: True
+    Button:
+        size_hint_y: None
+        height: (50,'sp')
+        on_press: app.open_settings()
+        on_release: root.select('item9')
+        Image:
+            x: self.parent.x
+            y: self.parent.y + 0.2*self.parent.height
+            height: 0.6*self.parent.height
+            width: self.parent.width
+            source: 'media/options_button_white-1.png'
+            mipmap: True
     Button:
         size_hint_y: None
         height: (50,'sp')
@@ -1816,21 +1851,13 @@
     
     BoxLayout:
         orientation: 'horizontal'
-        Widget:
+        Image:
             id: white_stone
-            size: self.parent.height, self.parent.height
             size_hint: None, None
+            size: self.parent.height, self.parent.height
+            source: 'media/stones/white_stone_pd-1.png'
+            mipmap: True
             canvas:
-                Color:
-                    rgba: (0.2,0.2,0.2,1)
-                Ellipse:
-                    pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
-                    size: (0.9*self.height,0.9*self.height)
-                Color:
-                    rgb: (1,1,1)
-                Ellipse:
-                    pos: self.pos[0] + 0.1*self.width, self.pos[1] + 0.1*self.height
-                    size: (0.8*self.height,0.8*self.height)
                 Color:
                     rgba: self.parent.parent.wtoplaycolour
                 Ellipse:
@@ -1851,27 +1878,18 @@
             text_size: self.width-20, self.height
             halign: 'right'
             valign: 'middle'
-        Widget:
+        Image:
             id: black_stone
+            size_hint: None, None
             size: self.parent.height, self.parent.height
+            source: 'media/stones/black_stone_pd-1.png'
+            mipmap: True
             canvas:
-                Color:
-                    rgba: (0.8,0.8,0.8,1)
-                Ellipse:
-                    pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
-                    size: (0.9*self.height,0.9*self.height)
-                Color:
-                    rgb: (0,0,0)
-                Ellipse:
-                    pos: self.pos[0] + 0.1*self.width, self.pos[1] + 0.1*self.height
-                    size: (0.8*self.height,0.8*self.height)
                 Color:
                     rgba: self.parent.parent.btoplaycolour
                 Ellipse:
                     pos: self.pos[0] + 0.35*self.width, self.pos[1] + 0.35*self.height
                     size: 0.3*self.width,0.3*self.height
-            size: self.parent.height, self.parent.height
-            size_hint: None, None
 
 <PlayerDetails>:
     orientation: 'vertical'
@@ -1881,27 +1899,18 @@
     
     BoxLayout:
         orientation: 'horizontal'
-        Widget:
+        Image:
             id: white_stone
+            size_hint: None, None
+            size: self.parent.height, self.parent.height
+            source: 'media/stones/white_stone_pd-1.png'
+            mipmap: True
             canvas:
-                Color:
-                    rgba: (0.2,0.2,0.2,1)
-                Ellipse:
-                    pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
-                    size: (0.9*self.height,0.9*self.height)
-                Color:
-                    rgb: (1,1,1)
-                Ellipse:
-                    pos: self.pos[0] + 0.1*self.width, self.pos[1] + 0.1*self.height
-                    size: (0.8*self.height,0.8*self.height)
                 Color:
                     rgba: self.parent.parent.wtoplaycolour
                 Ellipse:
                     pos: self.pos[0] + 0.35*self.width, self.pos[1] + 0.35*self.height
                     size: 0.3*self.width,0.3*self.height
-            size: self.parent.height, self.parent.height
-            size_hint: None, None
-                
         Label:
             text: ''.join(('',self.parent.parent.wtext,' ',self.parent.parent.wrank,''))
             font_size: 0.7*self.height
@@ -1912,27 +1921,18 @@
 
     BoxLayout:
         orientation: 'horizontal'
-        Widget:
+        Image:
             id: black_stone
+            size_hint: None, None
             size: self.parent.height, self.parent.height
+            source: 'media/stones/black_stone_pd-1.png'
+            mipmap: True
             canvas:
-                Color:
-                    rgba: (0.8,0.8,0.8,1)
-                Ellipse:
-                    pos: self.pos[0] + 0.05*self.width, self.pos[1] + 0.05*self.height
-                    size: (0.9*self.height,0.9*self.height)
-                Color:
-                    rgb: (0,0,0)
-                Ellipse:
-                    pos: self.pos[0] + 0.1*self.width, self.pos[1] + 0.1*self.height
-                    size: (0.8*self.height,0.8*self.height)
                 Color:
                     rgba: self.parent.parent.btoplaycolour
                 Ellipse:
                     pos: self.pos[0] + 0.35*self.width, self.pos[1] + 0.35*self.height
                     size: 0.3*self.width,0.3*self.height
-            size: self.parent.height, self.parent.height
-            size_hint: None, None
         Label:
             text: ''.join(('',self.parent.parent.btext,' ',self.parent.parent.brank,''))
             font_size: 0.7*self.height

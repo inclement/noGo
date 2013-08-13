@@ -13,6 +13,11 @@ class VDividerLine(Widget):
     linewidth = NumericProperty(1)
     colour = ListProperty([0.195,0.641,0.805])
 
+class HDividerLine(Widget):
+    hgap = NumericProperty(0.1) 
+    linewidth = NumericProperty(2)
+    colour = ListProperty([0.195,0.641,0.805])
+
 class DividerLine(Widget):
     hgap = NumericProperty(0.1) 
     linewidth = NumericProperty(2)

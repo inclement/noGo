@@ -29,6 +29,7 @@ version = 0.3.0
 requirements = pil,docutils,kivy
 
 orientation = portrait
+#orientation = landscape
 
 presplash.filename = /home/asandy/noGo/media/logo_big.png
 icon.filename = /home/asandy/noGo/media/logo_small.png

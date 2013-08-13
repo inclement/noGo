@@ -342,6 +342,10 @@ class PhoneBoardView(BoxLayout):
     collectionsgf = ObjectProperty(None,allownone=True)
     def rottest(self,num):
         Window.rotation = num
+    # def on_touch_move(self, touch):
+    #     super(PhoneBoardView, self).on_touch_down(touch)
+    #     with self.canvas:
+    #         Ellipse(pos=(touch.pos[0]-5,touch.pos[1]-5),size=(10,10))
 
 class StarPoint(Widget):
     pass

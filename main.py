@@ -797,6 +797,7 @@ class GobanApp(App):
         self.stone_type = config.getdefault('Board','stone_graphics','simple')
         self.boardtype = config.getdefault('Board','board_graphics','simple')
         sm.propagate_boardtype_mode(self.boardtype)
+        sm.propagate_view_mode(config.getdefault('Board','view_mode','phone'))
 
         self.bind(on_start=self.post_build_init)
 
