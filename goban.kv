@@ -1029,12 +1029,12 @@
         text: 'Currently open games:'
         size_hint: (1.,0.05)
     DividerLine
-    MyListView:
+    ListView:
         id: opengames
         scroll_distance: 1
         scroll_timeout: 1000
         size_hint: (1.,0.60)
-        adapter: la.ListAdapter(data=root.managedby.boards,args_converter = lambda c,j: main.get_game_chooser_info_from_boardname(root.managedby,j), selection_mode='single', allow_empty_selection=True,cls=main.OpenChooserButton)
+        adapter: la.ListAdapter(data=[],args_converter = lambda c,j: main.get_game_chooser_info_from_boardname(root.managedby,j), selection_mode='single', allow_empty_selection=True,cls=main.OpenChooserButton)
         selection: self.adapter.selection
     DividerLine
     BoxLayout:
@@ -1204,7 +1204,7 @@
             scroll_distance: 1
             scroll_timeout: 1000
             size_hint: (1.,0.60)
-            adapter: la.ListAdapter(data=root.managedby.boards,args_converter = lambda c,j: main.get_game_chooser_info_from_boardname(root.managedby,j), selection_mode='single', allow_empty_selection=True,cls=main.OpenChooserButton)
+            adapter: la.ListAdapter(data=[],args_converter = lambda c,j: main.get_game_chooser_info_from_boardname(root.managedby,j), selection_mode='single', allow_empty_selection=True,cls=main.OpenChooserButton)
             selection: self.adapter.selection
         DividerLine
         BoxLayout:
@@ -1223,7 +1223,7 @@
                 background_normal: 'media/black_pixel.png'
                 background_down: 'media/blue_press_pixel.png'
 
-<TabletBoardView>:
+<PhoneBoardView>:
     boardcontainer: bc
     board: bc.board
     spinner: navspinner
@@ -1340,7 +1340,7 @@
             background_normal: 'media/black_pixel.png'
             background_down: 'media/blue_press_pixel.png'
 
-<PhoneBoardView>:
+<TabletBoardView>:
     boardcontainer: bc
     board: bc.board
     spinner: navspinner

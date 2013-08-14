@@ -61,7 +61,7 @@ from time import asctime, time, sleep
 
 from gomill import sgf, boards
 from abstractboard import *
-from boardview import GuiBoard, BoardContainer, PhoneBoardView, GuessPopup, SaveQuery, MySpinnerOption
+from boardview import GuiBoard, BoardContainer, PhoneBoardView, TabletBoardView, GuessPopup, SaveQuery, MySpinnerOption
 from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone
 from miscwidgets import VDividerLine, DividerLine, WhiteStoneImage, BlackStoneImage, CarouselRightArrow, CarouselLeftArrow
 from info import InfoPage
@@ -280,6 +280,10 @@ class NogoManager(ScreenManager):
     
     def switch_and_set_back(self,newcurrent):
         print 'Asked to switch and set back',self.transition.is_active
+        print newcurrent, self.has_screen(newcurrent)
+        if newcurrent[:5] == 'Board' and self.has_screen(newcurrent):
+            print 'got to make_match bit'
+            self.make_board_match_view_mode(newcurrent)
         if not self.transition.is_active:
             self.back_screen_name = self.current
             self.current = newcurrent
@@ -309,8 +313,9 @@ class NogoManager(ScreenManager):
         print 'open games list is',l
         if len(l)>0:
             screenname = l[0].boardname
-            self.back_screen_name = self.current
-            self.current = screenname
+            self.switch_and_set_back(screenname)
+            # self.back_screen_name = self.current
+            # self.current = screenname
     def open_help(self):
         if self.has_screen('Info Page'):
             self.switch_and_set_back('Info Page')
@@ -436,7 +441,7 @@ class NogoManager(ScreenManager):
         else:
             collection = App.get_running_app().get_default_collection()
         self.new_board(in_collection=collection,gridsize=gridsize,handicap=handicap)
-    def new_board(self,with_collectionsgf=None,in_collection=None,from_file='',mode='Play',gridsize=19,handicap=0):
+    def new_board(self,with_collectionsgf=None,in_collection=None,from_file='',mode='Play',gridsize=19,handicap=0,goto=True):
         load_from_file = False
 
         print '%% NEW BOARD'
@@ -491,12 +496,16 @@ class NogoManager(ScreenManager):
 
         s = Screen(name=name)
         self.add_widget(s)
-        self.current = name
+        if goto:
+            self.current = name
 
         t4 = time()
 
 
-        pbv = PhoneBoardView(collectionsgf=collectionsgf)
+        if self.view_mode == 'tablet':
+            pbv = TabletBoardView(collectionsgf=collectionsgf)
+        else:
+            pbv = PhoneBoardView(collectionsgf=collectionsgf)
         pbv.board.collectionsgf = collectionsgf
 
         if platform() == 'android':
@@ -525,9 +534,6 @@ class NogoManager(ScreenManager):
             pbv.board.reset_gridsize(gridsize)
             pbv.board.add_handicap_stones(handicap)
 
-        t6 = time()
-
-        ta = time()
         pbv.board.time_start()
         s.add_widget(pbv)
         pbv.screenname = name
@@ -538,77 +544,11 @@ class NogoManager(ScreenManager):
         pbv.board.board_path = boardname_to_filepath(self.boardtype)
         pbv.board.display_markers = self.display_markers
         pbv.board.cache = App.get_running_app().cache
-        tb = time()
         pbv.board.get_game_info()
-        tc = time()
-        print 'Got to save...'
         pbv.board.save_sgf()
-        td = time()
         self.boards.append(name)
-        t65 = time()
-        #App.get_running_app().collections.save()
-        te = time()
-        #self.refresh_collection(collection)
-        tf = time()
-        #self.refresh_open_games()
-        tg = time()
 
-        t7 = time()
-
-        # if not pbv.board.gameinfo.has_key('date') and with_collectionsgf is None and from_file == '':
-        #     pbv.board.set_game_date()
-
-        t8 = time()
-
-        print '%%%%',t8-t1,t2-t1,t3-t2,t4-t3,t5-t4,t6-t5,t65-t6,t7-t65,t8-t7
-        print '%%%%',tg-ta,tb-ta,tc-tb,td-tc,te-td,tf-te,tg-tf
-        # if platform() == 'android':
-        #     Clock.schedule_once(pbv.boardcontainer.set_board_height,1)
-        
-    # def new_board(self,in_collection=None,mode='Play',from_file='',gridsize=19,handicap=0):
-    #     if in_collection is None:
-    #         in_collection = App.get_running_app().get_default_collection()
-    #     print 'in_collection is',in_collection
-    #     print 'size is', gridsize
-    #     print 'self.coordinates is', self.coordinates
-    #     self.back_screen_name = self.current
-
-    #     i = 1
-    #     while True:
-    #         if not self.has_screen('Board %d' % i):
-    #             name = 'Board %d' % i
-    #             break
-    #         i += 1
-    #     s = Screen(name=name)
-    #     self.add_widget(s)
-    #     self.current = name
-
-    #     collectionsgf = in_collection.add_game()
-    #     pbv = PhoneBoardView(collectionsgf=collectionsgf)
-    #     pbv.board.collectionsgf = collectionsgf
-    #     if from_file != '':
-    #         try:
-    #             print 'loading from file'
-    #             pbv.board.load_sgf_from_file('',[from_file])
-    #             collectionsgf.from_file = True
-    #             print 'done loading'
-    #         except:
-    #             popup = Popup(content=Label(text='Unable to open SGF. Please check the file exists and is a valid SGF.',title='Error opening file'),size_hint=(0.85,0.4),title='Error')
-    #             popup.open()
-    #             return False
-    #     else:
-    #         pbv.board.reset_gridsize(gridsize)
-    #         pbv.board.add_handicap_stones(handicap)
-    #         collectionsgf.from_file = False
-    #     pbv.board.time_start()
-    #     s.add_widget(pbv)
-    #     pbv.screenname = name
-    #     pbv.managedby = self
-    #     pbv.spinner.text = mode
-    #     pbv.board.touchoffset = self.touchoffset
-    #     pbv.board.coordinates = self.coordinates
-    #     self.boards.append(name)
-    #     App.get_running_app().collections.save()
+        return pbv
     def refresh_collections_index(self):
         if 'Collections Index' not in self.screen_names:
             self.create_collections_index()
@@ -643,9 +583,40 @@ class NogoManager(ScreenManager):
         hs_screen = Screen(name='Home')
         hs_screen.add_widget(hs)
         self.add_widget(hs_screen)
+        self.refresh_open_games()
         if goto:
             self.current = 'Home'
-        
+    def make_board_match_view_mode(self, name):
+        board = self.get_screen(name)
+        if self.view_mode == 'tablet':
+            if not isinstance(board.children[0], TabletBoardView):
+                print 'REFRESHING -> tbv'
+                print 'REFRESHING -> tbv'
+                print 'REFRESHING -> tbv'
+                board = self.get_screen(name)
+                self.close_board(name)
+                board = board.children[0]
+                board.board.save_sgf()
+                filen = board.board.collectionsgf.filen
+                reconstruction_path = board.board.get_reconstruction()
+                new_pbv = self.new_board(from_file=filen,mode='Navigate')
+                new_pbv.board.reconstruct_from(reconstruction_path)
+                App.get_running_app().manager.refresh_open_games()
+        else:
+            if not isinstance(board.children[0], PhoneBoardView):
+                print 'REFRESHING -> pbv'
+                print 'REFRESHING -> pbv'
+                print 'REFRESHING -> pbv'
+                board = self.get_screen(name)
+                self.close_board(name)
+                board = board.children[0]
+                board.board.save_sgf()
+                filen = board.board.collectionsgf.filen
+                reconstruction_path = board.board.get_reconstruction()
+                new_pbv = self.new_board(from_file=filen,mode='Navigate')
+                new_pbv.board.reconstruct_from(reconstruction_path)
+                App.get_running_app().manager.refresh_open_games()
+
     def create_collections_index(self):
         collections_list = App.get_running_app().collections.collections
         collections_index = CollectionsIndex(managedby=self)
@@ -782,7 +753,7 @@ class GobanApp(App):
         print 'my config is',config
 
         sound = SoundLoader.load('./media/sounds/stone_sound5.mp3')
-        sound.volume = 0.1
+        sound.volume = 0.05
         self.stone_sound = sound
 
         # Get any json collection backups if on android
@@ -986,6 +957,7 @@ class GobanApp(App):
             self.manager.propagate_input_mode(value)
         elif key == 'view_mode':
             self.manager.propagate_view_mode(value)
+            self.manager.go_home()
         elif key == 'coordinates':
             print 'coordinates key pressed',config,section,key,value
             self.manager.propagate_coordinates_mode(int(value))

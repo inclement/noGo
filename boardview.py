@@ -103,6 +103,7 @@ handicap_positions = {19: {2: [(3,3),(15,15)],
                            }
                       }
 
+
 def format_score(score):
     if score == 0:
         return '[color=#ff0000]j[/color][color=#00ff00]i[/color][color=#ff0000]g[/color][color=#00ff00]o[/color]'
@@ -501,6 +502,12 @@ class GuiBoard(Widget):
         else:
             self.clear_markers()
 
+    def get_reconstruction(self):
+        return self.abstractboard.get_reconstruction()
+    def reconstruct_from(self, reconstruction):
+        instructions = self.abstractboard.reconstruct_from(reconstruction)
+        self.follow_instructions(instructions)
+
     # def add_widget(self,*args,**kwargs):
     #     print 'board add_widget called with...',args
     #     super(GuiBoard,self).add_widget(*args)
@@ -798,15 +805,19 @@ class GuiBoard(Widget):
         if newtype == 'newvar':
             instructions = self.abstractboard.add_new_node(coords,self.next_to_play)
             self.follow_instructions(instructions)
+            App.get_running_app().play_stone_sound()
         if newtype == 'newmain':
             instructions = self.abstractboard.add_new_node(coords,self.next_to_play,newmainline=True)
             self.follow_instructions(instructions)
+            App.get_running_app().play_stone_sound()
         if newtype == 'replacenext':
             instructions = self.abstractboard.replace_next_node(coords,self.next_to_play)
             self.follow_instructions(instructions)
+            App.get_running_app().play_stone_sound()
         if newtype == 'insert':
             instructions = self.abstractboard.insert_before_next_node(coords,self.next_to_play)
             self.follow_instructions(instructions)
+            App.get_running_app().play_stone_sound()
         print 'add_new_stone received instructions:',instructions
 
     def open_sgf_dialog(self,*args,**kwargs):
@@ -1098,7 +1109,6 @@ class GuiBoard(Widget):
             add_stones = instructions['add']
             for stone in add_stones:
                 self.add_stone(coord=stone[0],colour=colourname_to_colour(stone[1]))
-            App.get_running_app().play_stone_sound()
         if 'empty' in instructions:
             empty_stones = instructions['empty']
             for stone in empty_stones:
@@ -1200,6 +1210,8 @@ class GuiBoard(Widget):
         if children_exist:
             instructions = self.abstractboard.advance_position()
             self.follow_instructions(instructions)
+            if 'add' in instructions:
+                App.get_running_app().play_stone_sound()
         else:
             self.stop_autoplay()
             if platform() == 'android':

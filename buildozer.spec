@@ -13,7 +13,7 @@ package.domain = net.inclem
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,sgf,json,kv,txt,rst
+source.include_exts = py,png,jpg,sgf,json,kv,txt,rst,mp3
 
 # (list) Source files to exclude (let empty to not excluding anything)
 #source.exclude_exts = spec

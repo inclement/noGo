@@ -5,6 +5,8 @@ game tree.
 
 '''
 
+import sys
+
 from gomill import sgf, boards, ascii_boards
 from random import randint
 
@@ -525,6 +527,32 @@ class AbstractBoard(object):
         curnode = self.curnode
         newboard = [row[:] for row in self.boards[curnode].board]
         return newboard
+
+    def get_reconstruction(self):
+        curnode = self.curnode
+        variations = []
+        node = curnode
+        while node.parent is not None:
+            variations.append(node.parent.index(node))
+            node = node.parent
+        return variations[::-1]
+
+    def reconstruct_from(self,vs):
+        #self.reset_position()
+        node = self.curnode
+        print 'reconstructing with',vs
+        try:
+            for entry in vs:
+                print 'node is',node,len(node)
+                node = node[entry]
+                print 'new node is',node,len(node)
+            instructions = self.jump_to_node(node)
+            return instructions
+        except IndexError:
+            print 'Error reading reconstruction index'
+            sys.exit()
+            return {}
+            
 
     def load_sgf_from_file(self,filen):
         print 'abstractboard asked to load from',filen

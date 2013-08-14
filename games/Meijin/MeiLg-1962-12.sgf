@@ -1,43 +1,23 @@
-(;
-EV[1st Meijin 1962 league]
-RO[League]
-PB[Fujisawa Hosai]
-BR[9d]
-PW[Miyashita Shuyo]
-WR[9d]
-KM[5]
-RE[B+R]
-DT[1962]
-BL[1800.0]
-WL[1800.0]
-
-;B[pd];W[dc];B[pp];W[dp];B[de];W[ce];B[dd];W[cd];B[ec];W[cf]
-;B[db];W[cc];B[jc];W[fc];B[ed];W[fb];B[eb];W[id];B[jd];W[if]
-;B[hd];W[fd];B[fe];W[ge];B[gd];W[ff];B[ee];W[ic];B[he];W[ie]
-;B[gf];W[hb];B[ld];W[dh];B[gh];W[ih];B[gj];W[qj];B[qg];W[qm]
-;B[qo];W[mq];B[oq];W[jq];B[cj];W[dj];B[dk];W[ej];B[ek];W[fk]
-;B[fj];W[ci];B[fl];W[gk];B[ii];W[gl];B[jh];W[ke];B[jb];W[le]
-;B[md];W[lh];B[kg];W[lg];B[ki];W[je];B[li];W[kd];B[kc];W[of]
-;B[nf];W[lc];B[lb];W[ne];B[me];W[mf];B[ng];W[mc];B[nd];W[nc]
-;B[oe];W[mb];B[ka];W[ma];B[oc];W[ob];B[pb];W[ia];B[ja];W[la]
-;B[na];W[kb];B[ei];W[ib];B[di];W[fm];B[bi];W[cb];B[bg];W[bf]
-;B[rk];W[qk];B[rl];W[qc];B[pc];W[qh];B[rh];W[rm];B[rj];W[ri]
-;B[si];W[qi];B[rf];W[sj];B[sk];W[ql];B[nm];W[sn];B[rp];W[fp]
-;B[ip];W[iq];B[oj];W[sl];B[sm];W[ok];B[nk];W[sl];B[af];W[ae]
-;B[sm];W[nj];B[ol];W[sl];B[cp];W[cq];B[sm];W[oi];B[pk];W[sl]
-;B[do];W[ep];B[sm];W[mi];B[mj];W[sl];B[bq];W[bp];B[sm];W[ni]
-;B[mg];W[sl];B[co];W[br];B[sm];W[lf];B[mh];W[sl];B[dq];W[cr]
-;B[sm];W[mk];B[lj];W[sl];B[ca];W[ba];B[sm];W[pj];B[ok];W[sl]
-;B[gp];W[en];B[sm];W[og];B[pf];W[sl];B[jp];W[kp];B[sm];W[nh]
-;B[ne];W[sl];B[ko];W[gq];B[sm];W[pe];B[qe];W[sl];B[hq];W[hr]
-;B[sm];W[ph];B[pg];W[sl];B[hp];W[gr];B[sm];W[qn];B[so];W[sl]
-;B[lp];W[kq];B[sm];W[sh];B[sg];W[sl];B[gn];W[eo];B[sm];W[on]
-;B[rn];W[om];B[ml];W[oo];B[bo];W[cm];B[bm];W[lo];B[kn];W[in]
-;B[hm];W[go];B[ho];W[el];B[im];W[bl];B[bn];W[cl];B[ap];W[ar]
-;B[aq];W[ik];B[oh];W[og];B[mo];W[nr];B[da];W[cg];B[ch];W[ag]
-;B[bh];W[ab];B[po];W[np];B[bb];W[bc];B[or];W[kk];B[lk];W[mp]
-;B[ln];W[os];B[ps];W[ns];B[pr];W[eg];B[fa];W[ga];B[fg];W[jg]
-;B[hh];W[ig];B[il];W[jj];B[hk];W[hj];B[hl];W[ji];B[kh];W[hi]
-;B[gm]
-C[271 moves complete.]
-)
+(;BL[1800.0]BR[9d]DT[1962]EV[1st Meijin 1962 league]KM[5]PB[Fujisawa Hosai]
+PW[Miyashita Shuyo]RE[B+R]RO[League]WL[1800.0]WR[9d];B[pd];W[dc];B[pp];W[dp];
+B[de];W[ce];B[dd];W[cd];B[ec];W[cf];B[db];W[cc];B[jc];W[fc];B[ed];W[fb];B[eb];
+W[id];B[jd];W[if];B[hd];W[fd];B[fe];W[ge];B[gd];W[ff];B[ee];W[ic];B[he];W[ie];
+B[gf];W[hb];B[ld];W[dh];B[gh];W[ih];B[gj];W[qj];B[qg];W[qm];B[qo];W[mq];B[oq];
+W[jq];B[cj];W[dj];B[dk];W[ej];B[ek];W[fk];B[fj];W[ci];B[fl];W[gk];B[ii];W[gl];
+B[jh];W[ke];B[jb];W[le];B[md];W[lh];B[kg];W[lg];B[ki];W[je];B[li];W[kd];B[kc];
+W[of];B[nf];W[lc];B[lb];W[ne];B[me];W[mf];B[ng];W[mc];B[nd];W[nc];B[oe];W[mb];
+B[ka];W[ma];B[oc];W[ob];B[pb];W[ia];B[ja];W[la];B[na];W[kb];B[ei];W[ib];B[di];
+W[fm];B[bi];W[cb];B[bg];W[bf];B[rk];W[qk];B[rl];W[qc];B[pc];W[qh];B[rh];W[rm];
+B[rj];W[ri];B[si];W[qi];B[rf];W[sj];B[sk];W[ql];B[nm];W[sn];B[rp];W[fp];B[ip];
+W[iq];B[oj];W[sl];B[sm];W[ok];B[nk];W[sl];B[af];W[ae];B[sm];W[nj];B[ol];W[sl];
+B[cp];W[cq];B[sm];W[oi];B[pk];W[sl];B[do];W[ep];B[sm];W[mi];B[mj];W[sl];B[bq];
+W[bp];B[sm];W[ni];B[mg];W[sl];B[co];W[br];B[sm];W[lf];B[mh];W[sl];B[dq];W[cr];
+B[sm];W[mk];B[lj];W[sl];B[ca];W[ba];B[sm];W[pj];B[ok];W[sl];B[gp];W[en];B[sm];
+W[og];B[pf];W[sl];B[jp];W[kp];B[sm];W[nh];B[ne];W[sl];B[ko];W[gq];B[sm];W[pe];
+B[qe];W[sl];B[hq];W[hr];B[sm];W[ph];B[pg];W[sl];B[hp];W[gr];B[sm];W[qn];B[so];
+W[sl];B[lp];W[kq];B[sm];W[sh];B[sg];W[sl];B[gn];W[eo];B[sm];W[on];B[rn];W[om];
+B[ml];W[oo];B[bo];W[cm];B[bm];W[lo];B[kn];W[in];B[hm];W[go];B[ho];W[el];B[im];
+W[bl];B[bn];W[cl];B[ap];W[ar];B[aq];W[ik];B[oh];W[og];B[mo];W[nr];B[da];W[cg];
+B[ch];W[ag];B[bh];W[ab];B[po];W[np];B[bb];W[bc];B[or];W[kk];B[lk];W[mp];B[ln];
+W[os];B[ps];W[ns];B[pr];W[eg];B[fa];W[ga];B[fg];W[jg];B[hh];W[ig];B[il];W[jj];
+B[hk];W[hj];B[hl];W[ji];B[kh];W[hi];B[gm]C[271 moves complete.])
