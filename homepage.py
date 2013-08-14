@@ -15,6 +15,11 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import ObjectProperty, ListProperty
 from kivy.utils import platform
 
+class TabletHomeScreen(BoxLayout):
+    managedby = ObjectProperty(None,allownone=True)
+    gamesview = ObjectProperty(None,allownone=True)
+    opengames = ObjectProperty(None,allownone=True)
+    pb = ObjectProperty(None, allownone=True)
 class HomeScreen(BoxLayout):
     managedby = ObjectProperty(None,allownone=True)
     gamesview = ObjectProperty(None,allownone=True)

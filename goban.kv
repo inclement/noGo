@@ -919,7 +919,7 @@
             points: [self.x + 0.5*self.hgap*self.width, self.y + 0.5*self.height, self.x + (1-0.5*self.hgap)*self.width, self.y + 0.5*self.height]
             width: self.linewidth
     
-<TabletHomeScreen>:
+<HomeScreen>:
     id: homeroot
     orientation: 'vertical'
     gamesview: opengames
@@ -1053,7 +1053,7 @@
             background_normal: 'media/black_pixel.png'
             background_down: 'media/blue_press_pixel.png'
 
-<HomeScreen>:
+<TabletHomeScreen>:
     id: homeroot
     orientation: 'horizontal'
     gamesview: opengames
@@ -1962,6 +1962,8 @@
     padding: (0,0)
 
     on_text: self.scroll_y = 1; self.scroll_timeout=0; self.scroll_timeout = 55
+    scroll_distance: 1
+    scroll_timeout: 1000
 
     GridLayout:
         cols: 1

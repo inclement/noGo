@@ -63,7 +63,7 @@ from boardview import GuiBoard, BoardContainer, PhoneBoardView, GuessPopup, Save
 from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone
 from miscwidgets import VDividerLine, DividerLine, WhiteStoneImage, BlackStoneImage, CarouselRightArrow, CarouselLeftArrow
 from info import InfoPage
-from homepage import HomeScreen, OpenSgfDialog
+from homepage import TabletHomeScreen, HomeScreen, OpenSgfDialog
 from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton, GameChooserButton, DeleteSgfQuestion, CollectionsList, Collection, CollectionSgf, get_collectioninfo_from_collection
 from widgetcache import WidgetCache
 
@@ -628,6 +628,22 @@ class NogoManager(ScreenManager):
     #         scr = self.get_screen(sname)
     #         self.remove_widget(scr)
     #         self.view_or_open_collection(dirn,goto=False)
+    def rebuild_homescreen(self,mode=None,goto=True):
+        if mode is None:
+            mode = self.view_mode
+        if 'Home' in self.screen_names:
+            oldhome = self.get_screen('Home')
+            self.remove_widget(oldhome)
+        if mode == 'tablet':
+            hs = TabletHomeScreen(managedby=self)
+        else:
+            hs = HomeScreen(managedby=self)
+        hs_screen = Screen(name='Home')
+        hs_screen.add_widget(hs)
+        self.add_widget(hs_screen)
+        if goto:
+            self.current = 'Home'
+        
     def create_collections_index(self):
         collections_list = App.get_running_app().collections.collections
         collections_index = CollectionsIndex(managedby=self)
@@ -703,6 +719,7 @@ class NogoManager(ScreenManager):
             Window.rotation = 270
         else:
             Window.rotation = 0
+        self.rebuild_homescreen()
 
     def query_delete_sgf(self,sel):
         if len(sel)>0:
@@ -785,10 +802,11 @@ class GobanApp(App):
         self.manager = sm
         sm.app = self
 
-        hv = Screen(name="Home")
-        hs = HomeScreen(managedby=sm)
-        hv.add_widget(hs)
-        sm.add_widget(hv)
+        sm.rebuild_homescreen()
+        # hv = Screen(name="Home")
+        # hs = HomeScreen(managedby=sm)
+        # hv.add_widget(hs)
+        # sm.add_widget(hv)
         sm.create_collections_index()
         sm.current = 'Home'
 
