@@ -1098,6 +1098,7 @@ class GuiBoard(Widget):
             add_stones = instructions['add']
             for stone in add_stones:
                 self.add_stone(coord=stone[0],colour=colourname_to_colour(stone[1]))
+            App.get_running_app().play_stone_sound()
         if 'empty' in instructions:
             empty_stones = instructions['empty']
             for stone in empty_stones:

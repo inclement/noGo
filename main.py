@@ -43,6 +43,8 @@ from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProper
 from kivy.vector import Vector
 from kivy.clock import Clock
 
+from kivy.core.audio import SoundLoader
+
 from kivy.input.postproc import doubletap
 
 from random import random as r
@@ -713,12 +715,13 @@ class NogoManager(ScreenManager):
             
     def propagate_view_mode(self,val):
         self.view_mode = val
-        if val == 'phone':
-            Window.rotation = 0
-        elif val == 'tablet':
-            Window.rotation = 270
-        else:
-            Window.rotation = 0
+        if platform() == 'android':
+            if val == 'phone':
+                Window.rotation = 0
+            elif val == 'tablet':
+                Window.rotation = 270
+            else:
+                Window.rotation = 0
         self.rebuild_homescreen()
 
     def query_delete_sgf(self,sel):
@@ -763,6 +766,8 @@ class GobanApp(App):
     stone_type = StringProperty('default')
     board_type = StringProperty('./media/boards/none.png')
 
+    sounds = BooleanProperty(True)
+
     use_kivy_settings = False
 
     title = 'noGo'
@@ -775,6 +780,10 @@ class GobanApp(App):
         print 'user data dir is', self.user_data_dir
         config = self.config
         print 'my config is',config
+
+        sound = SoundLoader.load('./media/sounds/stone_sound5.mp3')
+        sound.volume = 0.1
+        self.stone_sound = sound
 
         # Get any json collection backups if on android
         if platform() == 'android':
@@ -818,6 +827,7 @@ class GobanApp(App):
         self.boardtype = config.getdefault('Board','board_graphics','simple')
         sm.propagate_boardtype_mode(self.boardtype)
         sm.propagate_view_mode(config.getdefault('Board','view_mode','phone'))
+        self.set_sounds(config.getdefault('Board','sounds','0'))
 
         self.bind(on_start=self.post_build_init)
 
@@ -935,13 +945,19 @@ class GobanApp(App):
              "section": "Board",
              "key": "stone_graphics",
              "options": ["simple","slate and shell","bordered slate and shell","drawn by noGo"]},
+            {"type": "bool",
+             "title": "Play sounds",
+             "desc": "Whether to play stone clack sound",
+             "section": "Board",
+             "key": "sounds",
+             "true": "auto"},
             ])
         settings.add_json_panel('Board',
                                 self.config,
                                 data=jsondata)
 
     def build_config(self, config):
-        config.setdefaults('Board',{'input_mode':'phone','view_mode':'phone','coordinates':False,'markers':True,'stone_graphics':'slate and shell','board_graphics':'board section photo 1'})
+        config.setdefaults('Board',{'input_mode':'phone','view_mode':'phone','coordinates':False,'markers':True,'stone_graphics':'slate and shell','board_graphics':'board section photo 1','sounds':False})
 
     def on_pause(self,*args,**kwargs):
         print 'App asked to pause'
@@ -981,6 +997,9 @@ class GobanApp(App):
         elif key == 'board_graphics':
             self.board_type = value
             self.manager.propagate_boardtype_mode(value)
+        elif key == 'sounds':
+            print 'sounds key changed',value
+            self.set_sounds(value)
         else:
             super(GobanApp,self).on_config_change(config,section,key,value)
 
@@ -1032,6 +1051,19 @@ class GobanApp(App):
             board.get_game_info()
             board.save_sgf()
             collectionsgf.save()
+    def set_sounds(self,val):
+        if val == 'False':
+            val = False
+        elif val == 'True':
+            val = True
+        else:
+            val = int(val)
+        self.sounds = bool(val)
+    def play_stone_sound(self,*args):
+        print 'asked to play sound', self.sounds
+        if self.sounds:
+            self.stone_sound.seek(0)
+            self.stone_sound.play()
         
         
 def testconverter(j,*args):
