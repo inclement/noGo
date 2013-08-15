@@ -177,6 +177,12 @@ class CollectionsList(EventDispatcher):
                 self.collections.append(col)
         elif version == 2:
             for entry in colpy:
+                parts = entry.split('/')
+                if len(parts) == 2:
+                    print 'REBUILDING ENTRY'
+                    print 'entry is',entry
+                    entry = './collections/' + parts[-1]
+                    print 'now is',entry
                 try:
                     col = Collection().from_file(entry)
                     self.collections.append(col)

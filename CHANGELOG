@@ -1,0 +1,16 @@
+0.3.1:
+- Preliminary tablet mode (functional but subject to change before finalisation).
+- Stone sound and toggle.
+- Backend storage improvements
+
+0.3.0:
+- New edit panel/mode to add/remove markers (square, circle, triangle, cross) or stones.
+- Added slider to quickly jump through the game
+- Autoplay with different possible speeds
+- Random game button (e.g. for random pro game from pro collection)
+- Improved variation display, button now green when other variations are available
+- Miscellaneous bugfixes
+
+0.2.3:
+- Added noGo to sgf open menus (e.g. in file browser apps or downloads)
+- New button to email sgfs

@@ -26,7 +26,7 @@ source.include_exts = py,png,jpg,sgf,json,kv,txt,rst,mp3
 version = 0.3.2
 
 # (list) Application requirements
-requirements = pil,docutils,kivy
+requirements = docutils,kivy
 
 orientation = portrait
 #orientation = landscape
