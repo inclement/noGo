@@ -1,10 +1,26 @@
-(;FF[4]BR[9d]DT[1998-07-09]EV[23rd Gosei title]KM[5.5]PB[Yoda Norimoto]
-PC[Japan]PW[Sonoda Yuichi]RE[B+R]RO[1]SO[Go Weekly]TM[14400]WR[9d];B[qd];W[dp];
-B[dd];W[pp];B[kc];W[cf];B[fd];W[bd];B[qn];W[nq];B[pj];W[od];B[pf];W[qc];B[rc];
-W[pc];B[rb];W[mc];B[nf];W[me];B[ne];W[nd];B[ld];W[kb];B[jb];W[lb];B[jc];W[md];
-B[fq];W[dn];B[cc];W[ci];B[dr];W[cq];B[iq];W[kq];B[qp];W[qq];B[rq];W[pq];B[ro];
-W[ei];B[lg];W[ol];B[po];W[ql];B[pd];W[ob];B[qj];W[ml];B[nk];W[nl];B[no];W[ok];
-B[lr];W[hq];B[hp];W[ir];B[hr];W[jr];B[gq];W[mp];B[kp];W[lq];B[jq];W[kr];B[oj];
-W[cr];B[ek];W[gj];B[fl];W[gl];B[gm];W[hl];B[hm];W[il];B[ck];W[dl];B[em];W[cm];
-B[dk];W[bc];B[df];W[ce];B[de];W[lj];B[im];W[jm];B[hi];W[kh];B[dh];W[bj];B[ji];
-W[nj];B[ni];W[mj];B[cg];W[bg];B[bh];W[ch];B[dg];W[bf];B[jl])
+(;
+FF[4]
+EV[23rd Gosei title]
+RO[1]
+PB[Yoda Norimoto]
+BR[9d]
+PW[Sonoda Yuichi]
+WR[9d]
+TM[14400]
+KM[5.5]
+RE[B+R]
+DT[1998-07-09]
+PC[Japan]
+SO[Go Weekly]
+
+;B[qd];W[dp];B[dd];W[pp];B[kc];W[cf];B[fd];W[bd];B[qn];W[nq]
+;B[pj];W[od];B[pf];W[qc];B[rc];W[pc];B[rb];W[mc];B[nf];W[me]
+;B[ne];W[nd];B[ld];W[kb];B[jb];W[lb];B[jc];W[md];B[fq];W[dn]
+;B[cc];W[ci];B[dr];W[cq];B[iq];W[kq];B[qp];W[qq];B[rq];W[pq]
+;B[ro];W[ei];B[lg];W[ol];B[po];W[ql];B[pd];W[ob];B[qj];W[ml]
+;B[nk];W[nl];B[no];W[ok];B[lr];W[hq];B[hp];W[ir];B[hr];W[jr]
+;B[gq];W[mp];B[kp];W[lq];B[jq];W[kr];B[oj];W[cr];B[ek];W[gj]
+;B[fl];W[gl];B[gm];W[hl];B[hm];W[il];B[ck];W[dl];B[em];W[cm]
+;B[dk];W[bc];B[df];W[ce];B[de];W[lj];B[im];W[jm];B[hi];W[kh]
+;B[dh];W[bj];B[ji];W[nj];B[ni];W[mj];B[cg];W[bg];B[bh];W[ch]
+;B[dg];W[bf];B[jl])

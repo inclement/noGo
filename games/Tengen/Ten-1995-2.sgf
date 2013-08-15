@@ -1,13 +1,29 @@
-(;FF[3]B[pd]BR[9d]DT[1995-11-23]ID[21/2]KM[5.5]PB[Kobayashi Koichi]PC[Japan]
-PW[Ryu Shikun]RE[B+R]RO[2]WR[9d];W[dd];B[qp];W[dp];B[oq];W[qj];B[cj];W[ch];
-B[cm];W[gq];B[ql];W[qf];B[qh];W[of];B[nd];W[pi];B[qe];W[rf];B[kc];W[co];B[iq];
-W[oo];B[po];W[op];B[nq];W[pn];B[pp];W[qn];B[pk];W[nm];B[ph];W[oh];B[oi];W[oj];
-B[ni];W[pj];B[nl];W[nj];B[om];W[on];B[mm];W[pl];B[pm];W[rl];B[qm];W[rm];B[qk];
-W[rk];B[og];W[nh];B[pf];W[mi];B[ro];W[nn];B[ll];W[lo];B[ri];W[kn];B[jl];W[in];
-B[lq];W[oe];B[pe];W[ng];B[pg];W[hl];B[kj];W[ej];B[di];W[fh];B[ei];W[fi];B[dg];
-W[cg];B[eg];W[ce];B[ij];W[gf];B[bn];W[bo];B[el];W[ji];B[ki];W[kd];B[lc];W[nk];
-B[ol];W[jj];B[jh];W[ii];B[lh];W[mk];B[ml];W[rj];B[ih];W[hi];B[kf];W[bl];B[fj];
-W[cl];B[dl];W[fk];B[bm];W[bj];B[gj];W[kk];B[lk];W[jk];B[lj];W[ek];B[dk];W[bk];
-B[ci];W[bi];B[ee];W[fc];B[ge];W[hh];B[ed];W[ec];B[rn];W[sj];B[gk];W[fl];B[gl];
-W[fm];B[gm];W[fn];B[jm];W[ho];B[gn];W[he];B[gd];W[ik];B[go];W[gp];B[fo];W[dn];
-B[eo];W[dm];B[hp];W[if];B[hc];W[ip];B[hq];W[eq];B[im];W[hm];B[hn];W[io];B[jn])
+(;
+FF[3]
+RO[2]
+ID[21/2]
+PB[Kobayashi Koichi]
+BR[9d]
+PW[Ryu Shikun]
+WR[9d]
+KM[5.5]
+RE[B+R]
+DT[1995-11-23]
+PC[Japan]
+B[pd]
+
+;W[dd];B[qp];W[dp];B[oq];W[qj];B[cj];W[ch];B[cm];W[gq];B[ql]
+;W[qf];B[qh];W[of];B[nd];W[pi];B[qe];W[rf];B[kc];W[co];B[iq]
+;W[oo];B[po];W[op];B[nq];W[pn];B[pp];W[qn];B[pk];W[nm];B[ph]
+;W[oh];B[oi];W[oj];B[ni];W[pj];B[nl];W[nj];B[om];W[on];B[mm]
+;W[pl];B[pm];W[rl];B[qm];W[rm];B[qk];W[rk];B[og];W[nh];B[pf]
+;W[mi];B[ro];W[nn];B[ll];W[lo];B[ri];W[kn];B[jl];W[in];B[lq]
+;W[oe];B[pe];W[ng];B[pg];W[hl];B[kj];W[ej];B[di];W[fh];B[ei]
+;W[fi];B[dg];W[cg];B[eg];W[ce];B[ij];W[gf];B[bn];W[bo];B[el]
+;W[ji];B[ki];W[kd];B[lc];W[nk];B[ol];W[jj];B[jh];W[ii];B[lh]
+;W[mk];B[ml];W[rj];B[ih];W[hi];B[kf];W[bl];B[fj];W[cl];B[dl]
+;W[fk];B[bm];W[bj];B[gj];W[kk];B[lk];W[jk];B[lj];W[ek];B[dk]
+;W[bk];B[ci];W[bi];B[ee];W[fc];B[ge];W[hh];B[ed];W[ec];B[rn]
+;W[sj];B[gk];W[fl];B[gl];W[fm];B[gm];W[fn];B[jm];W[ho];B[gn]
+;W[he];B[gd];W[ik];B[go];W[gp];B[fo];W[dn];B[eo];W[dm];B[hp]
+;W[if];B[hc];W[ip];B[hq];W[eq];B[im];W[hm];B[hn];W[io];B[jn])

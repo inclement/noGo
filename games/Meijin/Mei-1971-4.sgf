@@ -1,17 +1,33 @@
-(;BR[9d]DT[1971]EV[10th Meijin Title]KM[5]PB[Rin Kaiho]PW[Fujisawa Shuko]
-RE[W+R]RO[4]WR[Meijin];B[qd];W[dd];B[cp];W[pq];B[oc];W[eq];B[qo];W[pl];B[no];
-W[oo];B[on];W[op];B[qm];W[nn];B[om];W[mn];B[rk];W[dn];B[ep];W[dp];B[do];W[dq];
-B[eo];W[co];B[cn];W[bo];B[dm];W[gp];B[en];W[bp];B[iq];W[hq];B[nq];W[np];B[mo];
-W[lp];B[lo];W[ko];B[ln];W[mp];B[lm];W[io];B[hr];W[gr];B[ph];W[dj];B[jd];W[rd];
-B[qc];W[gd];B[fj];W[jg];B[eh];W[ch];B[he];W[hd];B[ie];W[lg];B[hg];W[ng];B[mh];
-W[mg];B[oi];W[pf];B[pg];W[nd];B[of];W[ld];B[mb];W[ni];B[cc];W[cd];B[bd];W[dc];
-B[bb];W[cb];B[bc];W[cf];B[db];W[eb];B[ca];W[ml];B[ll];W[mj];B[kj];W[og];B[oe];
-W[ji];B[li];W[nh];B[ik];W[hh];B[ih];W[ig];B[hi];W[gh];B[gg];W[gi];B[hj];W[ii];
-B[gj];W[jh];B[fh];W[lb];B[mc];W[lc];B[fc];W[ge];B[gf];W[ec];B[fe];W[fd];B[md];
-W[ke];B[me];W[jc];B[kq];W[kp];B[qq];W[qr];B[jr];W[lr];B[lq];W[mq];B[kr];W[mr];
-B[ip];W[ho];B[jp];W[hs];B[is];W[ir];B[cq];W[cr];B[hr];W[gs];B[gn];W[im];B[fp];
-W[go];B[fq];W[gq];B[la];W[nl];B[jm];W[jn];B[il];W[km];B[jl];W[lk];B[kk];W[kn];
-B[kl];W[qk];B[qj];W[pj];B[qi];W[rl];B[ql];W[pk];B[rj];W[qp];B[ic];W[rn];B[qn];
-W[ro];B[rm];W[id];B[je];W[jb];B[ci];W[fg];B[fi];W[ih];B[ef];W[hf];B[if];W[di];
-B[de];W[ce];B[hc];W[ed];B[dh];W[dg];B[kf];W[jf];B[eg];W[kd];B[bh];W[cg];B[bi];
-C[192 moves complete.]W[bm])
+(;
+EV[10th Meijin Title]
+RO[4]
+PB[Rin Kaiho]
+BR[9d]
+PW[Fujisawa Shuko]
+WR[Meijin]
+KM[5]
+RE[W+R]
+DT[1971]
+
+;B[qd];W[dd];B[cp];W[pq];B[oc];W[eq];B[qo];W[pl];B[no];W[oo]
+;B[on];W[op];B[qm];W[nn];B[om];W[mn];B[rk];W[dn];B[ep];W[dp]
+;B[do];W[dq];B[eo];W[co];B[cn];W[bo];B[dm];W[gp];B[en];W[bp]
+;B[iq];W[hq];B[nq];W[np];B[mo];W[lp];B[lo];W[ko];B[ln];W[mp]
+;B[lm];W[io];B[hr];W[gr];B[ph];W[dj];B[jd];W[rd];B[qc];W[gd]
+;B[fj];W[jg];B[eh];W[ch];B[he];W[hd];B[ie];W[lg];B[hg];W[ng]
+;B[mh];W[mg];B[oi];W[pf];B[pg];W[nd];B[of];W[ld];B[mb];W[ni]
+;B[cc];W[cd];B[bd];W[dc];B[bb];W[cb];B[bc];W[cf];B[db];W[eb]
+;B[ca];W[ml];B[ll];W[mj];B[kj];W[og];B[oe];W[ji];B[li];W[nh]
+;B[ik];W[hh];B[ih];W[ig];B[hi];W[gh];B[gg];W[gi];B[hj];W[ii]
+;B[gj];W[jh];B[fh];W[lb];B[mc];W[lc];B[fc];W[ge];B[gf];W[ec]
+;B[fe];W[fd];B[md];W[ke];B[me];W[jc];B[kq];W[kp];B[qq];W[qr]
+;B[jr];W[lr];B[lq];W[mq];B[kr];W[mr];B[ip];W[ho];B[jp];W[hs]
+;B[is];W[ir];B[cq];W[cr];B[hr];W[gs];B[gn];W[im];B[fp];W[go]
+;B[fq];W[gq];B[la];W[nl];B[jm];W[jn];B[il];W[km];B[jl];W[lk]
+;B[kk];W[kn];B[kl];W[qk];B[qj];W[pj];B[qi];W[rl];B[ql];W[pk]
+;B[rj];W[qp];B[ic];W[rn];B[qn];W[ro];B[rm];W[id];B[je];W[jb]
+;B[ci];W[fg];B[fi];W[ih];B[ef];W[hf];B[if];W[di];B[de];W[ce]
+;B[hc];W[ed];B[dh];W[dg];B[kf];W[jf];B[eg];W[kd];B[bh];W[cg]
+;B[bi];W[bm]
+C[192 moves complete.]
+)

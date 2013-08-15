@@ -1,13 +1,26 @@
-(;FF[3]BT[China]DT[1985-03-11]ID[ 1/ 7]KM[5.5]PB[Jiang Zhujiu]
-PW[Kobayashi Koichi]RE[W+R]WR[9d]WT[Japan];B[qd];W[dp];B[cd];W[qp];B[oc];W[fc];
-B[dc];W[ic];B[oq];W[kq];B[pn];W[po];B[qn];W[np];B[qj];W[nq];B[kc];W[cj];B[je];
-W[fe];B[dg];W[qe];B[pe];W[qf];B[rd];W[og];B[qh];W[oe];B[pf];W[pg];B[pd];W[pi];
-B[qi];W[lg];B[he];W[fg];B[ih];W[ok];B[ei];W[df];B[cf];W[de];B[ce];W[dh];B[eh];
-W[eg];B[cg];W[ek];B[gd];W[ec];B[hb];W[db];B[cb];W[dd];B[cc];W[hg];B[gh];W[hf];
-B[jg];W[ie];B[id];W[if];B[jf];W[hc];B[nm];W[mj];B[dn];W[pl];B[rl];W[fp];B[cl];
-W[ej];B[di];W[ck];B[dl];W[fm];B[fn];W[gn];B[gm];W[fl];B[cp];W[cq];B[dq];W[eq];
-B[go];W[hn];B[do];W[dr];B[fo];W[hm];B[bp];W[oo];B[on];W[ro];B[rn];W[ip];B[mo];
-W[no];B[mn];W[pj];B[lq];W[lp];B[nr];W[pr];B[ho];W[jp];B[ko];W[kp];B[hl];W[il];
-B[hk];W[ik];B[hj];W[gl];B[jn];W[ij];B[hi];W[kj];B[mf];W[mg];B[gc];W[hd];B[ib];
-W[ge];B[jd];W[gb];B[qg];W[nd];B[kh];W[lh];B[ki];W[ml];B[li];W[mi];B[nl];W[jm];
-B[nk];W[nj];B[bq];W[br])
+(;
+FF[3]
+ID[ 1/ 7]
+PB[Jiang Zhujiu]
+PW[Kobayashi Koichi]
+WR[9d]
+KM[5.5]
+RE[W+R]
+DT[1985-03-11]
+WT[Japan]
+BT[China]
+
+;B[qd];W[dp];B[cd];W[qp];B[oc];W[fc];B[dc];W[ic];B[oq];W[kq]
+;B[pn];W[po];B[qn];W[np];B[qj];W[nq];B[kc];W[cj];B[je];W[fe]
+;B[dg];W[qe];B[pe];W[qf];B[rd];W[og];B[qh];W[oe];B[pf];W[pg]
+;B[pd];W[pi];B[qi];W[lg];B[he];W[fg];B[ih];W[ok];B[ei];W[df]
+;B[cf];W[de];B[ce];W[dh];B[eh];W[eg];B[cg];W[ek];B[gd];W[ec]
+;B[hb];W[db];B[cb];W[dd];B[cc];W[hg];B[gh];W[hf];B[jg];W[ie]
+;B[id];W[if];B[jf];W[hc];B[nm];W[mj];B[dn];W[pl];B[rl];W[fp]
+;B[cl];W[ej];B[di];W[ck];B[dl];W[fm];B[fn];W[gn];B[gm];W[fl]
+;B[cp];W[cq];B[dq];W[eq];B[go];W[hn];B[do];W[dr];B[fo];W[hm]
+;B[bp];W[oo];B[on];W[ro];B[rn];W[ip];B[mo];W[no];B[mn];W[pj]
+;B[lq];W[lp];B[nr];W[pr];B[ho];W[jp];B[ko];W[kp];B[hl];W[il]
+;B[hk];W[ik];B[hj];W[gl];B[jn];W[ij];B[hi];W[kj];B[mf];W[mg]
+;B[gc];W[hd];B[ib];W[ge];B[jd];W[gb];B[qg];W[nd];B[kh];W[lh]
+;B[ki];W[ml];B[li];W[mi];B[nl];W[jm];B[nk];W[nj];B[bq];W[br])

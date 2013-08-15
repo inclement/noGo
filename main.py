@@ -551,7 +551,7 @@ class NogoManager(ScreenManager):
         self.boards.append(name)
 
         if self.view_mode == 'tablet':
-            pbv.board.comment_pre_text = 'This [b]tablet mode[/b] is currently experimental. It should work fine, but is still being tested and will be subject to change (more efficient layout etc.) before being finalised.\n-----\n'
+            pbv.board.comment_pre_text = 'This [b]tablet mode[/b] is currently experimental. It should work fine, but is still being tested and will be subject to change (more efficient layout etc.) and speed optimisation before being finalised.\n-----\n'
 
         return pbv
     def refresh_collections_index(self):
@@ -604,7 +604,7 @@ class NogoManager(ScreenManager):
                 reconstruction_path = board.board.get_reconstruction()
                 new_pbv = self.new_board(from_file=filen,mode='Navigate')
                 new_pbv.board.reconstruct_from(reconstruction_path)
-                new_pbv.board.comment_pre_text = 'This [b]tablet mode[/b] is currently experimental. It should work fine, but is still being tested and will be subject to change (more efficient layout etc.) before being finalised.\n-----\n'
+                new_pbv.board.comment_pre_text = 'This [b]tablet mode[/b] is currently experimental. It should work fine, but is still being tested and will be subject to change (more efficient layout etc.) and speed optimisation before being finalised.\n-----\n'
                 App.get_running_app().manager.refresh_open_games()
         else:
             if not isinstance(board.children[0], PhoneBoardView):
@@ -773,7 +773,7 @@ class GobanApp(App):
                     filestr = fileh.read()
                 if len(filestr) > 1:
                     name = filen.split('/')[-1]
-                    copyfile(filen,'./'+name)
+                    copyfile(filen,'./collections/'+name)
            
 
         # Load collections

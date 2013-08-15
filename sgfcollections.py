@@ -146,7 +146,7 @@ class CollectionsList(EventDispatcher):
             if platform() == 'android':
                 default_filen = '/sdcard/noGo/collections_list.json'
             else:
-                default_filen = '.' + '/collections_list.json'
+                default_filen = '.' + '/collections/collections_list.json'
             filen = default_filen
         colstr = self.serialise()
         with open(filen,'w') as fileh:
@@ -160,7 +160,7 @@ class CollectionsList(EventDispatcher):
         return json.dumps(coll_lists)
     def from_file(self,filen='default'):
         #default_filen = App.get_running_app().user_data_dir + '/collections_list.json'
-        default_filen = './collections_list.json'
+        default_filen = './collections/collections_list.json'
         if filen == 'default':
             filen = default_filen
         with open(filen,'r') as fileh:
@@ -245,12 +245,12 @@ class Collection(EventDispatcher):
         if platform() == 'android':
             filen = '/sdcard/noGo/' + self.name + '.json'
         else:
-            filen = '.' + '/' + self.name + '.json'
+            filen = '.' + '/collections/' + self.name + '.json'
         with open(filen,'w') as fileh:
             fileh.write(self.serialise())
         return filen
     def get_filen(self):
-        filen = '.' + '/' + self.name + '.json'
+        filen = '.' + '/collections/' + self.name + '.json'
         return filen
     def from_file(self,filen):
         print 'Trying to load collection from',filen
