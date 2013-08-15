@@ -1,29 +1,14 @@
-(;
-FF[4]
-EV[17th Gosei]
-RO[1]
-PB[Kobayashi Koichi]
-BR[Kisei, Meijin, Gosei]
-PW[Kobayashi Satoru]
-WR[9d]
-KM[5.5]
-RE[B+R]
-DT[1992-07-02]
-PC[Sendai, Japan]
-SO[Go Weekly, July 14 '92]
-
-;B[pd];W[dd];B[pp];W[dp];B[fq];W[dn];B[jq];W[qn];B[pn];W[pm]
-;B[qo];W[on];B[po];W[om];B[np];W[qf];B[pi];W[of];B[nd];W[ni]
-;B[pk];W[nk];B[pg];W[oe];B[od];W[qe];B[nh];W[qc];B[qg];W[me]
-;B[mh];W[rf];B[lc];W[mi];B[lh];W[kj];B[jh];W[ln];B[mo];W[mn]
-;B[ci];W[cg];B[cl];W[jc];B[ob];W[qb];B[jd];W[ic];B[kd];W[ec]
-;B[bn];W[fp];B[gp];W[eq];B[fo];W[ep];B[gq];W[bp];B[gc];W[id]
-;B[fd];W[if];B[ef];W[ce];B[jf];W[ig];B[gf];W[jg];B[ie];W[he]
-;B[je];W[gd];B[fc];W[hf];B[kg];W[ih];B[ji];W[dh];B[ge];W[hd]
-;B[ed];W[dc];B[gh];W[hi];B[gi];W[hj];B[ej];W[ik];B[ch];W[dg]
-;B[rm];W[ei];B[di];W[kq];B[kp];W[jp];B[ko];W[iq];B[jr];W[ir]
-;B[ip];W[jo];B[io];W[jn];B[kr];W[lq];B[lr];W[lo];B[lp];W[kn]
-;B[mp];W[fj];B[eh];W[fi];B[gj];W[fk];B[gk];W[ek];B[hk];W[ij]
-;B[hm];W[gn];B[hn];W[cm];B[dl];W[cj];B[bj];W[dj];B[bh];W[gl]
-;B[hl];W[fh];B[fg];W[bg];B[ai];W[ag];B[ah];W[ak];B[al];W[bk]
-;B[ck];W[bl];B[bm];W[am];B[dk])
+(;FF[4]BR[Kisei, Meijin, Gosei]DT[1992-07-02]EV[17th Gosei]KM[5.5]
+PB[Kobayashi Koichi]PC[Sendai, Japan]PW[Kobayashi Satoru]RE[B+R]RO[1]
+SO[Go Weekly, July 14 '92]WR[9d];B[pd];W[dd];B[pp];W[dp];B[fq];W[dn];B[jq];
+W[qn];B[pn];W[pm];B[qo];W[on];B[po];W[om];B[np];W[qf];B[pi];W[of];B[nd];W[ni];
+B[pk];W[nk];B[pg];W[oe];B[od];W[qe];B[nh];W[qc];B[qg];W[me];B[mh];W[rf];B[lc];
+W[mi];B[lh];W[kj];B[jh];W[ln];B[mo];W[mn];B[ci];W[cg];B[cl];W[jc];B[ob];W[qb];
+B[jd];W[ic];B[kd];W[ec];B[bn];W[fp];B[gp];W[eq];B[fo];W[ep];B[gq];W[bp];B[gc];
+W[id];B[fd];W[if];B[ef];W[ce];B[jf];W[ig];B[gf];W[jg];B[ie];W[he];B[je];W[gd];
+B[fc];W[hf];B[kg];W[ih];B[ji];W[dh];B[ge];W[hd];B[ed];W[dc];B[gh];W[hi];B[gi];
+W[hj];B[ej];W[ik];B[ch];W[dg];B[rm];W[ei];B[di];W[kq];B[kp];W[jp];B[ko];W[iq];
+B[jr];W[ir];B[ip];W[jo];B[io];W[jn];B[kr];W[lq];B[lr];W[lo];B[lp];W[kn];B[mp];
+W[fj];B[eh];W[fi];B[gj];W[fk];B[gk];W[ek];B[hk];W[ij];B[hm];W[gn];B[hn];W[cm];
+B[dl];W[cj];B[bj];W[dj];B[bh];W[gl];B[hl];W[fh];B[fg];W[bg];B[ai];W[ag];B[ah];
+W[ak];B[al];W[bk];B[ck];W[bl];B[bm];W[am];B[dk])

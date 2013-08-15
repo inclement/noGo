@@ -15,6 +15,7 @@ import os
 print 'THIS DIR'
 print os.listdir('.')
 
+
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle, Ellipse
@@ -71,7 +72,6 @@ from widgetcache import WidgetCache
 
 import sys
 
-# from kivy.config import Config
 # Config.set('graphics', 'width', '400')
 # Config.set('graphics', 'height', '600')
 
@@ -92,6 +92,8 @@ textcodes = ['text','LB']
 def boardname_to_filepath(name):
     if name == 'full board photo':
         return './media/boards/edphoto_full_small2.png'
+    elif name == 'white':
+        return './media/white_pixel.png'
     elif name == 'board section photo 1':
         return './media/boards/edphoto_section.png'
     elif name == 'lightened board photo 1':
@@ -548,6 +550,9 @@ class NogoManager(ScreenManager):
         pbv.board.save_sgf()
         self.boards.append(name)
 
+        if self.view_mode == 'tablet':
+            pbv.board.comment_pre_text = 'This [b]tablet mode[/b] is currently experimental. It should work fine, but is still being tested and will be subject to change (more efficient layout etc.) before being finalised.\n-----\n'
+
         return pbv
     def refresh_collections_index(self):
         if 'Collections Index' not in self.screen_names:
@@ -591,8 +596,6 @@ class NogoManager(ScreenManager):
         if self.view_mode == 'tablet':
             if not isinstance(board.children[0], TabletBoardView):
                 print 'REFRESHING -> tbv'
-                print 'REFRESHING -> tbv'
-                print 'REFRESHING -> tbv'
                 board = self.get_screen(name)
                 self.close_board(name)
                 board = board.children[0]
@@ -601,11 +604,10 @@ class NogoManager(ScreenManager):
                 reconstruction_path = board.board.get_reconstruction()
                 new_pbv = self.new_board(from_file=filen,mode='Navigate')
                 new_pbv.board.reconstruct_from(reconstruction_path)
+                new_pbv.board.comment_pre_text = 'This [b]tablet mode[/b] is currently experimental. It should work fine, but is still being tested and will be subject to change (more efficient layout etc.) before being finalised.\n-----\n'
                 App.get_running_app().manager.refresh_open_games()
         else:
             if not isinstance(board.children[0], PhoneBoardView):
-                print 'REFRESHING -> pbv'
-                print 'REFRESHING -> pbv'
                 print 'REFRESHING -> pbv'
                 board = self.get_screen(name)
                 self.close_board(name)
@@ -647,6 +649,7 @@ class NogoManager(ScreenManager):
     def propagate_boardtype_mode(self,name):
         self.boardtype = name
         board_file = boardname_to_filepath(name)
+        print 'board file is',board_file
         print 'propagating boardtype',name,board_file
         for name in self.screen_names:
             if name[:5] == 'Board':

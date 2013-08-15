@@ -435,42 +435,51 @@
 <CollectionsIndex>:
     id: ci
     collections_list: collections
-    orientation: 'vertical'
+    orientation: 'horizontal'
 
-    ListView:
-        id: collections
-        scroll_distance: 1
-        scroll_timeout: 1000
-        size_hint_y: 0.9
-    
-    DividerLine
+    Widget
+    VDividerLine:
+        vgap: 0
     BoxLayout:
-        orientation: 'horizontal'
-        size_hint_y: 0.1
-        Button:
-            size_hint: (0.25,1.)
-            text: 'Delete\ncollection'
-            halign: 'center'
-            valign: 'middle'
-            on_press: app.query_delete_collection(collections.adapter.selection)
-            background_normal: 'media/red_pixel.png'
-            background_down: 'media/blue_press_pixel.png'
-        VDividerLine
-        Button:
-            size_hint: (0.25,1.)
-            text: 'New\ncollection'
-            halign: 'center'
-            valign: 'middle'
-            on_release: app.new_collection_query()
-            background_normal: 'media/blue_pixel.png'
-            background_down: 'media/blue_press_pixel.png'
-        VDividerLine
-        Button:
-            size_hint: (0.5,1.)
-            text: 'View selected collection'
-            on_release: root.managedby.view_or_open_collection(collections.adapter.selection)
-            background_normal: 'media/green_pixel.png'
-            background_down: 'media/blue_press_pixel.png'
+        orientation: 'vertical'
+        size_hint_x: None
+        width: min(root.width,dp(800))
+        ListView:
+            id: collections
+            scroll_distance: 1
+            scroll_timeout: 1000
+            size_hint_y: 0.9
+        DividerLine
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.1
+            Button:
+                size_hint: (0.25,1.)
+                text: 'Delete\ncollection'
+                halign: 'center'
+                valign: 'middle'
+                on_press: app.query_delete_collection(collections.adapter.selection)
+                background_normal: 'media/red_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
+            VDividerLine
+            Button:
+                size_hint: (0.25,1.)
+                text: 'New\ncollection'
+                halign: 'center'
+                valign: 'middle'
+                on_release: app.new_collection_query()
+                background_normal: 'media/blue_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
+            VDividerLine
+            Button:
+                size_hint: (0.5,1.)
+                text: 'View selected collection'
+                on_release: root.managedby.view_or_open_collection(collections.adapter.selection)
+                background_normal: 'media/green_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
+    VDividerLine:
+        vgap: 0
+    Widget
 
 <PrintyButton>:
     text: ''
@@ -609,56 +618,66 @@
 
 <StandaloneGameChooser>:
     id: sgc
-    orientation: 'vertical'
+    orientation: 'horizontal'
     gameslist: gl
-    Label:
-        height: 30,'sp'
-        size_hint_y: None
-        text: root.collection.name + ' Collection'
-        font_size: (25,'sp')
-        textsize: self.size
-        valign: 'middle'
-    DividerLine
-    ListView:
-        id: gl
-        scroll_distance: 1
-        scroll_timeout: 1000
-        size_hint_y: 0.9
-    DividerLine
+    Widget
+    VDividerLine:
+        vgap: 0
     BoxLayout:
-        orientation: 'horizontal'
-        size_hint_y: 0.1
-        Button:
-            size_hint: (0.22222,1.)
-            text: 'Delete'
-            halign: 'center'
+        orientation: 'vertical'
+        size_hint_x: None
+        width: min(root.width, dp(800))
+        Label:
+            height: 30,'sp'
+            size_hint_y: None
+            text: root.collection.name + ' Collection'
+            font_size: (25,'sp')
+            textsize: self.size
             valign: 'middle'
-            on_press: root.managedby.query_delete_sgf(gl.adapter.selection)
-            background_normal: 'media/red_pixel.png'
-            background_down: 'media/blue_press_pixel.png'
-        VDividerLine
-        Button:
-            size_hint: (0.22222,1.)
-            text: 'New game'
-            on_release: root.managedby.new_board(in_collection=root.collection)
-            halign: 'center'
-            valign: 'middle'
-            background_normal: 'media/blue_pixel.png'
-            background_down: 'media/blue_press_pixel.png'
-        VDividerLine
-        Button:
-            size_hint: (0.22222,1.)
-            text: 'Random'
-            on_release: root.managedby.new_board(with_collectionsgf=root.collection.random_sgf(),mode='Navigate') if len(root.collection.games) >= 1 else None
-            background_normal: 'media/orange_pixel.png'
-            background_down: 'media/blue_press_pixel.png'
-        VDividerLine
-        Button:
-            size_hint: (0.3333,1.)
-            text: 'Open selected'
-            on_press: root.managedby.board_from_gamechooser(gl.adapter.selection)
-            background_normal: 'media/green_pixel.png'
-            background_down: 'media/blue_press_pixel.png'
+        DividerLine
+        ListView:
+            id: gl
+            scroll_distance: 1
+            scroll_timeout: 1000
+            size_hint_y: 0.9
+        DividerLine
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.1
+            Button:
+                size_hint: (0.22222,1.)
+                text: 'Delete'
+                halign: 'center'
+                valign: 'middle'
+                on_press: root.managedby.query_delete_sgf(gl.adapter.selection)
+                background_normal: 'media/red_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
+            VDividerLine
+            Button:
+                size_hint: (0.22222,1.)
+                text: 'New game'
+                on_release: root.managedby.new_board(in_collection=root.collection)
+                halign: 'center'
+                valign: 'middle'
+                background_normal: 'media/blue_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
+            VDividerLine
+            Button:
+                size_hint: (0.22222,1.)
+                text: 'Random'
+                on_release: root.managedby.new_board(with_collectionsgf=root.collection.random_sgf(),mode='Navigate') if len(root.collection.games) >= 1 else None
+                background_normal: 'media/orange_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
+            VDividerLine
+            Button:
+                size_hint: (0.3333,1.)
+                text: 'Open selected'
+                on_press: root.managedby.board_from_gamechooser(gl.adapter.selection)
+                background_normal: 'media/green_pixel.png'
+                background_down: 'media/blue_press_pixel.png'
+    VDividerLine:
+        vgap: 0
+    Widget
 
 <CollectionChooserButton>:
     height: (50,'sp')
