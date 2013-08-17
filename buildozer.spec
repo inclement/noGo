@@ -28,6 +28,7 @@ version = 0.3.2
 # (list) Application requirements
 requirements = docutils,kivy
 
+#orientation = all
 orientation = portrait
 #orientation = landscape
 

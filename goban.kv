@@ -3,6 +3,15 @@
 #:import la kivy.adapters.listadapter
 #:import lv kivy.uix.listview
 
+<CollectionProgress>:
+    title: 'Parsing collections...'
+    size_hint_x: 0.9
+    size_hint_y: None
+    height: (100,'sp')
+    ProgressBar:
+        value: root.progress
+        max: root.length-1
+
 <EditMarker>:
     pos: self.set_position_from_coord(self.coord)
     size: self.board.stonesize
@@ -988,7 +997,7 @@
         cols: 3
         size_hint: (1.,0.25)
         Button:
-            on_press: homeroot.managedby.switch_and_set_back('Collections Index')
+            on_release: homeroot.managedby.switch_and_set_back('Collections Index')
             background_normal: 'media/black_pixel.png'
             background_down: 'media/blue_press_pixel.png'
             BoxLayout:
@@ -1125,7 +1134,7 @@
             orientation: 'vertical'
             size_hint: (1.,0.25)
             Button:
-                on_press: homeroot.managedby.switch_and_set_back('Collections Index')
+                on_release: homeroot.managedby.switch_and_set_back('Collections Index')
                 background_normal: 'media/black_pixel.png'
                 background_down: 'media/blue_press_pixel.png'
                 BoxLayout:
@@ -1607,8 +1616,8 @@
         orientation: "vertical"
         FileChooserListView:
             id: filechooser
-            filters: ['*.sgf']
-            path: root.get_dir()
+            filters: ['*'] #['*.sgf']
+            path: '.' #root.get_dir()
             sort_func: lambda j: sorted(j,key=lambda s: s.lower())
         BoxLayout:
             size_hint_y: None

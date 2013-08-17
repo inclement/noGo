@@ -137,6 +137,7 @@ class GameChooserInfo(BoxLayout):
 
 class CollectionsList(EventDispatcher):
     collections = ListProperty([])
+    popup = ObjectProperty(None,allownone=True)
     def __str__(self):
         return 'CollectionsList with {0} collections'.format(len(self.collections))
     def __repr__(self):
@@ -176,16 +177,23 @@ class CollectionsList(EventDispatcher):
                     col.games.append(CollectionSgf().from_dict(game,col))
                 self.collections.append(col)
         elif version == 2:
+            if self.popup is not None:
+                self.popup.progress = 0
+                self.popup.length = len(colpy)
             for entry in colpy:
                 parts = entry.split('/')
                 if len(parts) == 2:
-                    print 'REBUILDING ENTRY'
-                    print 'entry is',entry
-                    entry = './collections/' + parts[-1]
-                    print 'now is',entry
+                    # print 'REBUILDING ENTRY'
+                    # print 'entry is',entry
+                    entry = './collections/' + parts[-1] # 
+                    # print 'now is',entry
                 try:
                     col = Collection().from_file(entry)
                     self.collections.append(col)
+                    if self.popup is not None:
+                        # print 'popup is',self.popup, self.popup.progress, self.popup.length
+                        self.popup.progress += 1
+                       # time.sleep(1)
                 except IOError:
                     print 'Collection doesn\'t seem to exist. Skipping.'
         else:
@@ -196,7 +204,7 @@ class CollectionsList(EventDispatcher):
             dirn = '/sdcard/noGo/collections/{0}'.format(newname)
         else:
             dirn = './games/{0}'.format(newname)
-        print 'Making dir for new collection:',dirn
+        # print 'Making dir for new collection:',dirn
         try:
             mkdir(dirn)
         except OSError:
@@ -241,6 +249,7 @@ class Collection(EventDispatcher):
                 self.games.append(colsgf)
             except IOError:
                 print 'Tried to load sgf that doesn\'t seem to exist. Skipping.'
+                print 'game was', game
         #self.games = map(lambda j: CollectionSgf(collection=self).load(j),games)
         return self
     def as_list(self):
@@ -259,7 +268,7 @@ class Collection(EventDispatcher):
         filen = '.' + '/collections/' + self.name + '.json'
         return filen
     def from_file(self,filen):
-        print 'Trying to load collection from',filen
+        # print 'Trying to load collection from',filen
         with open(filen,'r') as fileh:
             jsonstr = fileh.read()
         #print 'File contents are',jsonstr

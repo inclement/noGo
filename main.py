@@ -10,10 +10,10 @@
 
 # You should have received a copy of the GNU General Public License along with noGo. If not, see http://www.gnu.org/licenses/gpl-3.0.txt
 
-print 'DEBUG STUFF'
-import os
-print 'THIS DIR'
-print os.listdir('.')
+# print 'DEBUG STUFF'
+# import os
+# print 'THIS DIR'
+# print os.listdir('.')
 
 
 from kivy.app import App
@@ -70,6 +70,9 @@ from homepage import TabletHomeScreen, HomeScreen, OpenSgfDialog
 from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton, GameChooserButton, DeleteSgfQuestion, CollectionsList, Collection, CollectionSgf, get_collectioninfo_from_collection
 from widgetcache import WidgetCache
 
+if platform() == 'android':
+    from jnius import autoclass
+
 import sys
 
 # Config.set('graphics', 'width', '400')
@@ -89,6 +92,20 @@ squarecodes = ['square','SQ']
 circlecodes = ['circle','CR']
 crosscodes = ['cross','MA']
 textcodes = ['text','LB']
+
+class CollectionProgress(Popup):
+    length = NumericProperty(1)
+    progress = NumericProperty(0)
+    
+    def set_length(self,thing,value):
+        print 'thing is',thing
+        print 'val is',value
+        self.length = value
+    def set_progress(self, thing, value):
+        print 'prog thing is',thing
+        print 'prog val is', value
+        self.progress = value
+
 def boardname_to_filepath(name):
     if name == 'full board photo':
         return './media/boards/edphoto_full_small2.png'
@@ -286,6 +303,9 @@ class NogoManager(ScreenManager):
         if newcurrent[:5] == 'Board' and self.has_screen(newcurrent):
             print 'got to make_match bit'
             self.make_board_match_view_mode(newcurrent)
+        elif newcurrent == 'Collections Index':
+            if not self.has_screen('Collections Index'):
+                self.create_collections_index()
         if not self.transition.is_active:
             self.back_screen_name = self.current
             self.current = newcurrent
@@ -620,6 +640,8 @@ class NogoManager(ScreenManager):
                 App.get_running_app().manager.refresh_open_games()
 
     def create_collections_index(self):
+        app = App.get_running_app()
+        app.build_collections_list()
         collections_list = App.get_running_app().collections.collections
         collections_index = CollectionsIndex(managedby=self)
         collections_args_converter = get_collectioninfo_from_collection
@@ -688,8 +710,17 @@ class NogoManager(ScreenManager):
                 curboard.children[0].board.coordinates = bool(val)
             
     def propagate_view_mode(self,val):
+        print 'PROPAGATING VIEW MODE',val
         self.view_mode = val
-        if platform() == 'android':
+        if False: #platform() == 'android':
+            try:
+                if val == 'tablet':
+                    App.get_running_app().try_android_rotate('landscape')
+                else:
+                    App.get_running_app().try_android_rotate('portrait')
+            except AttributeError:
+                print 'VIEW MODE variables don\'t exist yet.'
+        else:
             if val == 'phone':
                 Window.rotation = 0
             elif val == 'tablet':
@@ -735,7 +766,7 @@ def printargs(*args,**kwargs):
 class GobanApp(App):
     manager = ObjectProperty(None,allownone=True)
     cache = ObjectProperty(WidgetCache())
-    collections = ObjectProperty(CollectionsList())
+    collections = ObjectProperty(None, allownone=True)
 
     stone_type = StringProperty('default')
     board_type = StringProperty('./media/boards/none.png')
@@ -750,10 +781,12 @@ class GobanApp(App):
     prev_opened_file = StringProperty('')
 
     def build(self):
+        print 'ENTERED BUILD()'
+        t1 = time()
         # Load config
-        print 'user data dir is', self.user_data_dir
+        #print 'user data dir is', self.user_data_dir
         config = self.config
-        print 'my config is',config
+        #print 'my config is',config
 
         sound = SoundLoader.load('./media/sounds/stone_sound5.mp3')
         sound.volume = 0.05
@@ -777,7 +810,7 @@ class GobanApp(App):
            
 
         # Load collections
-        self.collections = CollectionsList().from_file()
+        # self.collections = CollectionsList().from_file()
 
         
         # Construct GUI
@@ -790,8 +823,11 @@ class GobanApp(App):
         # hs = HomeScreen(managedby=sm)
         # hv.add_widget(hs)
         # sm.add_widget(hv)
-        sm.create_collections_index()
+        # sm.create_collections_index()
         sm.current = 'Home'
+
+        t2 = time()
+        print 'CONSTRUCTED manager and home',t2-t1
 
         # Get initial settings from config panel
         config = self.config
@@ -808,9 +844,33 @@ class GobanApp(App):
         if platform() == 'android':
             from android import activity
             activity.bind(on_new_intent=self.on_intent)
+
+            self.PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            self.ActivityInfo = autoclass('android.content.pm.ActivityInfo')
+            
             
 
+        t3 = time()
+        print 'RETURNING SM',t3-t2, t3-t1
         return sm
+    def build_collections_list(self):
+        if self.collections is None:
+            self.collections = CollectionsList()
+            cl = self.collections
+            #progress = CollectionProgress()
+            #cl.popup = progress
+            #progress.open()
+            #sleep(1)
+            cl.from_file()
+            #progress.dismiss()
+ 
+            
+    def try_android_rotate(self,dir='portrait'):
+        if dir == 'landscape':
+            self.PythonActivity.mActivity.setRequestedOrientation(self.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+        else:
+            self.PythonActivity.mActivity.setRequestedOrientation(self.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+        
 
     def on_intent(self,intent):
         print 'INTENT'
