@@ -32,7 +32,7 @@ requirements = docutils,kivy
 orientation = portrait
 #orientation = landscape
 
-presplash.filename = /home/asandy/noGo/media/logo_big.png
+presplash.filename = /home/asandy/noGo/media/logo_big2.png
 icon.filename = /home/asandy/noGo/media/logo_small.png
 
 fullscreen = 0

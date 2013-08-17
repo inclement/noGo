@@ -3,6 +3,14 @@
 #:import la kivy.adapters.listadapter
 #:import lv kivy.uix.listview
 
+# <NogoManager>:
+#     canvas.before:
+#         Color:
+#             rgba: 1,0,0,1
+#         Rectangle:
+#             size: root.size
+#             pos: root.pos
+
 <CollectionProgress>:
     title: 'Parsing collections...'
     size_hint_x: 0.9

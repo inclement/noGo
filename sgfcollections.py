@@ -220,31 +220,60 @@ class CollectionsList(EventDispatcher):
             self.collections.remove(col)
 
 def get_collectioninfo_from_collection(row_index,col):
-    return {'colname': col.name, 'numentries': len(col.games), 'collection': col}
+    return {'colname': col.name, 'numentries': col.number_of_games(), 'collection': col}
 
 class Collection(EventDispatcher):
     games = ListProperty([])
+    lazy_games = ListProperty([])
     name = StringProperty('Collection')
     defaultdir = StringProperty('./games/unsaved/')
+    lazy_loaded = BooleanProperty(False)
+    finished_loading = BooleanProperty(False)
     def __init__(self,*args,**kwargs):
         if platform() == 'android':
             self.defaultdir = '/sdcard/noGo/collections/unsaved/'
         super(Collection,self).__init__(*args,**kwargs)
     def __str__(self):
-        return 'SGF collection {0} with {1} games'.format(self.name,len(self.games))
+        return 'SGF collection {0} with {1} games'.format(self.name,self.number_of_games())
     def __repr__(self):
         return self.__str__()
     def remove_sgf(self,sgf):
+        self.finish_lazy_loading()
         if sgf in self.games:
             self.games.remove(sgf)
     def get_default_dir(self):
         return '.' + '/' + self.name
+    def number_of_games(self):
+        if not self.finished_loading:
+            return len(self.lazy_games)
+        else:
+            return len(self.games)
+    def lazy_from_list(self, l):
+        name, defaultdir, games = l
+        self.name = name
+        self.defaultdir = defaultdir
+        self.lazy_games = games
+        self.lazy_loaded = True
+        self.finished_loading = False
+        return self
+    def finish_lazy_loading(self):
+        print 'Finishing lazy loading'
+        if self.lazy_loaded:
+            for game in self.lazy_games:
+                try:
+                    colsgf = CollectionSgf(collection=self).load(game)
+                    self.games.append(colsgf)
+                except IOError:
+                    print '(lazy) Tried to load sgf that doesn\'t seem to exist. Skipping.'
+                    print 'game was', game
+            self.finished_loading = True
     def from_list(self,l):
         name,defaultdir,games = l
         self.name = name
         self.defaultdir = defaultdir
         for game in games:
             try:
+                print 'finish loading',game
                 colsgf = CollectionSgf(collection=self).load(game)
                 self.games.append(colsgf)
             except IOError:
@@ -253,10 +282,13 @@ class Collection(EventDispatcher):
         #self.games = map(lambda j: CollectionSgf(collection=self).load(j),games)
         return self
     def as_list(self):
+        self.finish_lazy_loading()
         return [self.name, self.defaultdir, map(lambda j: j.get_filen(),self.games)]
     def serialise(self):
+        self.finish_lazy_loading()
         return json.dumps([SERIALISATION_VERSION,self.as_list()])
     def save(self):
+        self.finish_lazy_loading()
         if platform() == 'android':
             filen = '/sdcard/noGo/' + self.name + '.json'
         else:
@@ -274,14 +306,16 @@ class Collection(EventDispatcher):
         #print 'File contents are',jsonstr
         version,selflist = json.loads(jsonstr)
         selflist = jsonconvert(selflist)
-        return self.from_list(selflist)
+        return self.lazy_from_list(selflist)
     def add_game(self,can_change_name=True):
+        self.finish_lazy_loading()
         game = CollectionSgf(collection=self,can_change_name=can_change_name)
         game.filen = game.get_default_filen() + '.sgf'
         self.games.append(game)
         self.save()
         return game
     def random_sgf(self):
+        self.finish_lazy_loading()
         return random.choice(self.games)
 
 

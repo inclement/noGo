@@ -367,11 +367,12 @@ class NogoManager(ScreenManager):
             matching_collections = filter(lambda j: j.name == collection_name,collections.collections)
             if len(matching_collections) > 0:
                 collection = matching_collections[0]
+                collection.finish_lazy_loading()
                 print 'Established opening',collection
                 screenname = 'Collection ' + collection.name
                 games = collection.games
                 args_converter = lambda k,j: j.info_for_button()
-                print 'made args converter',games
+                #print 'made args converter',games
                 if len(games)>0:
                     print args_converter('yay',games[0])
                 list_adapter = ListAdapter(data=games,
@@ -383,8 +384,8 @@ class NogoManager(ScreenManager):
                 gc = StandaloneGameChooser(managedby=self,collection=collection)
                 gc.gameslist.adapter = list_adapter
                 print 'made gc and set adapter'
-                print 'games are',games
-                print 'gameinfos are', map(lambda j: j.gameinfo,games)
+                #print 'games are',games
+                #print 'gameinfos are', map(lambda j: j.gameinfo,games)
                 s = Screen(name=screenname)
                 s.add_widget(gc)
                 self.add_widget(s)
@@ -444,6 +445,7 @@ class NogoManager(ScreenManager):
             print 'new boards',self.screens
     def new_board_dialog(self):
         print 'Opening new_board_dialog'
+        App.get_running_app().build_collections_list()
         dialog = NewBoardQuery(manager=self)
         popup = Popup(content=dialog,title='Create new board...',size_hint=(0.85,0.9))
         popup.content.popup = popup
