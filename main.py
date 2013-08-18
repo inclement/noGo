@@ -443,6 +443,10 @@ class NogoManager(ScreenManager):
             self.remove_widget(pbvs)
             self.boards.remove(name)
             print 'new boards',self.screens
+    def collection_tool_dialog(self):
+        '''Create and open a dialog popup for collection tools (import directory etc.)'''
+        App.get_running_app().build_collections_list()
+        pass
     def new_board_dialog(self):
         print 'Opening new_board_dialog'
         App.get_running_app().build_collections_list()
@@ -574,6 +578,10 @@ class NogoManager(ScreenManager):
 
         if self.view_mode == 'tablet':
             pbv.board.comment_pre_text = 'This [b]tablet mode[/b] is currently experimental. It should work fine, but is still being tested and will be subject to change (more efficient layout etc.) and speed optimisation before being finalised.\n-----\n'
+
+        t6 = time()
+        print 'timings are'
+        print t6-t1, t6-t5, t5-t4, t4-t3, t3-t2, t2-t1
 
         return pbv
     def refresh_collections_index(self):
