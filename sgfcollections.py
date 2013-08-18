@@ -257,7 +257,7 @@ class Collection(EventDispatcher):
         self.finished_loading = False
         return self
     def finish_lazy_loading(self):
-        print 'Finishing lazy loading'
+        #print 'Finishing lazy loading'
         if self.lazy_loaded:
             for game in self.lazy_games:
                 try:
