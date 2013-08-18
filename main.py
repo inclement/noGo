@@ -64,7 +64,7 @@ from gomill import sgf, boards
 from abstractboard import *
 from boardview import GuiBoard, BoardContainer, PhoneBoardView, TabletBoardView, GuessPopup, SaveQuery, MySpinnerOption
 from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone
-from miscwidgets import VDividerLine, DividerLine, WhiteStoneImage, BlackStoneImage, CarouselRightArrow, CarouselLeftArrow
+from miscwidgets import VDividerLine, DividerLine, WhiteStoneImage, BlackStoneImage, CarouselRightArrow, CarouselLeftArrow, AndroidTextInput
 from info import InfoPage
 from homepage import TabletHomeScreen, HomeScreen, OpenSgfDialog
 from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton, GameChooserButton, DeleteSgfQuestion, CollectionsList, Collection, CollectionSgf, get_collectioninfo_from_collection
@@ -506,6 +506,8 @@ class NogoManager(ScreenManager):
                 collectionsgf.can_change_name = False
 
         t2 = time()
+
+        print 't2 - t1 is...',t2-t1
 
         if filen == '' and with_collectionsgf is None:
             collectionsgf.filen = collectionsgf.get_default_filen() + '.sgf'

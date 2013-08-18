@@ -257,15 +257,18 @@ class Collection(EventDispatcher):
         self.finished_loading = False
         return self
     def finish_lazy_loading(self):
-        #print 'Finishing lazy loading'
-        if self.lazy_loaded:
+        print 'Finishing lazy loading'
+        if not self.finished_loading and self.lazy_loaded:
+            print 'need to load',len(self.lazy_games)
             for game in self.lazy_games:
+                print 'currently doing',game
                 try:
                     colsgf = CollectionSgf(collection=self).load(game)
                     self.games.append(colsgf)
                 except IOError:
                     print '(lazy) Tried to load sgf that doesn\'t seem to exist. Skipping.'
                     print 'game was', game
+            self.lazy_games = []
             self.finished_loading = True
     def from_list(self,l):
         name,defaultdir,games = l

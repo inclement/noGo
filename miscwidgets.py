@@ -1,7 +1,11 @@
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
+from kivy.uix.textinput import TextInput
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
+
+class AndroidTextInput(TextInput):
+    pass
 
 class CarouselRightArrow(Button):
     pass
