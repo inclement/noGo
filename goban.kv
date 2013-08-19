@@ -18,7 +18,7 @@
         Color:
             rgba: (0.195,0.641,0.805,1)
         Line:
-            width: 1.3
+            width: 2
             cap: 'square'
             points: [self.x+1.5, self.y+dp(4), self.x+1.5, self.y, self.x-1.5+self.width, self.y, self.x-1.5+self.width, self.y+dp(4)]
             joint: 'miter'
@@ -522,14 +522,16 @@
 <GameInfo>:
     orientation: 'vertical'
     do_scroll_x: False
+    entries_layout: entries
 
     ScrollView:
         scroll_distance: 1
         scroll_timeout: 1000
         BoxLayout:
+            id: entries
             orientation: 'vertical'
             size_hint_y: None
-            height: (400,'sp')
+            height: (320,'sp')
             BoxLayout:
                 orientation: 'horizontal'
                 Label:
@@ -636,13 +638,13 @@
     BoxLayout:
         orientation: 'horizontal'
         size_hint_y: None
-        height: (60,'sp')
+        height: (40,'sp')
         Button:
             text: 'Cancel'
-            on_press: root.popup.dismiss()
+            on_release: root.release_keyboards(); root.popup.dismiss()
         Button:
             text: 'Submit'
-            on_release: root.popup.dismiss()
+            on_release: root.release_keyboard(); root.popup.dismiss()
             on_press: root.board.set_game_info({'wname':str(wname_text.text),'wrank':str(wrank_text.text),'bname':str(bname_text.text),'brank':str(brank_text.text),'komi':str(komi_text.text),'result':str(result_text.text),'event':str(event_text.text),'gname':str(gname_text.text),'rules':str(ruleset_text.text),'source':str(source_text.text)})
      
         

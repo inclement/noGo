@@ -193,6 +193,12 @@ class GameInfo(BoxLayout):
     gname = StringProperty('')
     ruleset = StringProperty('')
     source = StringProperty('')
+    entries_layout = ObjectProperty(None)
+    def release_keyboards(self):
+        print 'RELEASING KEYBOARDS'
+        print 'child widgets are',self.entries_layout.children
+        for widget in self.entries_layout.children:
+            widget.focus = False
     def populate_from_gameinfo(self,gi):
         if 'bname' in gi:
             self.bname = gi['bname']
@@ -638,7 +644,7 @@ class GuiBoard(Widget):
     def view_game_info(self):
         gi = GameInfo(board=self)
         gi.populate_from_gameinfo(self.gameinfo)
-        popup = Popup(content=gi,title='Game info.',size_hint=(0.95,0.45),pos_hint={'top':0.95})
+        popup = Popup(content=gi,title='Game info.',size_hint=(0.95,0.5),pos_hint={'top':1})
         popup.content.popup = popup
         popup.open()
 

@@ -732,7 +732,7 @@ class NogoManager(ScreenManager):
                     App.get_running_app().try_android_rotate('portrait')
             except AttributeError:
                 print 'VIEW MODE variables don\'t exist yet.'
-        else:
+        elif platform() == 'android':
             if val == 'phone':
                 Window.rotation = 0
             elif val == 'tablet':
