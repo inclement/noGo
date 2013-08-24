@@ -11,11 +11,11 @@
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
 from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone, get_stone_image_location, BlackStoneSimple, WhiteStoneSimple, BlackStoneShell, WhiteStoneShell, BlackStoneDrawn, WhiteStoneDrawn, WhiteStoneBorderedShell, BlackStoneBorderedShell, WhiteStoneStylised, BlackStoneStylised
 
-
 from kivy.app import App
+
 def get_stone(colour):
     stone_type = App.get_running_app().stone_type
-    print 'What kind of stone to get?',stone_type
+    #print 'What kind of stone to get?',stone_type
     if colour == 'white':
         if stone_type == 'slate and shell':
             return WhiteStoneShell()

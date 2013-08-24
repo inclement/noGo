@@ -46,8 +46,6 @@ from kivy.clock import Clock
 
 from kivy.core.audio import SoundLoader
 
-from kivy.input.postproc import doubletap
-
 from random import random as r
 from random import choice
 from math import sin
@@ -136,6 +134,7 @@ def markercode_to_marker(markercode):
     return None
 
 def set_board_height(boardcontainer):
+    # Should be redundant now.
     width = Window.width
     height = Window.height
     print 'window height,width',height,width
@@ -472,6 +471,7 @@ class NogoManager(ScreenManager):
     def new_board(self,with_collectionsgf=None,in_collection=None,from_file='',mode='Play',gridsize=19,handicap=0,goto=True):
         load_from_file = False
 
+        App.get_running_app().build_collections_list()
         print '%% NEW BOARD'
         print with_collectionsgf, in_collection, from_file
         print type(from_file)
@@ -538,9 +538,9 @@ class NogoManager(ScreenManager):
             pbv = PhoneBoardView(collectionsgf=collectionsgf)
         pbv.board.collectionsgf = collectionsgf
 
-        if platform() == 'android':
-            #set_board_height(pbv.boardcontainer)
-            pbv.boardcontainer.set_board_height()
+        # if platform() == 'android':
+        #     #set_board_height(pbv.boardcontainer)
+        #     pbv.boardcontainer.set_board_height()
 
         gi = collectionsgf.gameinfo
         if 'gridsize' in gi:
@@ -622,7 +622,13 @@ class NogoManager(ScreenManager):
         self.add_widget(hs_screen)
         self.refresh_open_games()
         if goto:
+            if self.current == 'Home':
+                self.make_empty_screen()
+                self.current = 'emptyscreen'
             self.current = 'Home'
+    def make_empty_screen(self):
+        if 'emptyscreen' not in self.screen_names:
+            self.add_widget(Screen(name='emptyscreen'))
     def make_board_match_view_mode(self, name):
         board = self.get_screen(name)
         if self.view_mode == 'tablet':
@@ -823,6 +829,7 @@ class GobanApp(App):
 
         # Load collections
         # self.collections = CollectionsList().from_file()
+        #self.build_collections_list()
 
         
         # Construct GUI
@@ -830,13 +837,11 @@ class GobanApp(App):
         self.manager = sm
         sm.app = self
 
-        sm.rebuild_homescreen()
         # hv = Screen(name="Home")
         # hs = HomeScreen(managedby=sm)
         # hv.add_widget(hs)
         # sm.add_widget(hv)
         # sm.create_collections_index()
-        sm.current = 'Home'
 
         t2 = time()
         print 'CONSTRUCTED manager and home',t2-t1
@@ -850,6 +855,12 @@ class GobanApp(App):
         sm.propagate_boardtype_mode(self.boardtype)
         sm.propagate_view_mode(config.getdefault('Board','view_mode','phone'))
         self.set_sounds(config.getdefault('Board','sounds','0'))
+
+        # Rebuild homescreen *after* setting phone/tablet mode
+        #sm.add_widget(Screen(name='emptyscreen'))
+        sm.rebuild_homescreen()
+        sm.current = 'Home'
+
 
         self.bind(on_start=self.post_build_init)
 

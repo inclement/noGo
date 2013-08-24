@@ -32,11 +32,11 @@ Builder.load_string('''
                 pos: self.pos
                 size: self.size
     Image:
-        source: 'actionslider_gradient2.png'
+        source: 'actionslider_gradient6.png'
         mipmap: True
-        width: dp(5)
+        width: dp(10)
         height: mainpanel.height
-        x: mainpanel.x - self.width
+        x: mainpanel.x - self.width + 1
         y: mainpanel.y
         allow_stretch: True
         keep_ratio: False
@@ -146,6 +146,10 @@ class ActionSlider(StencilView):
             self.anim_progress = 0.000001
 
     def on_touch_down(self, touch):
+        if not self.collide_point(*touch.pos):
+            super(ActionSlider, self).on_touch_down(touch)
+            return 
+        Animation.cancel_all(self)
         self._panel_init_x = self._main_panel.x
         self._touch = touch
     def on_touch_move(self, touch):
@@ -153,11 +157,17 @@ class ActionSlider(StencilView):
             dx = touch.x - touch.ox
             
             self.anim_progress = max(0,min((self._panel_init_x + dx) / self.side_panel_width,1))
+        else:
+            super(ActionSlider, self).on_touch_move(touch)
+            return
 
     def on_touch_up(self, touch):
         if touch is self._touch:
             self._touch = None
             self._anim_to_steady()
+        else:
+            super(ActionSlider, self).on_touch_up(touch)
+            return
 
     def _anim_to_steady(self):
         if self.anim_progress > 0.7:
@@ -189,7 +199,7 @@ if __name__ == '__main__':
     side_panel.add_widget(Button(text='Another button'))
     actionslider.add_widget(side_panel)
 
-    label_head = '[b]Example label filling main panel[/b]\n\n'
+    label_head = '[b]Example label filling main panel[/b]\n\n(pull from left to right)\n\n'
     riker = "Some days you get the bear, and some days the bear gets you. I am your worst nightmare! You enjoyed that. When has justice ever been as simple as a rule book? For an android with no feelings, he sure managed to evoke them in others. Flair is what marks the difference between artistry and mere competence. Worf, It's better than music. It's jazz. The game's not big enough unless it scares you a little. We finished our first sensor sweep of the neutral zone. Your head is not an artifact! What? We're not at all alike!"
     main_panel = Label(text=label_head+riker+riker, font_size='20sp',
                        markup=True, valign='top', padding=(-30,-30))
