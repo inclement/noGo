@@ -136,6 +136,34 @@ def get_move_marker_colour(col):
     else:
         return [0.5,0.5,0.5,0.5]
 
+class ReversibleSpinner(BoxLayout):
+    spinner = ObjectProperty()
+    button = ObjectProperty()
+
+    text = StringProperty('')
+    values = ListProperty([])
+    option_cls = ObjectProperty()
+
+    cur_text = StringProperty('')
+    prev_text = StringProperty('')
+
+    def __init__(self, *args, **kwargs):
+        super(ReversibleSpinner, self).__init__(*args, **kwargs)
+        self.cur_text = self.text
+        if self.prev_text == '':
+            self.prev_text = self.text
+    def on_text(self, *args):
+        self.spinner.text = self.text
+        self.prev_text = self.cur_text
+        self.cur_text = self.text
+        if self.prev_text == '':
+            self.prev_text = self.cur_text
+    def revert_spinner(self):
+        self.text = self.prev_text
+
+class VarPopup(Popup):
+    pass
+
 class BoardCarousel(Carousel):
     board = ObjectProperty()
     board_navmode = StringProperty('')
@@ -194,7 +222,7 @@ class GameInfo(BoxLayout):
     ruleset = StringProperty('')
     source = StringProperty('')
     entries_layout = ObjectProperty(None)
-    def release_keyboards(self):
+    def release_keyboard(self):
         print 'RELEASING KEYBOARDS'
         print 'child widgets are',self.entries_layout.children
         for widget in self.entries_layout.children:
@@ -238,7 +266,7 @@ class TabletPlayerDetails(BoxLayout):
     wtoplaycolour = ListProperty([0,1,0,1])
     btoplaycolour = ListProperty([0,1,0,1])
     def set_to_play(self,player):
-        print 'set_to_play called!',player
+        #print 'set_to_play called!',player
         if player == 'w':
             self.wtoplaycolour = [0,0.8,0,1]
             self.btoplaycolour = [0,0.8,0,0]
@@ -266,7 +294,7 @@ class PlayerDetails(BoxLayout):
     wtoplaycolour = ListProperty([0,1,0,1])
     btoplaycolour = ListProperty([0,1,0,1])
     def set_to_play(self,player):
-        print 'set_to_play called!',player
+        #print 'set_to_play called!',player
         if player == 'w':
             self.wtoplaycolour = [0,0.8,0,1]
             self.btoplaycolour = [0,0.8,0,0]
@@ -284,7 +312,8 @@ class PlayerDetails(BoxLayout):
 
 class GameSlider(Slider):
     def on_value(self, *args):
-        print 'gameslider value changed to',self.value
+        #print 'gameslider value changed to',self.value
+        pass
 
 class CommentBox(ScrollView):
     pre_text = StringProperty('')
@@ -380,6 +409,7 @@ class EditMarker(Widget):
             return newpos
         else:
             return (0,0)
+            
 class MakeMoveMarker(EditMarker):
     def set_position_from_coord(self,coord):
         if self.board is not None:
@@ -391,6 +421,7 @@ class MakeMoveMarker(EditMarker):
             return newpos
         else:
             return (0,0)
+
 class MakeTriangleMarker(EditMarker):
     pass
 class MakeSquareMarker(EditMarker):
@@ -472,6 +503,7 @@ class GuiBoard(Widget):
     #     print 'on_comment_pre_text',args
     # def on_comment_text(self,*args):
     #     print 'on_comment_text',args
+
 
     # Board flipping
     flip_horiz = BooleanProperty(False)
@@ -705,12 +737,13 @@ class GuiBoard(Widget):
             instructions = self.abstractboard.jump_to_leaf_number(number)
             self.follow_instructions(instructions)
         else:
-            print '...but already at that node!'
+            pass
+            #print '...but already at that node!'
 
     def take_stone_input(self,coords):
         coords = tuple(coords)
         if self.navmode in ['Play','Edit']:
-            print 'TAKING STONE INPUT',coords,self.navmode
+            #print 'TAKING STONE INPUT',coords,self.navmode
             if self.input_mode == 'play':
                 if tuple(coords) not in self.stones:
                     existingvars = map(lambda j: j.get_move(),self.abstractboard.curnode)
@@ -725,7 +758,7 @@ class GuiBoard(Widget):
                     if not children_exist:
                         self.add_new_stone(coords)
                     else:
-                        popup = Popup(content=PickNewVarType(board=self,coord=coords),title='Do you want to...',size_hint=(0.85,0.85))
+                        popup = VarPopup(content=PickNewVarType(board=self,coord=coords),title='Do you want to...')
                         popup.content.popup = popup
                         popup.open()
             elif self.input_mode == 'mark_tri':
@@ -806,7 +839,7 @@ class GuiBoard(Widget):
         
 
     def add_new_stone(self,coords,newtype='newvar'):
-        print 'Called add_new_stone', coords, newtype
+        #print 'Called add_new_stone', coords, newtype
         colour = self.next_to_play
         if newtype == 'newvar':
             instructions = self.abstractboard.add_new_node(coords,self.next_to_play)
@@ -824,7 +857,7 @@ class GuiBoard(Widget):
             instructions = self.abstractboard.insert_before_next_node(coords,self.next_to_play)
             self.follow_instructions(instructions)
             App.get_running_app().play_stone_sound()
-        print 'add_new_stone received instructions:',instructions
+        #print 'add_new_stone received instructions:',instructions
 
     def open_sgf_dialog(self,*args,**kwargs):
         popup = Popup(content=OpenSgfDialog(board=self),title='Open SGF',size_hint=(0.85,0.85))
@@ -1045,11 +1078,11 @@ class GuiBoard(Widget):
         coord = (coord[0]-0.5,coord[1]-0.5)
         return (self.gobanpos[0] + self.boardindent[0] + coord[0]*gridspacing, self.gobanpos[1] + self.boardindent[1] + coord[1]*gridspacing)
 
-    def pos_to_coord(self,pos):
+    def pos_to_coord(self, pos, with_offset=True):
         gridspacing = self.gridspacing
         relx = (pos[0] - (self.gobanpos[0] + self.boardindent[0])) / gridspacing
         rely = (pos[1] - (self.gobanpos[1] + self.boardindent[1])) / gridspacing
-        if self.navmode != 'Score':
+        if (self.navmode != 'Score') or not with_offset:
             relx += self.touchoffset[0]
             rely += self.touchoffset[1]
         realcoord = (int(round(relx)),int(round(rely)))
@@ -1060,7 +1093,8 @@ class GuiBoard(Widget):
         if self.flip_forwardslash:
             realcoord = realcoord[::-1]
         if self.flip_backslash:
-            realcoord = realcoord[self.game.size - 1 - realcoord[0],self.game.size - 1 - realcoord[1]][::-1]
+            realcoord = realcoord[self.game.size - 1 - realcoord[0],
+                                  self.game.size - 1 - realcoord[1]][::-1]
         return realcoord
 
     def get_gridlines(self):
@@ -1095,8 +1129,11 @@ class GuiBoard(Widget):
         
     # Stone methods
     def follow_instructions(self,instructions,*args,**kwargs):
-        print 'self.display_markers is',self.display_markers
+        #print 'self.display_markers is',self.display_markers
         print '### instructions are', instructions
+        if instructions is None:
+            print 'No instructions.'
+            return
 
         t1 = time()
         
@@ -1167,9 +1204,9 @@ class GuiBoard(Widget):
         if 'nextplayer' in instructions:
             player = instructions['nextplayer']
             if player in ['b','w']:
-                print 'next_to_play from',self.next_to_play
+                #print 'next_to_play from',self.next_to_play
                 self.next_to_play = player
-                print '-->',self.next_to_play
+                #print '-->',self.next_to_play
             elif player == 'a':
                 self.next_to_play = alternate_colour(self.next_to_play)
 
@@ -1499,14 +1536,25 @@ class BoardContainer(StencilView):
         if self.collide_point(*touch.pos):
             self.board.stop_autoplay()
             if self.board.navmode == 'Navigate':
-                if touch.x > self.x + 0.5*self.width:
-                    self.board.advance_one_move()
+                coord = self.board.pos_to_coord(touch.pos)
+                if coord in self.board.varstones:
+                    varstone = self.board.varstones[coord]
+                    varnum = int(varstone.text) - 1
+                    instructions = self.board.abstractboard.jump_to_var(varnum)
+                    self.board.follow_instructions(instructions)
                 else:
-                    self.board.retreat_one_move()
+                    if touch.x > self.x + 0.5*self.width:
+                        self.board.advance_one_move()
+                    else:
+                        self.board.retreat_one_move()
             elif self.board.navmode == 'Guess':
                 print 'Touch down at', self.board.pos_to_coord(touch.pos)
                 print 'next to play is',self.board.next_to_play
-                marker = MakeMoveMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
+                marker = MakeMoveMarker(coord=self.board.pos_to_coord(touch.pos),
+                                        board=self.board,colour=
+                                        get_move_marker_colour(
+                                            self.board.next_to_play)
+                                        )
                 if self.makemovemarker is not None:
                     self.remove_widget(self.makemovemarker)
                 self.makemovemarker = marker
@@ -1516,22 +1564,62 @@ class BoardContainer(StencilView):
                 print 'next to play is',self.board.next_to_play
                 inputmode = self.board.input_mode
                 print 'inputmode is',inputmode
+                real_coord = self.board.pos_to_coord(touch.pos, False)
+                prev_coord = self.board.abstractboard.get_current_move_coord()
+                print 'real_coord is', real_coord, 'and prev_coord is', prev_coord
+                if prev_coord == real_coord and self.board.stones.has_key(prev_coord):
+                    touch.ud['movestone'] = prev_coord
+                    print 'movestone!'
+                    return
                 if inputmode == 'mark_tri':
-                    marker = MakeTriangleMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
+                    marker = MakeTriangleMarker(coord=
+                                                self.board.pos_to_coord(
+                                                    touch.pos),
+                                                board=self.board,
+                                                colour=get_move_marker_colour(
+                                                    self.board.next_to_play)
+                                                )
                 elif inputmode == 'mark_squ':
-                    marker = MakeSquareMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
+                    marker = MakeSquareMarker(coord=
+                                              self.board.pos_to_coord(
+                                                  touch.pos),
+                                              board=self.board,
+                                              colour=get_move_marker_colour(
+                                                  self.board.next_to_play))
                 elif inputmode == 'mark_cir':
-                    marker = MakeCircleMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
+                    marker = MakeCircleMarker(coord=
+                                              self.board.pos_to_coord(
+                                                  touch.pos),
+                                              board=self.board,
+                                              colour=get_move_marker_colour(
+                                                  self.board.next_to_play))
                 elif inputmode == 'mark_cro':
-                    marker = MakeCrossMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
+                    marker = MakeCrossMarker(coord=self.board.pos_to_coord(
+                                             touch.pos),
+                                             board=self.board,
+                                             colour=get_move_marker_colour(
+                                                 self.board.next_to_play))
                 elif inputmode == 'bstone':
-                    marker = MakeMoveMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour('b'))
+                    marker = MakeMoveMarker(coord=self.board.pos_to_coord(
+                                            touch.pos),
+                                            board=self.board,
+                                            colour=get_move_marker_colour('b'))
                 elif inputmode == 'wstone':
-                    marker = MakeMoveMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour('w'))
+                    marker = MakeMoveMarker(coord=self.board.pos_to_coord(
+                                            touch.pos),
+                                            board=self.board,
+                                            colour=get_move_marker_colour('w'))
                 elif inputmode == 'estone':
-                    marker = MakeEmptyMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour('w'))
+                    marker = MakeEmptyMarker(coord=self.board.pos_to_coord(
+                                             touch.pos),
+                                             board=self.board,
+                                             colour=get_move_marker_colour('w'))
                 else:
-                    marker = MakeMoveMarker(coord=self.board.pos_to_coord(touch.pos),board=self.board,colour=get_move_marker_colour(self.board.next_to_play))
+                    marker = MakeMoveMarker(coord=self.board.pos_to_coord(
+                                            touch.pos),
+                                            board=self.board,
+                                            colour=get_move_marker_colour(
+                                                self.board.next_to_play))
                 
                 print 'marker is',marker
                 if self.makemovemarker is not None:
@@ -1541,19 +1629,28 @@ class BoardContainer(StencilView):
             elif self.board.navmode == 'Score':
                 coord = self.board.pos_to_coord(touch.pos)
                 print 'score: coord is',coord
-                if 0 <= coord[0] < self.board.gridsize and 0 <= coord[1] < self.board.gridsize:
+                if (0 <= coord[0] < self.board.gridsize and
+                    0 <= coord[1] < self.board.gridsize):
                     print 'coord accepted',coord
-                    changed, newscore = self.board.scoreboard.toggle_status_at(coord)
+                    changed, newscore = self.board.scoreboard.toggle_status_at(
+                        coord)
                     print changed, newscore
                     for coords in changed:
                         self.board.toggle_ld_marker(coords)
                     if self.board.gameinfo.has_key('komi'):
                         komi = float(self.board.gameinfo['komi'])
                     newscore -= komi
-                    self.board.comment_pre_text = 'Score: %s\n-----\n' % (format_score(newscore))
+                    self.board.comment_pre_text = ('Score: %s\n-----\n' %
+                                                   (format_score(newscore)))
                     print 'finished board modification for this coord'
             elif self.board.navmode == 'Zoom':
-                ani = Animation(gobanpos=(self.board.gobanpos[0]-100,self.board.gobanpos[1]-100),t='in_out_quad',duration=2) + Animation(gobanpos=self.board.gobanpos,t='in_out_quad',duration=2)
+                ani = (Animation(gobanpos=(self.board.gobanpos[0]-100,
+                                          self.board.gobanpos[1]-100),
+                                t='in_out_quad',
+                                duration=2) +
+                       Animation(gobanpos=self.board.gobanpos,
+                                 t='in_out_quad',
+                                 duration=2))
                 ani.start(self.board)
                 
 
@@ -1567,12 +1664,44 @@ class BoardContainer(StencilView):
             finalcoord = marker.coord
             self.makemovemarker = None
             self.remove_widget(marker)
-            print 'Marker let go at', finalcoord
-            if (0<=finalcoord[0]<self.board.gridsize) and (0<=finalcoord[1]<self.board.gridsize):
+            #print 'Marker let go at', finalcoord
+            if ((0<=finalcoord[0]<self.board.gridsize) and
+                (0<=finalcoord[1]<self.board.gridsize)):
                 self.board.take_stone_input(finalcoord)
+        if touch.ud.has_key('movestone'):
+            print 'movestone touch up'
+            newcoord = self.board.pos_to_coord(touch.pos, False)
+            oldcoord = touch.ud.pop('movestone')
+            print 'movement', newcoord, oldcoord
+            dx = newcoord[0] - oldcoord[0]
+            dy = newcoord[1] - oldcoord[1]
+            if newcoord in self.board.stones:
+                return
+            if not (abs(dx) == 1 and abs(dy) == 0 or
+                    abs(dx) == 0 and abs(dy) == 1):
+                return
+            if oldcoord not in self.board.stones:
+                return
+            stone = self.board.stones.pop(oldcoord)
+            instructions_back = self.board.abstractboard.retreat_position()
+            instructions_forward = self.board.abstractboard.replace_next_node(
+                newcoord, stone.colour[0])
 
-
+            self.board.follow_instructions(instructions_back)
+            self.board.follow_instructions(instructions_forward)
+            self.board.remove_stone(newcoord)
+            # back_removes = instructions_back['remove']
+            # back_adds = instructions_back['add']
+            # fore_removes = instructions_forward['remove']
+            # fore_add = instructions_forward['add']
             
+            self.board.stones[newcoord] = stone
+            newpos = self.board.coord_to_pos(newcoord)
+            anim = Animation(pos=newpos, t='in_out_sine', duration=0.3)
+            anim.start(stone)
+            if self.board.playmarker is not None:
+                anim = Animation(pos=newpos, t='in_out_sine', duration=0.3)
+                anim.start(self.board.playmarker)
 
     def _keyboard_closed(self):
         print 'My keyboard has been closed!'

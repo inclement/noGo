@@ -621,6 +621,15 @@ class AbstractBoard(object):
             self.varcache[curnode] = 0
         return self.jump_to_node(curnode)
             
+    def get_previous_move_coord(self):
+        if self.curnode.parent is None:
+            return None
+        move = self.curnode.parent.get_move()
+        return move[1]
+
+    def get_current_move_coord(self):
+        move = self.curnode.get_move()
+        return move[1]
 
     def advance_position(self,*args,**kwargs):
         print 'advance_position called'
@@ -671,6 +680,17 @@ class AbstractBoard(object):
         instructions.update({'nodeindex': node_index})
 
         return instructions
+
+    def jump_to_var(self, num):
+        if self.curnode.parent is not None:
+            parentnode = self.curnode.parent
+            newind = num 
+            if len(parentnode) > newind:
+                newnode = parentnode[newind]
+                self.varcache[parentnode] = newind
+                return self.jump_to_node(newnode)
+        else:
+            return None
 
     def increment_variation(self):
         #instructions = {'add':[((randint(0,18),randint(0,18)),['w','b'][randint(0,1)])],'playmarker': (randint(0,18),randint(0,18))}#, 'nextplayer': ['w','b'][randint(0,1)]}
@@ -892,7 +912,7 @@ class AbstractBoard(object):
             newnode = self.curnode.new_child(0)
         if coord is not None:
             newnode.set_move(colour,coord)
-        print 'newnode is',newnode
+        #print 'newnode is',newnode
         if jump:
             instructions = self.jump_to_node(newnode)
             instructions.update({'unsaved':True})
@@ -952,7 +972,7 @@ class AbstractBoard(object):
         return self.boards[node]
 
     def build_boards_to_node(self, node, replace=False):
-        print 'build_boards_to_node called'
+        #print 'build_boards_to_node called'
         precursor_nodes = self.game.get_sequence_above(node)
         board = boards.Board(self.game.size)
         board, instructions = apply_node_to_board(board,precursor_nodes[0])

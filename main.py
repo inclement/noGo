@@ -19,11 +19,13 @@
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle, Ellipse
+from kivy.metrics import dp
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
+from kivy.uix.image import Image
 from kivy.uix.togglebutton import ToggleButton
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
@@ -35,6 +37,8 @@ from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.screenmanager import *
+from kivy.uix.settings import Settings, SettingsWithSpinner, SettingsWithTabbedPanel, SettingsWithNoMenu
+from kivy.uix.settings import Settings
 from kivy.adapters.listadapter import ListAdapter
 #from kivy.uix.listview import ListView, ListItemButton
 from mylistview import ListView, ListItemButton
@@ -43,6 +47,8 @@ from kivy.animation import Animation
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
+
+#from navigationdrawer import NavigationDrawer
 
 from kivy.core.audio import SoundLoader
 
@@ -60,13 +66,14 @@ from time import asctime, time, sleep
 
 from gomill import sgf, boards
 from abstractboard import *
-from boardview import GuiBoard, BoardContainer, PhoneBoardView, TabletBoardView, GuessPopup, SaveQuery, MySpinnerOption
+from boardview import GuiBoard, BoardContainer, PhoneBoardView, TabletBoardView, GuessPopup, SaveQuery, MySpinnerOption, ReversibleSpinner
 from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone
 from miscwidgets import VDividerLine, DividerLine, WhiteStoneImage, BlackStoneImage, CarouselRightArrow, CarouselLeftArrow, AndroidTextInput
 from info import InfoPage
 from homepage import TabletHomeScreen, HomeScreen, OpenSgfDialog
 from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton, GameChooserButton, DeleteSgfQuestion, CollectionsList, Collection, CollectionSgf, get_collectioninfo_from_collection
 from widgetcache import WidgetCache
+
 
 if platform() == 'android':
     from jnius import autoclass
@@ -90,6 +97,9 @@ squarecodes = ['square','SQ']
 circlecodes = ['circle','CR']
 crosscodes = ['cross','MA']
 textcodes = ['text','LB']
+
+class NogoButton(Button):
+    pass
 
 class CollectionProgress(Popup):
     length = NumericProperty(1)
@@ -308,10 +318,12 @@ class NogoManager(ScreenManager):
         if not self.transition.is_active:
             self.back_screen_name = self.current
             self.current = newcurrent
-        print 'Finished switching'
-    def go_home(self):
+        print 'Finished switching', self.back_screen_name, self.current
+    def go_home(self, fromright=False):
+        print 'going home'
         if not self.transition.is_active:
-            self.transition = SlideTransition(direction='right')
+            if not fromright:
+                self.transition = SlideTransition(direction='right')
             self.current = 'Home'
             self.back_screen_name = 'Home'
             self.transition = SlideTransition(direction='left')
@@ -319,13 +331,20 @@ class NogoManager(ScreenManager):
         if platform() == 'android':
             import android
             res = android.hide_keyboard()
+        print 'HANDLING android back...'
         self.go_back()
     def go_back(self):
+        app = App.get_running_app()
+        # if app.navdrawer.state == 'open':
+        #     return app.navdrawer.toggle_state()
+        print 'going back', self.back_screen_name
         if not self.transition.is_active:
             self.transition = SlideTransition(direction='right')
             if self.current == self.back_screen_name or self.current[:5] == 'Board':
                 self.back_screen_name = 'Home'
-            if self.has_screen(self.back_screen_name):
+            print '->',self.back_screen_name
+            if self.back_screen_name in self.screen_names:
+                print 'going to',self.back_screen_name
                 self.current = self.back_screen_name
             else:
                 self.current = 'Home'
@@ -781,8 +800,27 @@ def printargs(*args,**kwargs):
     print kwargs
     '######'
 
+# class NogoDrawer(NavigationDrawer):
+#     pass
+
+class NavigationButtons(ScrollView):
+    manager = ObjectProperty(None, allownone=True)
+    navdrawer = ObjectProperty(None, allownone=True)
+    def on_touch_down(self, touch):
+        super(NavigationButtons, self).on_touch_down(touch)
+        if self.collide_point(*touch.pos):
+            print 'touched!'
+            print self.pos
+            print self.size
+            print self.parent, self.parent.children
+            print [child.pos for child in self.children]
+            print [child.size for child in self.children]
+            print [child.size for child in self.children[0].children]
+
 class GobanApp(App):
-    manager = ObjectProperty(None,allownone=True)
+    version = StringProperty('0.4.0')
+    manager = ObjectProperty(None, allownone=True)
+    navdrawer = ObjectProperty(None, allownone=True)
     cache = ObjectProperty(WidgetCache())
     collections = ObjectProperty(None, allownone=True)
 
@@ -791,7 +829,9 @@ class GobanApp(App):
 
     sounds = BooleanProperty(True)
 
-    use_kivy_settings = False
+    use_kivy_settings = True
+
+    settings_widget = SettingsWithNoMenu
 
     title = 'noGo'
     name = 'noGo'
@@ -875,7 +915,20 @@ class GobanApp(App):
 
         t3 = time()
         print 'RETURNING SM',t3-t2, t3-t1
+
+        #drawer = NogoDrawer()
+        #drawer.add_widget(NavigationButtons())
+        #drawer.add_widget(Image(source='media/logo_big2.png',
+        #                        allow_stretch=True,
+        #                        mipmap=True))
+        #drawer.add_widget(sm)
+
+        #self.navdrawer = drawer
+
+        #return drawer
+        
         return sm
+
     def build_collections_list(self):
         if self.collections is None:
             self.collections = CollectionsList()
@@ -964,6 +1017,49 @@ class GobanApp(App):
             return True
         return False
 
+    def _on_keyboard_settings(self, *args):
+        pass
+
+    # def display_settings(self, settings):
+    #     try:
+    #         p = self.settings_popup
+    #     except AttributeError:
+    #         self.settings_popup = Popup(content=settings,
+    #                                     title='Settings',
+    #                                     size_hint=(0.8, 0.8))
+    #         p = self.settings_popup
+    #     if p.content is not settings:
+    #         p.content = settings
+    #     p.open()
+    # def close_settings(self, *args):
+    #     try:
+    #         p = self.settings_popup
+    #         p.dismiss()
+    #     except AttributeError:
+    #         pass # Settings popup doesn't exist
+
+    def display_settings(self, settings):
+        manager = self.manager
+        if not manager.has_screen('Settings'):
+            s = Screen(name='Settings')
+            s.add_widget(settings)
+            manager.add_widget(s)
+        manager.switch_and_set_back('Settings')
+
+    def close_settings(self, *args):
+        print 'Closing settings'
+        if self.manager.current == 'Settings':
+            self.manager.go_back()
+
+    # def get_settings_widget(self):
+    #     return SettingsWithNoMenu()
+    #     # return SettingsWithTabbedPanel()
+    #     # return SettingsWithSpinner()
+    #     # return Settings()
+    #     # s = Settings()
+    #     # s.menu.width = dp(300)
+    #     # return s
+
     def build_settings(self,settings):
         jsondata = json.dumps([
             {"type": "options",
@@ -1015,6 +1111,7 @@ class GobanApp(App):
 
     def build_config(self, config):
         config.setdefaults('Board',{'input_mode':'phone','view_mode':'phone','coordinates':False,'markers':True,'stone_graphics':'slate and shell','board_graphics':'board section photo 1','sounds':False})
+
 
     def on_pause(self,*args,**kwargs):
         print 'App asked to pause'
@@ -1118,7 +1215,7 @@ class GobanApp(App):
             val = int(val)
         self.sounds = bool(val)
     def play_stone_sound(self,*args):
-        print 'asked to play sound', self.sounds
+        #print 'asked to play sound', self.sounds
         if self.sounds:
             self.stone_sound.seek(0)
             self.stone_sound.play()

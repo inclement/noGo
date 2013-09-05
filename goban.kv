@@ -4,13 +4,119 @@
 #:import lv kivy.uix.listview
 #:import Window kivy.core.window.Window
 
-# <NogoManager>:
-#     canvas.before:
-#         Color:
-#             rgba: 1,0,0,1
-#         Rectangle:
-#             size: root.size
-#             pos: root.pos
+<FlipButton@Button>:
+    Image:
+        x: root.x + 0.05*root.width
+        y: root.y + 0.2*root.height
+        width: 0.9*root.width
+        height: 0.6*root.height
+        pos: root.pos 
+        size: root.size
+        source: 'media/mainimages/spinner_flip-1.png'
+        allow_stretch: True
+        mipmap: True
+
+<ReversibleSpinner>:
+    spinner: spinner
+    button: button
+    orientation: 'horizontal'
+    text: self.spinner.text
+    Spinner:
+        id: spinner
+        text: 'Navigate'
+        values: root.values
+        option_cls: main.MySpinnerOption
+    FlipButton:
+        id: button
+        size_hint_x: None
+        width: dp(30)
+        on_press: root.revert_spinner()
+
+<NogoManager>:
+    canvas.before:
+        Color:
+            rgba: 0,0,0,1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<NogoButton>:
+    background_normal: 'media/black_pixel.png'
+    background_down: 'media/blue_press_pixel.png'
+
+<NavigationButtons>:
+    manager: app.manager
+    do_scroll_x: False
+    minimum_height: buttons.height
+    GridLayout:
+        id: buttons
+        width: root.width
+        cols: 1
+        spacing: 1
+        size_hint_y: None
+        height: self.minimum_height
+        Widget:
+            size_hint_y: None
+            height: 2
+        Image:
+            source: 'media/logo_big.png'
+            size_hint_y: None
+            height: min(0.6*root.width, dp(200))
+            mipmap: True
+        Label:
+            size_hint_y: None
+            height: sp(25)
+            text: 'v' + app.version
+        DividerLine:
+        NogoButton:
+            text: 'Home'
+            on_release: root.navdrawer.toggle_state(); root.manager.go_home(True)
+            height: dp(40)
+            size_hint_y: None
+        DividerLine:
+            linewidth: 1
+        NogoButton:
+            text: 'Collections'
+            on_release: root.navdrawer.toggle_state(); root.manager.switch_and_set_back('Collections Index')
+            height: dp(40)
+            size_hint_y: None
+        DividerLine:
+            linewidth: 1
+        NogoButton:
+            text: 'New board'
+            on_release: root.navdrawer.toggle_state(); root.manager.new_board_dialog()
+            height: dp(40)
+            size_hint_y: None
+        DividerLine:
+            linewidth: 1
+        NogoButton:
+            text: 'SGF from file'
+            on_release: root.navdrawer.toggle_state(); root.manager.open_sgf_dialog()
+            height: dp(40)
+            size_hint_y: None
+        DividerLine:
+            linewidth: 1
+        NogoButton:
+            text: 'Settings'
+            on_release: root.navdrawer.toggle_state(); app.open_settings()
+            height: dp(40)
+            size_hint_y: None
+        DividerLine:
+            linewidth: 1
+        NogoButton:
+            text: 'noGo info'
+            on_release: root.navdrawer.toggle_state(); root.manager.open_help()
+            height: dp(40)
+            size_hint_y: None
+        DividerLine:
+
+<NogoDrawer>:
+    anim_type: 'reveal_below_anim'
+    separator_image: './nogo_gradient_rtol.png'
+    separator_image_width: dp(10)
+    id: drawer
+    NavigationButtons:
+        navdrawer: drawer
 
 <AndroidTextInput>:
     background_color: (0,0,0,0)
@@ -1106,7 +1212,7 @@
         orientation: 'horizontal'
         Button:
             text: 'Close selected.'
-            font_size: 0.4*self.height
+            font_size: 0.3*self.height
             on_release: root.managedby.close_board_from_selection(opengames.adapter.selection)
             background_normal: 'media/black_pixel.png'
             background_down: 'media/blue_press_pixel.png'
@@ -1114,7 +1220,7 @@
         Button:
             id: pb
             text: 'Switch to selected.'
-            font_size: 0.4*self.height
+            font_size: 0.3*self.height
             on_release: root.managedby.set_current_from_opengameslist(opengames.adapter.selection)
             background_normal: 'media/black_pixel.png'
             background_down: 'media/blue_press_pixel.png'
@@ -1316,7 +1422,7 @@
             next_to_play: bc.board.next_to_play
             on_next_to_play: self.set_to_play(self.next_to_play)
 
-        Spinner:
+        ReversibleSpinner:
             id: navspinner
             text: 'Navigate'
             values: ['Navigate','Play','Edit','Score','Guess']
@@ -1327,7 +1433,7 @@
     BoardContainer:
         id: bc
         size_hint_y: None if Window.height > 1.2*Window.width else 0.6
-        height: Window.width 
+        height: Window.width
 
         uielements: {'varbutton': [btn_nextvar]}
 
@@ -1469,12 +1575,12 @@
 
         VDividerLine:
             size_hint_x: None
-            width: (5,'sp')
+            width: (2,'sp')
             vgap: 0
         BoxLayout:
             orientation: 'vertical'
             size_hint_x: None if Window.width > 1.2*Window.height else 0.6
-            width: Window.height - sp(55)
+            width: Window.height - sp(30)
             Widget:
                 size_hint_y: None
                 height: (5,'sp')
@@ -1482,7 +1588,7 @@
             BoxLayout:
                 orientation: 'horizontal'
                 size_hint: (1.,None)
-                height: (45,'sp')
+                height: (30,'sp')
 
                 Widget:
                     size_hint_x: None
@@ -1503,8 +1609,8 @@
 
             Widget:
                 size_hint_y: None
-                height: (5,'sp')
-            DividerLine
+                height: (2,'sp')
+            DividerLine:
                 height: (5,'sp')
 
             BoardContainer:
@@ -1520,7 +1626,7 @@
         BoxLayout:
             orientation: 'vertical'
             size_hint_x: None
-            width: (80,'dp')
+            width: (72,'dp')
             Spinner:
                 id: navspinner
                 text: 'Navigate'
@@ -1611,6 +1717,11 @@
         text: 'Save as...'
         on_press: root.board.save_sgf(mode='saveas')
         on_release: root.select('item3')
+
+<VarPopup>:
+    size_hint: None, None
+    height: min(dp(500), Window.height)
+    width: min(dp(300), Window.width)
     
 <PickNewVarType>:
     BoxLayout:
@@ -1868,12 +1979,6 @@
 <VarStone>:
     canvas:
         Color:
-            rgba: 0,0,0,0.5
-        Ellipse:
-            size: self.size
-            pos: self.pos
-
-        Color:
             rgba: self.colour
         Ellipse:
             size: (0.9*self.size[0],0.9*self.size[1])
@@ -1947,7 +2052,7 @@
                     size: 0.3*self.width,0.3*self.height
         Label:
             text: ''.join(('',self.parent.parent.wtext,' ',self.parent.parent.wrank,''))
-            font_size: (20,'sp')
+            font_size: (18,'sp')
             markup: True
             text_size: self.width-20, self.height
             halign: 'left'
@@ -2033,8 +2138,6 @@
     padding: (0,0)
 
     on_text: self.scroll_y = 1; self.scroll_timeout=0; self.scroll_timeout = 55
-    scroll_distance: 1
-    scroll_timeout: 100
 
     GridLayout:
         cols: 1

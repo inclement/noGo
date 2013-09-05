@@ -23,13 +23,13 @@ source.include_exts = py,png,jpg,sgf,json,kv,txt,rst,mp3,atlas
 # version.filename = %(source.dir)s/main.py
 
 # (str) Application versionning (method 2)
-version = 0.3.2
+version = 0.4.1
 
 # (list) Application requirements
-requirements = docutils,kivy
+requirements = pil,docutils,kivy
 
-#orientation = all
-orientation = portrait
+orientation = all
+#orientation = portrait
 #orientation = landscape
 
 presplash.filename = /home/asandy/noGo/media/logo_big2.png

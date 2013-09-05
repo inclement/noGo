@@ -1,3 +1,10 @@
+0.4.1:
+- Test release for public root dir
+
+0.4.0:
+- Tablet mode improvements
+- Speed improvements (mainly launch speed reduced)
+
 0.3.1:
 - Preliminary tablet mode (functional but subject to change before finalisation).
 - Stone sound and toggle.
