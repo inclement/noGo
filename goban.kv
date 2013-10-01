@@ -3,6 +3,27 @@
 #:import la kivy.adapters.listadapter
 #:import lv kivy.uix.listview
 #:import Window kivy.core.window.Window
+#: import ScrollEffect kivy.effects.scroll.ScrollEffect
+
+<ScrollListView>:
+    effect_y: ScrollEffect
+
+<AreaMarker>:
+    canvas:
+        Color:
+            rgba: 0,1,0,0.07
+        Rectangle:
+            pos: [self.corners[0], self.corners[1]]
+            size: (self.corners[4]-self.corners[2], self.corners[3]-self.corners[1])
+        Color:
+            rgba: 0,0,0,0.5
+        Line:
+            points: self.corners
+            close: True
+            width: 2
+            joint: 'round'
+        
+                
 
 <FlipButton@Button>:
     Image:
@@ -363,7 +384,7 @@
         size_hint_y: None
         text: '(leave blank to create temporary board)'
     DividerLine
-    ListView:
+    ScrollListView:
         id: collections
         scroll_distance: 1
         scroll_timeout: 1000
@@ -553,7 +574,7 @@
 <SaveQuery>
     orientation: 'vertical'
     collections_list: collections
-    ListView:
+    ScrollListView:
         id: collections
         scroll_distance: 1
         scroll_timeout: 1000
@@ -583,7 +604,7 @@
         orientation: 'vertical'
         size_hint_x: None
         width: min(root.width,dp(700))
-        ListView:
+        ScrollListView:
             id: collections
             scroll_distance: 1
             scroll_timeout: 1000
@@ -785,7 +806,7 @@
             textsize: self.size
             valign: 'middle'
         DividerLine
-        ListView:
+        ScrollListView:
             id: gl
             scroll_distance: 1
             scroll_timeout: 1000
@@ -1199,7 +1220,7 @@
         font_size: pb.font_size
         size_hint: (1.,0.06)
     DividerLine
-    ListView:
+    ScrollListView:
         id: opengames
         scroll_distance: 1
         scroll_timeout: 1000
@@ -1372,7 +1393,7 @@
             font_size: pb.font_size
             size_hint: (1.,0.06)
         DividerLine
-        MyListView:
+        ScrollListView:
             id: opengames
             scroll_distance: 1
             scroll_timeout: 1000
@@ -1425,7 +1446,7 @@
         ReversibleSpinner:
             id: navspinner
             text: 'Navigate'
-            values: ['Navigate','Play','Edit','Score','Guess']
+            values: ['Navigate','Play','Edit','Score','Guess'] #,'Pattern\nsearch']
             size_hint: (0.25,1.0)
             on_text: bc.board.set_navmode(self,self.text)
             option_cls: main.MySpinnerOption
@@ -1630,7 +1651,7 @@
             Spinner:
                 id: navspinner
                 text: 'Navigate'
-                values: ['Navigate','Play','Edit','Score','Guess']
+                values: ['Navigate','Play','Edit','Score','Guess', 'Pattern\nsearch']
                 on_text: bc.board.set_navmode(self,self.text)
                 option_cls: main.MySpinnerOption
             DividerLine:
@@ -2148,6 +2169,7 @@
         Label:
             id: thetb
             text: root.pre_text + root.text
+            #font_name: './DroidSansMono.ttf'
             markup: True
             padding: root.padding
             text_size: self.width-10,None

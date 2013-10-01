@@ -21,41 +21,26 @@ from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle, Ellipse
 from kivy.metrics import dp
 from kivy.uix.widget import Widget
+from kivy.uix.listview import ListView
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.image import Image
-from kivy.uix.togglebutton import ToggleButton
-from kivy.uix.label import Label
-from kivy.uix.scrollview import ScrollView
-from kivy.uix.stencilview import StencilView
-from kivy.uix.dropdown import DropDown
-from kivy.uix.scatter import Scatter
-from kivy.uix.spinner import Spinner, SpinnerOption
-from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.popup import Popup
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.screenmanager import *
-from kivy.uix.settings import Settings, SettingsWithSpinner, SettingsWithTabbedPanel, SettingsWithNoMenu
-from kivy.uix.settings import Settings
+from kivy.uix.togglebutton import ToggleButton
+from kivy.uix.dropdown import DropDown
+from kivy.uix.screenmanager import ScreenManager, SlideTransition, Screen
 from kivy.adapters.listadapter import ListAdapter
-#from kivy.uix.listview import ListView, ListItemButton
-from mylistview import ListView, ListItemButton
-from kivy.utils import platform
-from kivy.animation import Animation
-from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty, ListProperty, AliasProperty, StringProperty, DictProperty, BooleanProperty, StringProperty, OptionProperty
-from kivy.vector import Vector
-from kivy.clock import Clock
-
 #from navigationdrawer import NavigationDrawer
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.settings import *
 
 from kivy.core.audio import SoundLoader
+from kivy.clock import Clock
 
-from random import random as r
-from random import choice
-from math import sin
-from functools import partial
+from kivy.properties import *
+
 from glob import glob
 from os.path import abspath, exists
 from os import mkdir, rename, environ, getenv, putenv
@@ -74,6 +59,7 @@ from homepage import TabletHomeScreen, HomeScreen, OpenSgfDialog
 from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton, GameChooserButton, DeleteSgfQuestion, CollectionsList, Collection, CollectionSgf, get_collectioninfo_from_collection
 from widgetcache import WidgetCache
 
+from kivy.utils import platform
 
 if platform() == 'android':
     from jnius import autoclass
@@ -97,6 +83,9 @@ squarecodes = ['square','SQ']
 circlecodes = ['circle','CR']
 crosscodes = ['cross','MA']
 textcodes = ['text','LB']
+
+class ScrollListView(ListView):
+    pass
 
 class NogoButton(Button):
     pass
@@ -551,7 +540,7 @@ class NogoManager(ScreenManager):
         t4 = time()
 
 
-        if self.view_mode == 'tablet':
+        if self.view_mode[:6] == 'tablet':
             pbv = TabletBoardView(collectionsgf=collectionsgf)
         else:
             pbv = PhoneBoardView(collectionsgf=collectionsgf)
@@ -597,7 +586,7 @@ class NogoManager(ScreenManager):
         pbv.board.save_sgf()
         self.boards.append(name)
 
-        if self.view_mode == 'tablet':
+        if self.view_mode[:6] == 'tablet':
             pbv.board.comment_pre_text = 'This [b]tablet mode[/b] is currently experimental. It should work fine, but is still being tested and will be subject to change (more efficient layout etc.) and speed optimisation before being finalised.\n-----\n'
 
         t6 = time()
@@ -632,7 +621,7 @@ class NogoManager(ScreenManager):
         if 'Home' in self.screen_names:
             oldhome = self.get_screen('Home')
             self.remove_widget(oldhome)
-        if mode == 'tablet':
+        if mode[:6] == 'tablet':
             hs = TabletHomeScreen(managedby=self)
         else:
             hs = HomeScreen(managedby=self)
@@ -650,7 +639,7 @@ class NogoManager(ScreenManager):
             self.add_widget(Screen(name='emptyscreen'))
     def make_board_match_view_mode(self, name):
         board = self.get_screen(name)
-        if self.view_mode == 'tablet':
+        if self.view_mode[:6] == 'tablet':
             if not isinstance(board.children[0], TabletBoardView):
                 print 'REFRESHING -> tbv'
                 board = self.get_screen(name)
@@ -749,21 +738,23 @@ class NogoManager(ScreenManager):
     def propagate_view_mode(self,val):
         print 'PROPAGATING VIEW MODE',val
         self.view_mode = val
-        if False: #platform() == 'android':
+        if platform() == 'android':
             try:
-                if val == 'tablet':
+                if val == 'tablet (normal)':
                     App.get_running_app().try_android_rotate('landscape')
+                elif val == 'tablet (flipped)':
+                    App.get_running_app().try_android_rotate('reverse_landscape')
                 else:
                     App.get_running_app().try_android_rotate('portrait')
             except AttributeError:
                 print 'VIEW MODE variables don\'t exist yet.'
-        elif platform() == 'android':
-            if val == 'phone':
-                Window.rotation = 0
-            elif val == 'tablet':
-                Window.rotation = 270
-            else:
-                Window.rotation = 0
+        # elif platform() == 'android':
+        #     if val == 'phone':
+        #         Window.rotation = 0
+        #     elif val == 'tablet':
+        #         Window.rotation = 270
+        #     else:
+        #         Window.rotation = 0
         self.rebuild_homescreen()
 
     def query_delete_sgf(self,sel):
@@ -806,16 +797,6 @@ def printargs(*args,**kwargs):
 class NavigationButtons(ScrollView):
     manager = ObjectProperty(None, allownone=True)
     navdrawer = ObjectProperty(None, allownone=True)
-    def on_touch_down(self, touch):
-        super(NavigationButtons, self).on_touch_down(touch)
-        if self.collide_point(*touch.pos):
-            print 'touched!'
-            print self.pos
-            print self.size
-            print self.parent, self.parent.children
-            print [child.pos for child in self.children]
-            print [child.size for child in self.children]
-            print [child.size for child in self.children[0].children]
 
 class GobanApp(App):
     version = StringProperty('0.4.0')
@@ -831,7 +812,7 @@ class GobanApp(App):
 
     use_kivy_settings = True
 
-    settings_widget = SettingsWithNoMenu
+    settings_cls = SettingsWithNoMenu
 
     title = 'noGo'
     name = 'noGo'
@@ -910,15 +891,13 @@ class GobanApp(App):
 
             self.PythonActivity = autoclass('org.renpy.android.PythonActivity')
             self.ActivityInfo = autoclass('android.content.pm.ActivityInfo')
-            
-            
 
         t3 = time()
         print 'RETURNING SM',t3-t2, t3-t1
 
         #drawer = NogoDrawer()
         #drawer.add_widget(NavigationButtons())
-        #drawer.add_widget(Image(source='media/logo_big2.png',
+        # drawer.add_widget(Image(source='media/logo_big2.png',
         #                        allow_stretch=True,
         #                        mipmap=True))
         #drawer.add_widget(sm)
@@ -942,8 +921,13 @@ class GobanApp(App):
  
             
     def try_android_rotate(self,dir='portrait'):
+        print 'Trying android rotate'
         if dir == 'landscape':
             self.PythonActivity.mActivity.setRequestedOrientation(self.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+        elif dir == 'reverse_landscape':
+            self.PythonActivity.mActivity.setRequestedOrientation(self.ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE)
+        elif dir == 'reverse_portrait':
+            self.PythonActivity.mActivity.setRequestedOrientation(self.ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT)
         else:
             self.PythonActivity.mActivity.setRequestedOrientation(self.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
         
@@ -1073,7 +1057,7 @@ class GobanApp(App):
              "desc": "Use compact phone view or expanded tablet view.",
              "section": "Board",
              "key": "view_mode",
-             "options": ["phone","tablet"]},
+             "options": ["phone","tablet (normal)", "tablet (flipped)"]},
             {"type": "bool",
              "title": "Show coordinates",
              "desc": "Whether or not to display coordinates on the board.",
@@ -1186,7 +1170,7 @@ class GobanApp(App):
             unsaved = self.collections.new_collection('unsaved')
             self.manager.refresh_collections_index()
         if platform() == 'android':
-            unsaved.defaultdir = '/sdcard/noGo/collections/unsaved/'
+            unsaved.defaultdir = '/sdcard/noGo/collections/unsaved'
         return unsaved
     def move_collectionsgf(self,collectionsgf,selection,board=None):
         if len(selection) > 0:
