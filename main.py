@@ -84,8 +84,14 @@ circlecodes = ['circle','CR']
 crosscodes = ['cross','MA']
 textcodes = ['text','LB']
 
+from kivy.effects.scroll import ScrollEffect
 class ScrollListView(ListView):
-    pass
+    def __init__(self, *args, **kwargs):
+        super(ScrollListView, self).__init__(*args, **kwargs)
+        Clock.schedule_once(self.set_scroll_effect, 1/30)
+    def set_scroll_effect(self, *args):
+        self.children[0].effect_y.edge_damping = 0.6
+        #= ScrollEffect()
 
 class NogoButton(Button):
     pass
