@@ -222,16 +222,17 @@ class CollectionsList(EventDispatcher):
 def get_collectioninfo_from_collection(row_index,col):
     return {'colname': col.name, 'numentries': col.number_of_games(), 'collection': col}
 
+
 class Collection(EventDispatcher):
     games = ListProperty([])
     lazy_games = ListProperty([])
     name = StringProperty('Collection')
-    defaultdir = StringProperty('./games/unsaved/')
+    defaultdir = StringProperty('./games/unsaved')
     lazy_loaded = BooleanProperty(False)
     finished_loading = BooleanProperty(False)
     def __init__(self,*args,**kwargs):
         if platform() == 'android':
-            self.defaultdir = '/sdcard/noGo/collections/unsaved/'
+            self.defaultdir = '/sdcard/noGo/collections/unsaved'
         super(Collection,self).__init__(*args,**kwargs)
     def __str__(self):
         return 'SGF collection {0} with {1} games'.format(self.name,self.number_of_games())
