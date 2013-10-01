@@ -41,6 +41,8 @@ Clock.max_iteration = 60
 
 from kivy.input.postproc import doubletap
 
+#from db import KombiloInterface
+
 from helpers import embolden
 
 from random import random as r
@@ -135,6 +137,62 @@ def get_move_marker_colour(col):
         return [0,0,0,0.5]
     else:
         return [0.5,0.5,0.5,0.5]
+
+class AreaMarker(Widget):
+    start_coord = ListProperty([0,0])
+    end_coord = ListProperty([0,0])
+    bottom_left = ListProperty([0,0])
+    top_right = ListProperty([0,0])
+    dx = NumericProperty(0)
+    dy = NumericProperty(0)
+    board = ObjectProperty()
+    corners = ListProperty([0,0,0,0,0,0,0,0])
+    def on_board(self, *args):
+        board = self.board
+        board.bind(size=self.set_corners)
+        board.bind(pos=self.set_corners)
+    def set_corners(self, *args):
+        to_pos = self.board.coord_to_pos
+        start = self.start_coord
+        end = self.end_coord
+        dx = end[0] - start[0]
+        dy = end[1] - start[1]
+        self.dx = dx
+        self.dy = dy
+        if dx >= 0 and dy >= 0:
+            bottom_left = to_pos(start)
+            top_right = to_pos((end[0]+1, end[1]+1))
+            bottom_left_coord = start
+            top_right_coord = end
+        elif dx >= 0 and dy < 0:
+            bottom_left = to_pos((start[0], end[1]))
+            top_right = to_pos((end[0]+1, start[1]+1))
+            bottom_left_coord = (start[0], end[1])
+            top_right_coord = (end[0], start[1])
+        elif dx < 0 and dy >= 0:
+            bottom_left = to_pos((end[0], start[1]))
+            top_right = to_pos((start[0]+1, end[1]+1))
+            bottom_left_coord = (end[0], start[1])
+            top_right_coord = (start[0], end[1])
+        elif dx < 0 and dy < 0:
+            bottom_left = to_pos((end[0], end[1]))
+            top_right = to_pos((start[0]+1, start[1]+1))
+            bottom_left_coord = end
+            top_right_coord = start
+        self.bottom_left = bottom_left_coord
+        self.top_right = top_right_coord
+        corners = [bottom_left[0], bottom_left[1],
+                   bottom_left[0], top_right[1],
+                   top_right[0], top_right[1],
+                   top_right[0], bottom_left[1]]
+        self.corners = corners
+                   
+    def on_start_coord(self, *args):
+        self.set_corners()
+    def on_end_coord(self, *args):
+        self.set_corners()
+        
+        
 
 class ReversibleSpinner(BoxLayout):
     spinner = ObjectProperty()
@@ -450,6 +508,10 @@ class GuiBoard(Widget):
     gameinfo = DictProperty({})
     collectionsgf = ObjectProperty(None,allownone=True)
 
+    #kinterface = ObjectProperty(None)
+
+    #areamarker = ObjectProperty(None, allownone=True)
+
     input_mode = OptionProperty('play',options=['play',
                                                 'mark_tri',
                                                 'mark_squ',
@@ -457,7 +519,8 @@ class GuiBoard(Widget):
                                                 'mark_cro',
                                                 'bstone',
                                                 'wstone',
-                                                'estone'])
+                                                'estone',
+                                                'mark_area'])
 
     autoplaying = BooleanProperty(False)
     autoplay_dts = [0.2, 0.3, 0.4, 0.5, 0.75, 1.0, 2, 4, 6, 10]
@@ -897,6 +960,23 @@ class GuiBoard(Widget):
         self.ld_markers = {}
         print 'new self.ld_markers', self.ld_markers
 
+    # def make_areamarker_at(self, touch):
+    #     if self.areamarker is not None:
+    #         marker = self.areamarker
+    #     else:
+    #         marker = AreaMarker(board=self)
+    #         self.add_widget(marker)
+    #     coord = self.pos_to_coord(touch.pos)
+    #     marker.start_coord = coord
+    #     marker.end_coord = coord
+    #     self.areamarker = marker
+
+    # def clear_areamarker(self, *args):
+    #     if self.areamarker is not None:
+    #         marker = self.areamarker
+    #         self.remove_widget(marker)
+    #         self.areamarker = None
+
     def make_scoreboard(self):
         if self.scoreboard is not None:
             self.scoreboard = None
@@ -904,9 +984,87 @@ class GuiBoard(Widget):
         sb.board = self.abstractboard.get_current_boardpos()
         self.scoreboard = sb
 
+    # def construct_search(self):
+    #     if self.areamarker is None:
+    #         return ''
+    #     marker = self.areamarker
+    #     terms = ['\n']
+    #     bottom_left = marker.bottom_left
+    #     top_right = marker.top_right
+    #     dx = top_right[0] - bottom_left[0] + 1
+    #     dy = top_right[1] - bottom_left[1] + 1
+
+    #     start = (top_right[0], bottom_left[1])
+
+    #     for i in range(dx):
+    #         for j in range(dy):
+    #             cur_coord = (start[0]-i, start[1]+j)
+    #             print cur_coord
+    #             if self.stones.has_key(cur_coord):
+    #                 stone = self.stones[cur_coord]
+    #                 colour = stone.colour
+    #                 if colour[0] == 'b':
+    #                     terms.append('X')
+    #                 elif colour[0] == 'w':
+    #                     terms.append('O')
+    #                 else:
+    #                     raise Exception('Stone not b or w?')
+    #             else:
+    #                 terms.append('.')
+    #         terms.append('\n')
+
+    #     gridsize = self.gridsize
+    #     top_left = (top_right[0], bottom_left[1])
+    #     bottom_right = (bottom_left[0], top_right[1])
+    #     print 'bottom_left', bottom_left
+    #     print 'top_left', top_left
+    #     print 'top_right', top_right
+    #     print 'bottom_right', bottom_right
+    #     if bottom_left[0] == 0 and bottom_left[1] == 0:
+    #         print 'hits bottom left'
+    #         if top_right[0] == (gridsize-1) and top_right[1] == (gridsize-1):
+    #             pattern = 'FULLBOARD_PATTERN'
+    #         # elif top_left[0] == gridsize - 1:
+    #         #     pattern = 'SIDE_W_PATTERN'
+    #         # elif bottom_right[1] == gridsize-1:
+    #         #     pattern = 'SIDE_S_PATTERN'
+    #         else:
+    #             pattern = 'CORNER_SW_PATTERN'
+    #     elif top_left[0] == gridsize-1 and top_left[1] == 0:
+    #         print 'hits top left'
+    #         if False and top_right[0] == (gridsize-1) and top_right[1] == (gridsize-1):
+    #             pattern = 'SIDE_N_PATTERN'
+    #         else:
+    #             pattern = 'CORNER_NW_PATTERN'
+    #     elif bottom_right[0] == 0 and bottom_right[1] == gridsize-1:
+    #         print 'hits bottom right'
+    #         if False and top_right[0] == (gridsize-1) and top_right[1] == (gridsize-1):
+    #             pattern = 'SIDE_E_PATTERN'
+    #         else:
+    #             pattern = 'CORNER_SE_PATTERN'
+    #     elif top_right[0] == (gridsize-1) and top_right[1] == (gridsize-1):
+    #         print 'hits top right'
+    #         pattern = 'CORNER_NE_PATTERN'
+    #     else:
+    #         print 'hits nothing'
+    #         pattern = 'CENTER_PATTERN'
+        
+    #     return ''.join(terms), pattern, (dy, dx), (bottom_left, top_left, top_right, bottom_right)
+
+    # def draw_search_results(self, continuations, positions):
+    #     self.clear_transient_widgets()
+    #     bottom_left, top_left, top_right, bottom_right = positions
+    #     for cont in continuations:
+    #         hits, xcoord, ycoord, bconts, bwinsafterb, blossesafterb, baftertenuki, wconts, bwinsafterw, wlossesafterw, waftertenuki, label = cont
+    #         real_coord = (top_left[0] - ycoord, top_left[1] + xcoord)
+    #         self.add_marker(real_coord, 'text', [label])
+
+            
+
     def set_navmode(self,spinner,mode):
         self.scoreboard = None
         self.clear_ld_markers()
+        #self.clear_areamarker()
         if mode != 'Guess':
             self.remove_guess_popup()
         self.navmode = mode
@@ -925,6 +1083,12 @@ class GuiBoard(Widget):
             self.comment_pre_text = guess_text + '\n-----\n'
         elif mode == 'Zoom':
             self.comment_pre_text = zoom_text + '\n-----\n'
+        elif mode == 'Pattern\nsearch':
+            self.comment_pre_text = '[b]Pattern search[/b]\n------\n'
+            # if self.kinterface is None:
+            #     self.kinterface = KombiloInterface()
+            #     self.kinterface.load_databases()
+            #     print 'loaded', self.kinterface.gamelist.noOfGames(), 'games'
 
 
     def clear_transient_widgets(self):
@@ -1562,70 +1726,7 @@ class BoardContainer(StencilView):
             elif self.board.navmode in ['Play','Edit']:
                 print 'Touch down at', self.board.pos_to_coord(touch.pos)
                 print 'next to play is',self.board.next_to_play
-                inputmode = self.board.input_mode
-                print 'inputmode is',inputmode
-                real_coord = self.board.pos_to_coord(touch.pos, False)
-                prev_coord = self.board.abstractboard.get_current_move_coord()
-                print 'real_coord is', real_coord, 'and prev_coord is', prev_coord
-                if prev_coord == real_coord and self.board.stones.has_key(prev_coord):
-                    touch.ud['movestone'] = prev_coord
-                    print 'movestone!'
-                    return
-                if inputmode == 'mark_tri':
-                    marker = MakeTriangleMarker(coord=
-                                                self.board.pos_to_coord(
-                                                    touch.pos),
-                                                board=self.board,
-                                                colour=get_move_marker_colour(
-                                                    self.board.next_to_play)
-                                                )
-                elif inputmode == 'mark_squ':
-                    marker = MakeSquareMarker(coord=
-                                              self.board.pos_to_coord(
-                                                  touch.pos),
-                                              board=self.board,
-                                              colour=get_move_marker_colour(
-                                                  self.board.next_to_play))
-                elif inputmode == 'mark_cir':
-                    marker = MakeCircleMarker(coord=
-                                              self.board.pos_to_coord(
-                                                  touch.pos),
-                                              board=self.board,
-                                              colour=get_move_marker_colour(
-                                                  self.board.next_to_play))
-                elif inputmode == 'mark_cro':
-                    marker = MakeCrossMarker(coord=self.board.pos_to_coord(
-                                             touch.pos),
-                                             board=self.board,
-                                             colour=get_move_marker_colour(
-                                                 self.board.next_to_play))
-                elif inputmode == 'bstone':
-                    marker = MakeMoveMarker(coord=self.board.pos_to_coord(
-                                            touch.pos),
-                                            board=self.board,
-                                            colour=get_move_marker_colour('b'))
-                elif inputmode == 'wstone':
-                    marker = MakeMoveMarker(coord=self.board.pos_to_coord(
-                                            touch.pos),
-                                            board=self.board,
-                                            colour=get_move_marker_colour('w'))
-                elif inputmode == 'estone':
-                    marker = MakeEmptyMarker(coord=self.board.pos_to_coord(
-                                             touch.pos),
-                                             board=self.board,
-                                             colour=get_move_marker_colour('w'))
-                else:
-                    marker = MakeMoveMarker(coord=self.board.pos_to_coord(
-                                            touch.pos),
-                                            board=self.board,
-                                            colour=get_move_marker_colour(
-                                                self.board.next_to_play))
-                
-                print 'marker is',marker
-                if self.makemovemarker is not None:
-                    self.remove_widget(self.makemovemarker)
-                self.makemovemarker = marker
-                self.add_widget(marker)
+                self.make_move_marker_at(touch)
             elif self.board.navmode == 'Score':
                 coord = self.board.pos_to_coord(touch.pos)
                 print 'score: coord is',coord
@@ -1652,13 +1753,96 @@ class BoardContainer(StencilView):
                                  t='in_out_quad',
                                  duration=2))
                 ani.start(self.board)
+            elif self.board.navmode == 'Pattern\nsearch':
+                self.board.make_areamarker_at(touch)
+                # if self.board.input_mode != 'mark_area':
+                #     self.make_move_marker_at(touch)
+                # elif self.input_mode == 'mark_area':
+                #     self.start_area_mark_at(touch)
                 
+
 
     def on_touch_move(self,touch):
         if self.makemovemarker is not None:
             self.makemovemarker.coord = self.board.pos_to_coord(touch.pos)
+        # if self.board.areamarker is not None:
+        #     coord = self.board.pos_to_coord(touch.pos)
+        #     gridsize = self.board.gridsize
+        #     if 0 <= coord[0] < gridsize and 0 <= coord[1] < gridsize:
+        #         self.board.areamarker.end_coord = self.board.pos_to_coord(touch.pos)
+
+    def make_move_marker_at(self, touch):
+        inputmode = self.board.input_mode
+        real_coord = self.board.pos_to_coord(touch.pos, False)
+        prev_coord = self.board.abstractboard.get_current_move_coord()
+        if prev_coord == real_coord and self.board.stones.has_key(prev_coord):
+            touch.ud['movestone'] = prev_coord
+            print 'movestone!'
+            return
+        if inputmode == 'mark_tri':
+            marker = MakeTriangleMarker(coord=
+                                        self.board.pos_to_coord(
+                                            touch.pos),
+                                        board=self.board,
+                                        colour=get_move_marker_colour(
+                                            self.board.next_to_play)
+                                        )
+        elif inputmode == 'mark_squ':
+            marker = MakeSquareMarker(coord=
+                                      self.board.pos_to_coord(
+                                          touch.pos),
+                                      board=self.board,
+                                      colour=get_move_marker_colour(
+                                          self.board.next_to_play))
+        elif inputmode == 'mark_cir':
+            marker = MakeCircleMarker(coord=
+                                      self.board.pos_to_coord(
+                                          touch.pos),
+                                      board=self.board,
+                                      colour=get_move_marker_colour(
+                                          self.board.next_to_play))
+        elif inputmode == 'mark_cro':
+            marker = MakeCrossMarker(coord=self.board.pos_to_coord(
+                                     touch.pos),
+                                     board=self.board,
+                                     colour=get_move_marker_colour(
+                                         self.board.next_to_play))
+        elif inputmode == 'bstone':
+            marker = MakeMoveMarker(coord=self.board.pos_to_coord(
+                                    touch.pos),
+                                    board=self.board,
+                                    colour=get_move_marker_colour('b'))
+        elif inputmode == 'wstone':
+            marker = MakeMoveMarker(coord=self.board.pos_to_coord(
+                                    touch.pos),
+                                    board=self.board,
+                                    colour=get_move_marker_colour('w'))
+        elif inputmode == 'estone':
+            marker = MakeEmptyMarker(coord=self.board.pos_to_coord(
+                                     touch.pos),
+                                     board=self.board,
+                                     colour=get_move_marker_colour('w'))
+        else:
+            marker = MakeMoveMarker(coord=self.board.pos_to_coord(
+                                    touch.pos),
+                                    board=self.board,
+                                    colour=get_move_marker_colour(
+                                        self.board.next_to_play))
+
+        if self.makemovemarker is not None:
+            self.remove_widget(self.makemovemarker)
+        self.makemovemarker = marker
+        self.add_widget(marker)
 
     def on_touch_up(self,touch):
+        # if self.board.areamarker is not None:
+        #     area, pattern, shape, positions = self.board.construct_search()
+        #     print 'area selected as', pattern, 'with shape', shape
+        #     print area
+        #     print 'Doing search!'
+        #     details = self.board.kinterface.search_pattern(area, pattern, shape)
+        #     self.board.comment_text = details
+        #     self.board.draw_search_results(self.board.kinterface.continuations, positions)
         if self.makemovemarker is not None:
             marker = self.makemovemarker
             finalcoord = marker.coord

@@ -84,8 +84,6 @@ class WidgetCache(object):
         self.blackstonecache = []
         self.whitestonecache = []
     def get_label(self,text):
-        print 'Asked for cached label with text',text
-        print self.labelcache
         lc = self.labelcache
         if lc.has_key(text):
             #print 'Already have such a label!'

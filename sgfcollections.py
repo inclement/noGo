@@ -360,6 +360,7 @@ class CollectionSgf(object):
     def save(self):
         dict = self.to_dict()
         filen = self.filen + '.json'
+        print 'TRYING TO WRITE TO FILEN', filen
         with open(filen,'w') as fileh:
             fileh.write(self.serialise())
         return filen
