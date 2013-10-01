@@ -23,13 +23,13 @@ source.include_exts = py,png,jpg,sgf,json,kv,txt,rst,mp3,atlas,ttf,so
 # version.filename = %(source.dir)s/main.py
 
 # (str) Application versionning (method 2)
-version = 0.4.1
+version = 0.4.2
 
 # (list) Application requirements
-requirements = pil,docutils,kivy
+requirements = kombilo,docutils,kivy
 
-orientation = all
-#orientation = portrait
+#orientation = all
+orientation = portrait
 #orientation = landscape
 
 presplash.filename = /home/asandy/noGo/media/logo_big2.png
@@ -51,7 +51,7 @@ android.permissions = VIBRATE
 #android.minapi = 8
 
 # (int) Android SDK version to use
-#android.sdk = 21
+#android.sdk = 8
 
 # (str) Android NDK version to use
 #android.ndk = 8c
