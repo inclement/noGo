@@ -1,8 +1,9 @@
 0.4.2:
 - Fixed longstanding bug when selecting first item in lists
+- Added ability to tap navigation stones to navigate between variations
+- Now can slide last played stone to move it (i.e. if misplaced)
 - Made tablet mode properly rotate screen
 - Settings screen much improved.
-- Minor UI changes/improvements
 
 0.4.1:
 - Test release for public root dir
