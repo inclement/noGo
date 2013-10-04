@@ -23,7 +23,7 @@ source.include_exts = py,png,jpg,sgf,json,kv,txt,rst,mp3,atlas,ttf,so
 # version.filename = %(source.dir)s/main.py
 
 # (str) Application versionning (method 2)
-version = 0.4.2
+version = 0.4.3
 
 # (list) Application requirements
 requirements = kombilo,docutils,kivy
