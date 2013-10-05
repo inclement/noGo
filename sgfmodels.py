@@ -2,16 +2,31 @@
 
 from peewee import *
 import datetime
+import json
 
-db = SqliteDatabase('./collections.db')
+from helpers import embolden
+
+db = SqliteDatabase('./games/sgfs.db')
 db.connect()
 
 class BaseModel(Model):
     class Meta(object):
         database = db
 
+class Collection(BaseModel):
+    name = CharField()
+    date_created = DateTimeField(default=datetime.datetime.now)
+
+    other = TextField(null=True)
+    '''Anything else I think of...'''
+
+    def __str__(self, *args):
+        return '<{} collection>'.format(self.name)
+    def __repr__(self, *args):
+        return str(self)
+        
 class Sgf(BaseModel):
-    '''Peewee model for storing sgf metadata in a databsae'''
+    '''Peewee model for storing sgf metadata in a database.'''
 
     filename = CharField(null=True)
 
@@ -21,52 +36,103 @@ class Sgf(BaseModel):
     other = TextField(null=True)
     '''Anything else I think of...'''
 
-    collections = CharField(null=True)
-
     keywords = CharField(null=True)
+    def get_keywords(self):
+        return json.loads(self.keywords)
+    def set_keywords(self, keywords):
+        self.keywords = json.dumps(keywords)
 
     user_rating = IntegerField(null=True)
 
-    user_created = BooleanProperty(null=True)
+    user_created = BooleanField(null=True)
 
     date_created = DateTimeField(default=datetime.datetime.now)
     
     
     # Direct sgf properties
     ap = CharField(null=True)
-    charset = ca = CharField(null=True)
-    fileformat = ff = CharField(null=True)
-    gametype = gm = CharField(null=True)
+    charset = CharField(null=True)
+    fileformat = CharField(null=True)
+    gametype = CharField(null=True)
     # Should always be 1 (== Go) for us...
-    varshow = st = CharField(null=True)
+    varshow = CharField(null=True)
     # We ignore this, and I'm not sure anyone uses it anyway
-    size = sz = IntegerField(null=True)
-    annotater = an = CharField(null=True)
-    brank = br = CharField(null=True)
-    bteam = bt = CharField(null=True)
-    copyright = cp = CharField(null=True)
-    date = dt = CharField(null=True)
-    event = ev = CharField(null=True)
-    gname = gn = CharField(null=True)
-    gamecomment = gc = CharField(null=True)
-    opening = on = CharField(null=True)
-    overtime = ot = CharField(null=True)
-    bname = pb = CharField(null=True)
-    place = pc = CharField(null=True)
-    wname = pw = CharField(null=True)
-    result = re = CharField(null=True)
-    round = ro = CharField(null=True)
-    rules = ru = CharField(null=True)
-    source = so = CharField(null=True)
-    timelim = tm = CharField(null=True)
-    user = us = CharField(null=True)
-    wrank = wr = CharField(null=True)
-    wteam = wt = CharField(null=True)
-    handicap = ha = CharField(null=True)
-    komi = km = CharField(null=True)
-    bterritory = tb = CharField(null=True)
+    gridsize = IntegerField(null=True)
+    annotater = CharField(null=True)
+    brank = CharField(null=True)
+    bteam = CharField(null=True)
+    copyright = CharField(null=True)
+    date = CharField(null=True)
+    event = CharField(null=True)
+
+    gname = CharField(null=True)
+    gamecomment = CharField(null=True)
+    opening = CharField(null=True)
+    overtime = CharField(null=True)
+    bname = CharField(null=True)
+    place = CharField(null=True)
+    wname = CharField(null=True)
+    result = CharField(null=True)
+    round = CharField(null=True)
+    rules = CharField(null=True)
+    source = CharField(null=True)
+    timelim = CharField(null=True)
+    user = CharField(null=True)
+    wrank = CharField(null=True)
+    wteam = CharField(null=True)
+    handicap = CharField(null=True)
+    komi = CharField(null=True)
+    bterritory = CharField(null=True)
     # Or area, depending on rules
-    wterritory = tw = CharField(null=True)
+    wterritory = CharField(null=True)
     # Or area, depending on rules
 
+    # def __init__(self, *args, **kwargs):
+    #     super(Sgf, self).__init__(*args, **kwargs)
 
+class CollectionSgf(BaseModel):
+    collection = ForeignKeyField(Collection)
+    sgf = ForeignKeyField(Sgf)
+
+    def __str__(self):
+        return '<CollectionSgf {} in {}>'.format(self.sgf, self.collection)
+
+
+def get_collections():
+    return list(Collection.select())
+
+def collections_args_converter(ri, col):
+    games = list(Sgf.select().join(CollectionSgf).join(Collection).where(Collection.name == col.name))
+    return {'colname': col.name,
+            'numentries': len(games),
+            'collection': col}
+
+def get_games_in(collection):
+    games = list(Sgf.select().join(CollectionSgf).join(Collection).where(Collection.name == collection.name))
+    return games
+
+def games_args_converter(ri, game):
+    info = {}
+    info['sgf'] = game
+
+    collection_list = list(Collection.select().join(CollectionSgf).join(Sgf).where(Sgf.id == game.id))
+    if len(collection_list) > 0:
+        info['collection'] = collection_list[0]
+
+    if game.filename:
+        info['filepath'] = game.filename
+    if game.result:
+        info['result'] = game.result
+        winner = game.result[0].lower()
+    if game.wname:
+        info['wname'] = game.wname
+        if winner == 'w':
+            info['wname'] = embolden(info['wname'])
+    if game.bname:
+        info['bname'] = game.bname
+        if winner == 'b':
+            info['bname'] = embolden(info['bname'])
+    if game.date:
+        info['date'] = game.date
+
+    return info

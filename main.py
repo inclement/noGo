@@ -58,6 +58,7 @@ from info import InfoPage
 from homepage import TabletHomeScreen, HomeScreen, OpenSgfDialog
 from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton, GameChooserButton, DeleteSgfQuestion, CollectionsList, Collection, CollectionSgf, get_collectioninfo_from_collection
 from widgetcache import WidgetCache
+from sgfmodels import Sgf, get_collections, collections_args_converter, Collection, games_args_converter, get_games_in
 
 from kivy.utils import platform
 
@@ -377,33 +378,27 @@ class NogoManager(ScreenManager):
             self.current = 'Collection ' + collection_name
         else:
             collections = App.get_running_app().collections
-            matching_collections = filter(lambda j: j.name == collection_name,collections.collections)
-            if len(matching_collections) > 0:
-                collection = matching_collections[0]
-                collection.finish_lazy_loading()
-                print 'Established opening',collection
-                screenname = 'Collection ' + collection.name
-                games = collection.games
-                args_converter = lambda k,j: j.info_for_button()
-                #print 'made args converter',games
-                if len(games)>0:
-                    print args_converter('yay',games[0])
-                list_adapter = ListAdapter(data=games,
-                                           args_converter = args_converter,
-                                           selection_mode = 'single',
-                                           allow_empty_selection=True,
-                                           cls=GameChooserButton,
-                                           )
-                gc = StandaloneGameChooser(managedby=self,collection=collection)
-                gc.gameslist.adapter = list_adapter
-                print 'made gc and set adapter'
-                #print 'games are',games
-                #print 'gameinfos are', map(lambda j: j.gameinfo,games)
-                s = Screen(name=screenname)
-                s.add_widget(gc)
-                self.add_widget(s)
-                if goto:
-                    self.switch_and_set_back(s.name)
+
+            collection = selection[0].collection
+            screenname = 'Collection ' + collection.name
+            games = get_games_in(collection)
+            args_converter = games_args_converter
+            list_adapter = ListAdapter(data=games,
+                                       args_converter = args_converter,
+                                       selection_mode = 'single',
+                                       allow_empty_selection=True,
+                                       cls=GameChooserButton,
+                                       )
+            gc = StandaloneGameChooser(managedby=self,collection=collection)
+            gc.gameslist.adapter = list_adapter
+            print 'made gc and set adapter'
+            #print 'games are',games
+            #print 'gameinfos are', map(lambda j: j.gameinfo,games)
+            s = Screen(name=screenname)
+            s.add_widget(gc)
+            self.add_widget(s)
+            if goto:
+                self.switch_and_set_back(s.name)
     def refresh_open_games(self):
         homepage = self.get_screen('Home')
         args_converter = lambda c,j: get_game_chooser_info_from_boardname(self,j)
@@ -622,6 +617,8 @@ class NogoManager(ScreenManager):
     #         self.remove_widget(scr)
     #         self.view_or_open_collection(dirn,goto=False)
     def rebuild_homescreen(self,mode=None,goto=True):
+        print 'rebuilding homescreen'
+        t1 = time()
         if mode is None:
             mode = self.view_mode
         if 'Home' in self.screen_names:
@@ -631,10 +628,17 @@ class NogoManager(ScreenManager):
             hs = TabletHomeScreen(managedby=self)
         else:
             hs = HomeScreen(managedby=self)
+        t2 = time()
+        print 'made homescreen', t2-t1
         hs_screen = Screen(name='Home')
         hs_screen.add_widget(hs)
+        t3 = time()
         self.add_widget(hs_screen)
+        print 'made Screen', t3-t2
         self.refresh_open_games()
+        t4 = time()
+        print 'refreshed open games', t4-t3
+        print 'total', t4-t1
         if goto:
             if self.current == 'Home':
                 self.make_empty_screen()
@@ -673,11 +677,10 @@ class NogoManager(ScreenManager):
 
     def create_collections_index(self):
         app = App.get_running_app()
-        app.build_collections_list()
-        collections_list = App.get_running_app().collections.collections
+        collections = get_collections()
         collections_index = CollectionsIndex(managedby=self)
-        collections_args_converter = get_collectioninfo_from_collection
-        list_adapter = ListAdapter(data=collections_list,
+        
+        list_adapter = ListAdapter(data=collections,
                                    args_converter = collections_args_converter,
                                    selection_mode = 'single',
                                    allow_empty_selection=True,
@@ -833,9 +836,11 @@ class GobanApp(App):
         config = self.config
         #print 'my config is',config
 
-        sound = SoundLoader.load('./media/sounds/stone_sound5.mp3')
-        sound.volume = 0.05
-        self.stone_sound = sound
+        def load_sound(*args):
+            sound = SoundLoader.load('./media/sounds/stone_sound5.mp3')
+            sound.volume = 0.05
+            self.stone_sound = sound
+        Clock.schedule_once(load_sound, 1)
 
         # Get any json collection backups if on android
         if platform() == 'android':
@@ -852,41 +857,47 @@ class GobanApp(App):
                 if len(filestr) > 1:
                     name = filen.split('/')[-1]
                     copyfile(filen,'./collections/'+name)
+
+        t1_2 = time()
            
-
-        # Load collections
-        # self.collections = CollectionsList().from_file()
-        #self.build_collections_list()
-
-        
         # Construct GUI
         sm = NogoManager(transition=SlideTransition(direction='left'))
         self.manager = sm
         sm.app = self
 
-        # hv = Screen(name="Home")
-        # hs = HomeScreen(managedby=sm)
-        # hv.add_widget(hs)
-        # sm.add_widget(hv)
-        # sm.create_collections_index()
-
         t2 = time()
-        print 'CONSTRUCTED manager and home',t2-t1
+        print 'CONSTRUCTED manager', t2-t1_2
 
         # Get initial settings from config panel
         config = self.config
+        s1 = time()
         sm.propagate_input_mode(config.getdefault('Board','input_mode','phone'))
+        s2 = time()
         sm.propagate_coordinates_mode(config.getdefault('Board','coordinates','1'))
+        s3 = time()
         self.stone_type = config.getdefault('Board','stone_graphics','simple')
+        s4 = time()
         self.boardtype = config.getdefault('Board','board_graphics','simple')
+        s5 = time()
         sm.propagate_boardtype_mode(self.boardtype)
+        s6 = time()
         sm.propagate_view_mode(config.getdefault('Board','view_mode','phone'))
+        s7 = time()
         self.set_sounds(config.getdefault('Board','sounds','0'))
+        s8 = time()
+        print s8-s1, s2-s1, s3-s2, s4-s3, s5-s4, s6-s5, s7-s6, s8-s7
+
+        t3_2 = time()
+
+        print 'propagated settings', t3_2 - t2
 
         # Rebuild homescreen *after* setting phone/tablet mode
         #sm.add_widget(Screen(name='emptyscreen'))
         sm.rebuild_homescreen()
         sm.current = 'Home'
+
+        t3_3 = time()
+        print 'rebuilt homescreen', t3_3 - t3_2
 
 
         self.bind(on_start=self.post_build_init)
@@ -899,7 +910,8 @@ class GobanApp(App):
             self.ActivityInfo = autoclass('android.content.pm.ActivityInfo')
 
         t3 = time()
-        print 'RETURNING SM',t3-t2, t3-t1
+        print 'did android stuff', t3-t3_3
+        print 'total init time',t3-t1
 
         #drawer = NogoDrawer()
         #drawer.add_widget(NavigationButtons())

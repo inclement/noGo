@@ -91,7 +91,7 @@ class GameChooserButton(ListItemButton):
     result = StringProperty('')
     date = StringProperty('')
     collection = ObjectProperty(None,allownone=True)
-    collectionsgf = ObjectProperty(None,allownone=True)
+    sgf = ObjectProperty(None, allownone=True)
     def construct_from_sgfinfo(self,info):
         self.info.construct_from_sgfinfo(info)
 
@@ -204,7 +204,7 @@ class CollectionsList(EventDispatcher):
             dirn = '/sdcard/noGo/collections/{0}'.format(newname)
         else:
             dirn = './games/{0}'.format(newname)
-        # print 'Making dir for new collection:',dirn
+        print 'Making dir for new collection:',dirn
         try:
             mkdir(dirn)
         except OSError:
@@ -361,7 +361,6 @@ class CollectionSgf(object):
     def save(self):
         dict = self.to_dict()
         filen = self.filen + '.json'
-        print 'TRYING TO WRITE TO FILEN', filen
         with open(filen,'w') as fileh:
             fileh.write(self.serialise())
         return filen
