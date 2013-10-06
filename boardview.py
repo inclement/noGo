@@ -41,9 +41,12 @@ Clock.max_iteration = 60
 
 from kivy.input.postproc import doubletap
 
+from sgfmodels import Sgf, CollectionSgf, Collection
+
 #from db import KombiloInterface
 
 from helpers import embolden
+import sgfmodels
 
 from random import random as r
 from random import choice
@@ -60,7 +63,7 @@ from shutil import copyfile
 
 from gomill import sgf, boards
 from abstractboard import *
-from sgfcollections import CollectionChooserButton, get_collectioninfo_from_collection
+from sgfcollections import CollectionChooserButton
 from widgetcache import WidgetCache
 from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone, WhiteStoneSimple, BlackStoneSimple
 
@@ -423,7 +426,7 @@ class TabletBoardView(BoxLayout):
     boardcontainer = ObjectProperty(None,allownone=True)
     board = ObjectProperty(None,allownone=True)
     spinner = ObjectProperty(None,allownone=True)
-    collectionsgf = ObjectProperty(None,allownone=True)
+    sgf_model = ObjectProperty(None,allownone=True)
     def rottest(self,num):
         Window.rotation = num
 
@@ -433,7 +436,7 @@ class PhoneBoardView(BoxLayout):
     boardcontainer = ObjectProperty(None,allownone=True)
     board = ObjectProperty(None,allownone=True)
     spinner = ObjectProperty(None,allownone=True)
-    collectionsgf = ObjectProperty(None,allownone=True)
+    sgf_model = ObjectProperty(None,allownone=True)
     def rottest(self,num):
         Window.rotation = num
     # def on_touch_move(self, touch):
@@ -506,7 +509,7 @@ class GuiBoard(Widget):
     touchoffset = ListProperty([0,0])
     guesses = ListProperty([0,0])
     gameinfo = DictProperty({})
-    collectionsgf = ObjectProperty(None,allownone=True)
+    sgf_model = ObjectProperty(None,allownone=True)
 
     #kinterface = ObjectProperty(None)
 
@@ -743,26 +746,46 @@ class GuiBoard(Widget):
         popup.content.popup = popup
         popup.open()
 
+    def save_sgf_in(self, selection):
+        sgf = self.sgf_model
+        if len(selection) == 0:
+            return False
+        else:
+            collection = selection[0].collection
+        collectionsgfs = list(CollectionSgf.select().where(CollectionSgf.sgf == sgf) )
+        if len(collectionsgfs) == 0:
+            collectionsgf = CollectionSgf(collection=collection,
+                                          sgf = sgf)
+            collectionsgf.save()
+        else:
+            collectionsgf = collectionsgfs[0]
+            collectionsgf.collection = collection
+            collectionsgf.save()
+        self.sgf_model.auto_filename()
+        self.save_sgf()
+        App.get_running_app().manager.refresh_collections_index()
+
     def save_sgf(self,mode='quiet'):
                 #saveas=False,autosave=False,refresh=True):
-        filen = self.collectionsgf.filen
+        filen = self.sgf_model.filename
         if filen == '':
-            filen = self.collectionsgf.set_filen()
+            filen = self.sgf_model.auto_filename()
         print 'filen from collectionsgf is',filen
         if mode == 'quiet':
             self.abstractboard.save_sgf(filen)
         elif mode == 'saveas':
             self.ask_where_to_save()
-        self.collectionsgf.save()
+        self.sgf_model.populate_from_gameinfo(self.gameinfo)
+        self.sgf_model.save()
         #App.get_running_app().collections.save()
 
     def ask_where_to_save(self,force=True):
-        sq = SaveQuery(board=self,collectionsgf=self.collectionsgf)
+        sq = SaveQuery(board=self,sgf_model=self.sgf_model)
         popup = Popup(content=sq,title='Where to save?',size_hint=(0.85,0.85))
         popup.content.popup = popup
 
-        collections_list = App.get_running_app().collections.collections
-        collections_args_converter = get_collectioninfo_from_collection
+        collections_list = sgfmodels.get_collections()
+        collections_args_converter = sgfmodels.collections_args_converter
         list_adapter = ListAdapter(data=collections_list,
                                    args_converter = collections_args_converter,
                                    selection_mode = 'single',
@@ -1996,7 +2019,6 @@ class EditPanel(GridLayout):
         elif toplay == 'b' and self.wplay_button.state == 'down':
             self.bplay_button.state = 'down'
             self.wplay_button.state = 'normal'
-
         
 
 class CommentInput(BoxLayout):
@@ -2007,7 +2029,7 @@ class CommentInput(BoxLayout):
 class SaveQuery(BoxLayout):
     collections_list = ObjectProperty(None,allownone=True)
     board = ObjectProperty(None,allownone=True)
-    collectionsgf = ObjectProperty(None,allownone=True)
+    sgf_model = ObjectProperty(None,allownone=True)
 
 def get_collectioninfo_from_dir(row_index,dirn):
     sgfs = glob(dirn + '/*.sgf')

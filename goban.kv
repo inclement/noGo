@@ -3,6 +3,7 @@
 #:import la kivy.adapters.listadapter
 #:import lv kivy.uix.listview
 #:import Window kivy.core.window.Window
+#: import sgfmodels sgfmodels
 
 <ScrollListView>:
     min_overscroll: 1000
@@ -588,7 +589,7 @@
         Button:
             size_hint: (0.5,1.)
             text: 'Save'
-            on_press: app.move_collectionsgf(root.collectionsgf,collections.adapter.selection,root.board)
+            on_press: root.board.save_sgf_in(collections.adapter.selection)
             on_release: root.popup.dismiss()
 
 <CollectionsIndex>:
@@ -617,7 +618,7 @@
                 text: 'Delete\ncollection'
                 halign: 'center'
                 valign: 'middle'
-                on_press: app.query_delete_collection(collections.adapter.selection)
+                on_press: sgfmodels.delete_collection_from(collections.adapter.selection); app.manager.refresh_collections_index()
                 background_normal: 'media/red_pixel.png'
                 background_down: 'media/blue_press_pixel.png'
             VDividerLine
@@ -826,7 +827,7 @@
             Button:
                 size_hint: (0.22222,1.)
                 text: 'New game'
-                on_release: root.managedby.new_board(in_collection=root.collection)
+                on_release: root.managedby.new_board(collection_model=root.collection)
                 halign: 'center'
                 valign: 'middle'
                 background_normal: 'media/blue_pixel.png'
@@ -835,7 +836,7 @@
             Button:
                 size_hint: (0.22222,1.)
                 text: 'Random'
-                on_release: root.managedby.new_board(with_collectionsgf=root.collection.random_sgf(),mode='Navigate') if len(root.collection.games) >= 1 else None
+                on_release: app.manager.random_game_from(root.collection)
                 background_normal: 'media/orange_pixel.png'
                 background_down: 'media/blue_press_pixel.png'
             VDividerLine

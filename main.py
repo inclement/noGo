@@ -15,7 +15,6 @@
 # print 'THIS DIR'
 # print os.listdir('.')
 
-
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle, Ellipse
@@ -56,9 +55,9 @@ from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, Circle
 from miscwidgets import VDividerLine, DividerLine, WhiteStoneImage, BlackStoneImage, CarouselRightArrow, CarouselLeftArrow, AndroidTextInput
 from info import InfoPage
 from homepage import TabletHomeScreen, HomeScreen, OpenSgfDialog
-from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton, GameChooserButton, DeleteSgfQuestion, CollectionsList, Collection, CollectionSgf, get_collectioninfo_from_collection
+from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton, GameChooserButton, DeleteSgfQuestion
 from widgetcache import WidgetCache
-from sgfmodels import Sgf, get_collections, collections_args_converter, Collection, games_args_converter, get_games_in
+from sgfmodels import Sgf, get_collections, collections_args_converter, Collection, games_args_converter, get_games_in, get_default_collection, CollectionSgf
 
 from kivy.utils import platform
 
@@ -435,8 +434,8 @@ class NogoManager(ScreenManager):
         if len(selection) > 0:
             button = selection[0]
             collection = button.collection
-            collectionsgf = button.collectionsgf
-            self.new_board(with_collectionsgf=collectionsgf,mode='Navigate')
+            sgf = button.sgf
+            self.new_board(sgf_model=sgf,mode='Navigate')
     def close_board_from_selection(self,sel):
         print 'asked to close from sel',sel
         if len(sel) > 0:
@@ -453,7 +452,6 @@ class NogoManager(ScreenManager):
             print 'new boards',self.screens
     def collection_tool_dialog(self):
         '''Create and open a dialog popup for collection tools (import directory etc.)'''
-        App.get_running_app().build_collections_list()
         pass
     def new_board_dialog(self):
         print 'Opening new_board_dialog'
@@ -461,8 +459,7 @@ class NogoManager(ScreenManager):
         dialog = NewBoardQuery(manager=self)
         popup = Popup(content=dialog,title='Create new board...',size_hint=(0.85,0.9))
         popup.content.popup = popup
-        collections_list = App.get_running_app().collections.collections
-        collections_args_converter = get_collectioninfo_from_collection
+        collections_list = get_collections()
         list_adapter = ListAdapter(data=collections_list,
                                    args_converter=collections_args_converter,
                                    selection_mode='single',
@@ -475,52 +472,51 @@ class NogoManager(ScreenManager):
         if len(sel)>0:
             collection = sel[0].collection
         else:
-            collection = App.get_running_app().get_default_collection()
-        self.new_board(in_collection=collection,gridsize=gridsize,handicap=handicap)
-    def new_board(self,with_collectionsgf=None,in_collection=None,from_file='',mode='Play',gridsize=19,handicap=0,goto=True):
+            collection = get_default_collection()
+        self.new_board(collection_model=collection,gridsize=gridsize,handicap=handicap)
+    def new_board(self,sgf_model=None,collection_model=None,from_file='',mode='Play',gridsize=19,handicap=0,goto=True):
         load_from_file = False
 
-        App.get_running_app().build_collections_list()
-        print '%% NEW BOARD'
-        print with_collectionsgf, in_collection, from_file
-        print type(from_file)
         t1 = time()
 
         # Get a collection and collectionsgf to contain and represent the board 
         filen = from_file
-        if with_collectionsgf is not None:
-            collectionsgf = with_collectionsgf
-            filen = collectionsgf.filen
-            collection = collectionsgf.collection
-            newboard = False
+        if sgf_model is not None:
+            sgf = sgf_model
+            if sgf.filename:
+                filen = sgf.filename
             load_from_file = True
-        elif in_collection is not None:
-            collection = in_collection
-            collectionsgf = collection.add_game(can_change_name=True)
+        elif collection_model is not None:
+            sgf = Sgf()
+            sgf.save()
+            collectionsgf = CollectionSgf(collection=collection_model, sgf=sgf)
+            collectionsgf.save()
+            
             load_from_file = False
             if from_file != '':
                 load_from_file = True
                 filen = from_file
-                collectionsgf.filen = filen
-                collectionsgf.can_change_name = False
+                sgf.filename = filen
         else:
-            collection = App.get_running_app().get_default_collection()
-            collectionsgf = collection.add_game()
-            print 'Made new collectionsgf for the game',collectionsgf
+            collection = get_default_collection()
+            sgf = Sgf()
+            sgf.save()
+            collectionsgf = CollectionSgf(collection=collection,
+                                          sgf=sgf)
+            collectionsgf.save()
+
             load_from_file = False
             if from_file != '':
                 load_from_file = True
                 filen = from_file
-                collectionsgf.filen = filen
-                collectionsgf.can_change_name = False
+                sgf.filename = filen
 
         t2 = time()
 
         print 't2 - t1 is...',t2-t1
 
-        if filen == '' and with_collectionsgf is None:
-            collectionsgf.filen = collectionsgf.get_default_filen() + '.sgf'
-            filen = collectionsgf.filen
+        if filen == '':
+            sgf.auto_filename()
             load_from_file = False
 
         t3 = time()
@@ -542,18 +538,17 @@ class NogoManager(ScreenManager):
 
 
         if self.view_mode[:6] == 'tablet':
-            pbv = TabletBoardView(collectionsgf=collectionsgf)
+            pbv = TabletBoardView(sgf_model=sgf)
         else:
-            pbv = PhoneBoardView(collectionsgf=collectionsgf)
-        pbv.board.collectionsgf = collectionsgf
+            pbv = PhoneBoardView(sgf_model=sgf)
+        pbv.board.sgf_model = sgf
 
         # if platform() == 'android':
         #     #set_board_height(pbv.boardcontainer)
         #     pbv.boardcontainer.set_board_height()
 
-        gi = collectionsgf.gameinfo
-        if 'gridsize' in gi:
-            gridsize = gi['gridsize']
+        if sgf.gridsize:
+            gridsize = sgf.gridsize
         pbv.board.gridsize = gridsize
 
         t5 = time()
@@ -600,9 +595,8 @@ class NogoManager(ScreenManager):
             self.create_collections_index()
             return False
         collections_index = self.get_screen('Collections Index').children[0]
-        collections_list = App.get_running_app().collections.collections
-        collections_args_converter = get_collectioninfo_from_collection
-        list_adapter = ListAdapter(data=collections_list,
+        collections = get_collections()
+        list_adapter = ListAdapter(data=collections,
                                    args_converter = collections_args_converter,
                                    selection_mode = 'single',
                                    allow_empty_selection=True,
@@ -610,12 +604,15 @@ class NogoManager(ScreenManager):
                                    )
         collections_index.collections_list.adapter = list_adapter
 
-    # def refresh_collection(self,dirn):
-    #     sname = 'Collection ' + dirn
-    #     if self.has_screen(sname):
-    #         scr = self.get_screen(sname)
-    #         self.remove_widget(scr)
-    #         self.view_or_open_collection(dirn,goto=False)
+
+    def random_game_from(self, collection):
+        sgf = collection.random_sgf()
+        print '  random game is', sgf, collection
+        if sgf is not None:
+            self.new_board(sgf_model=sgf, mode='Navigate')
+        else:
+            return
+    
     def rebuild_homescreen(self,mode=None,goto=True):
         print 'rebuilding homescreen'
         t1 = time()
@@ -775,7 +772,7 @@ class NogoManager(ScreenManager):
         print 'Asked to delete from selection',selection
         if len(selection)>0:
             button = selection[0]
-            print 'collectionsgf is',button,button.collection,button.collectionsgf,button.filepath
+            selection[0].sgf.delete_instance()
             self.delete_sgf(selection[0].collectionsgf)
     def delete_sgf(self,collectionsgf):
         collectionsgf.delete()
@@ -1165,8 +1162,12 @@ class GobanApp(App):
         popup.content.popup = popup
         popup.open()
     def new_collection(self,newname):
-        self.collections.new_collection(newname)
-        self.collections.save()
+        collection = Collection(name=newname)
+        if platform() == 'android':
+            collection.directory = '/sdcard/noGo/collections'
+        else:
+            collection.directory = './games'
+        collection.save()
         self.manager.refresh_collections_index()
     def query_delete_collection(self,sel):
         if len(sel)>0:
@@ -1192,7 +1193,7 @@ class GobanApp(App):
         return unsaved
     def move_collectionsgf(self,collectionsgf,selection,board=None):
         if len(selection) > 0:
-            collection = selection[0].collection
+            collection = selection[0].get_collections()[0]
         else:
             return False
         oldcollection = collectionsgf.collection

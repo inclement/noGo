@@ -2,7 +2,9 @@
 
 from peewee import *
 import datetime
+import time
 import json
+import random
 
 from helpers import embolden
 
@@ -16,6 +18,7 @@ class BaseModel(Model):
 class Collection(BaseModel):
     name = CharField()
     date_created = DateTimeField(default=datetime.datetime.now)
+    directory = CharField(default='./games')
 
     other = TextField(null=True)
     '''Anything else I think of...'''
@@ -24,11 +27,21 @@ class Collection(BaseModel):
         return '<{} collection>'.format(self.name)
     def __repr__(self, *args):
         return str(self)
+    def random_sgf(self):
+        games = get_games_in(self)
+        print 'games are', games
+        choice = random.choice(games)
+        print 'choice is', choice
+        if len(games) == 0:
+            return None
+        else:
+            return choice
+        
         
 class Sgf(BaseModel):
     '''Peewee model for storing sgf metadata in a database.'''
 
-    filename = CharField(null=True)
+    filename = CharField(default='', null=True)
 
     sgf = TextField(null=True)
     '''The entire sgf.'''
@@ -90,16 +103,43 @@ class Sgf(BaseModel):
     # def __init__(self, *args, **kwargs):
     #     super(Sgf, self).__init__(*args, **kwargs)
 
+    def get_collections(self, *args):
+        return list(Collection.select().join(CollectionSgf).join(Sgf).where(Sgf.id == self.id))
+
+    def auto_filename(self):
+        collections = self.get_collections()
+        if len(collections) > 0:
+            directory = collections[0].directory
+        else:
+            directory = './games'
+        filen = directory + '/' + time.asctime().replace(' ','_')
+        if self.wname:
+            filen += '_' + self.wname
+        if self.bname:
+            filen += '_' + self.bname
+        if self.event:
+            filen += '_' + self.event
+        filen += '.sgf'
+        self.filename = filen
+        return self.filename
+
+    def populate_from_gameinfo(self, info):
+        for key, value in info.iteritems():
+            if hasattr(self, key):
+                self.key = value
+
 class CollectionSgf(BaseModel):
     collection = ForeignKeyField(Collection)
     sgf = ForeignKeyField(Sgf)
 
     def __str__(self):
         return '<CollectionSgf {} in {}>'.format(self.sgf, self.collection)
+    def __repr__(self):
+        return str(self)
 
 
 def get_collections():
-    return list(Collection.select())
+    return list(Collection.select().order_by(Collection.date_created))[::-1]
 
 def collections_args_converter(ri, col):
     games = list(Sgf.select().join(CollectionSgf).join(Collection).where(Collection.name == col.name))
@@ -124,6 +164,8 @@ def games_args_converter(ri, game):
     if game.result:
         info['result'] = game.result
         winner = game.result[0].lower()
+    else:
+        winner = ''
     if game.wname:
         info['wname'] = game.wname
         if winner == 'w':
@@ -136,3 +178,18 @@ def games_args_converter(ri, game):
         info['date'] = game.date
 
     return info
+
+def get_default_collection():
+    collections = list(
+        Collection.select().where(Collection.name == 'unsaved'))
+    if len(collections) == 0:
+        collection = Collection(name='unsaved')
+    else:
+        collection = collections[0]
+    return collection
+        
+
+def delete_collection_from(selection):
+    if len(selection) == 0:
+        return False
+    selection[0].collection.delete_instance()
