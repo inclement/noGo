@@ -118,8 +118,14 @@ class ScoreBoard(object):
                                 
                     
             
-        
-
+'''        
+def apply_gameinfo_to_sgfmodel(model, info, save=False):
+    for key, value in info.iteritems():
+        if hasattr(model, key):
+            setattr(model, key, value)
+    if save:
+        model.save(
+        '''
 
 def get_sgf_from_file(filen):
     fileh = open(filen)

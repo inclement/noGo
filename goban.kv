@@ -843,7 +843,7 @@
             Button:
                 size_hint: (0.3333,1.)
                 text: 'Open selected'
-                on_press: root.managedby.board_from_gamechooser(gl.adapter.selection)
+                on_release: root.managedby.board_from_gamechooser(gl.adapter.selection)
                 background_normal: 'media/green_pixel.png'
                 background_down: 'media/blue_press_pixel.png'
     VDividerLine:
@@ -1793,7 +1793,7 @@
             id: filechooser
             filters: ['*'] #['*.sgf']
             path: '.' #root.get_dir()
-            sort_func: lambda j: sorted(j,key=lambda s: s.lower())
+            sort_func: lambda j, fs: sorted(j,key=lambda s: s.lower())
         BoxLayout:
             size_hint_y: None
             height: (50,'dp')
@@ -1802,8 +1802,7 @@
                 on_release: self.parent.parent.parent.popup.dismiss()
             Button:
                 text: "Load"
-                on_press: root.manager.open_from_intentpath(filechooser.selection[0])
-                on_release: self.parent.parent.parent.popup.dismiss()
+                on_release: root.manager.open_from_intentpath(filechooser.selection[0]); self.parent.parent.parent.popup.dismiss()
 
 <ButtonTest>:
     text: 'Next var'

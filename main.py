@@ -40,6 +40,7 @@ from kivy.clock import Clock
 
 from kivy.properties import *
 
+
 from glob import glob
 from os.path import abspath, exists
 from os import mkdir, rename, environ, getenv, putenv
@@ -60,6 +61,8 @@ from widgetcache import WidgetCache
 from sgfmodels import Sgf, get_collections, collections_args_converter, Collection, games_args_converter, get_games_in, get_default_collection, CollectionSgf
 
 from kivy.utils import platform
+
+from toast import toast
 
 if platform() == 'android':
     from jnius import autoclass
@@ -278,13 +281,14 @@ class NogoManager(ScreenManager):
             if name[:5] == 'Board':
                 board = self.get_screen(name)
                 try:
-                    if board.children[0].board.collectionsgf.filen == path:
+                    if board.children[0].board.sgf_model.filename == path:
                         print 'filen is correct, name is',name
                         self.switch_and_set_back(name)
                         return
                 except IndexError:
                     print 'Tried to go to board that doesn\'t exist, maybe didn\'t load properly'
         print 'path not already open, opening'
+        print 'doing new board'
         self.new_board(from_file=path,mode='Navigate')
 
     def on_current(self,*args,**kwargs):
@@ -455,7 +459,6 @@ class NogoManager(ScreenManager):
         pass
     def new_board_dialog(self):
         print 'Opening new_board_dialog'
-        App.get_running_app().build_collections_list()
         dialog = NewBoardQuery(manager=self)
         popup = Popup(content=dialog,title='Create new board...',size_hint=(0.85,0.9))
         popup.content.popup = popup
@@ -475,6 +478,7 @@ class NogoManager(ScreenManager):
             collection = get_default_collection()
         self.new_board(collection_model=collection,gridsize=gridsize,handicap=handicap)
     def new_board(self,sgf_model=None,collection_model=None,from_file='',mode='Play',gridsize=19,handicap=0,goto=True):
+        toast('Loading sgf', False)
         load_from_file = False
 
         t1 = time()
@@ -499,11 +503,14 @@ class NogoManager(ScreenManager):
                 sgf.filename = filen
         else:
             collection = get_default_collection()
+            print 'default collection is', collection
             sgf = Sgf()
             sgf.save()
+            print 'made sgf'
             collectionsgf = CollectionSgf(collection=collection,
                                           sgf=sgf)
             collectionsgf.save()
+            print 'made collectionsgf'
 
             load_from_file = False
             if from_file != '':
@@ -923,18 +930,6 @@ class GobanApp(App):
         
         return sm
 
-    def build_collections_list(self):
-        if self.collections is None:
-            self.collections = CollectionsList()
-            cl = self.collections
-            #progress = CollectionProgress()
-            #cl.popup = progress
-            #progress.open()
-            #sleep(1)
-            cl.from_file()
-            #progress.dismiss()
- 
-            
     def try_android_rotate(self,dir='portrait'):
         print 'Trying android rotate'
         if dir == 'landscape':

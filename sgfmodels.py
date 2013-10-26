@@ -184,6 +184,7 @@ def get_default_collection():
         Collection.select().where(Collection.name == 'unsaved'))
     if len(collections) == 0:
         collection = Collection(name='unsaved')
+        collection.save()
     else:
         collection = collections[0]
     return collection
