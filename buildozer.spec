@@ -13,7 +13,7 @@ package.domain = net.inclem
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,sgf,json,kv,txt,rst,mp3,atlas,ttf,so
+source.include_exts = py,png,jpg,sgf,json,kv,txt,rst,mp3,atlas,ttf,so,db
 
 # (list) Source files to exclude (let empty to not excluding anything)
 #source.exclude_exts = spec
@@ -26,7 +26,7 @@ source.include_exts = py,png,jpg,sgf,json,kv,txt,rst,mp3,atlas,ttf,so
 version = 0.4.3
 
 # (list) Application requirements
-requirements = kombilo,docutils,kivy
+requirements = sqlite3,docutils,kivy
 
 #orientation = all
 orientation = portrait
@@ -54,7 +54,7 @@ android.permissions = VIBRATE
 #android.sdk = 8
 
 # (str) Android NDK version to use
-#android.ndk = 8c
+android.ndk = 8e
 
 # (str) Android NDK directory (if empty, it will be automatically downloaded.)
 #android.ndk_path =
