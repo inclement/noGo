@@ -403,13 +403,16 @@ class NogoManager(ScreenManager):
             if goto:
                 self.switch_and_set_back(s.name)
     def refresh_open_games(self):
+        print ' Refreshing open games'
         homepage = self.get_screen('Home')
-        args_converter = lambda c,j: get_game_chooser_info_from_boardname(self,j)
-        list_adapter = ListAdapter(data=self.boards,
+        args_converter = games_args_converter
+        print 'boards are', self.boards
+        sgfs = [self.get_screen(board).children[0].board.sgf_model for board in self.boards]
+        list_adapter = ListAdapter(data=sgfs,
                                    args_converter=args_converter,
                                    selection_mode='single',
                                    allow_empty_selection=True,
-                                   cls=OpenChooserButton,
+                                   cls=GameChooserButton,
                                    )
         homepage.children[0].opengames.adapter = list_adapter
 
@@ -419,9 +422,8 @@ class NogoManager(ScreenManager):
         if len(matching_screens) > 0:
             scr = self.get_screen(matching_screens[0])
             gc = scr.children[0]
-            games = collection.games
-            args_converter = lambda k,j: j.info_for_button()
-            #args_converter = testconverter
+            games = get_games_in(collection)
+            args_converter = games_args_converter
             list_adapter = ListAdapter(data=games,
                                        args_converter = args_converter,
                                        selection_mode = 'single',
@@ -566,7 +568,12 @@ class NogoManager(ScreenManager):
                 pbv.board.load_sgf_from_file('',[filen])
             except:
                 print 'Exception occurred, making popup'
-                popup = Popup(content=Label(text='Unable to open SGF. Please check the file exists and is a valid SGF.',title='Error opening file'),size_hint=(0.85,0.4),title='Error')
+                popup = Popup(content=Label(text=
+                                            ('Unable to open SGF. Please check'
+                                             'the file exists and is a valid SGF.'),
+                                            title='Error opening file'),
+                              size_hint=(0.85,0.4),
+                              title='Error')
                 print 'popup made'
                 popup.open()
                 #self.close_board(name)
@@ -595,6 +602,8 @@ class NogoManager(ScreenManager):
         t6 = time()
         print 'timings are'
         print t6-t1, t6-t5, t5-t4, t4-t3, t3-t2, t2-t1
+
+        self.refresh_open_games()
 
         return pbv
     def refresh_collections_index(self):
