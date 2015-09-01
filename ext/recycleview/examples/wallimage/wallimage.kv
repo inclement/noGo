@@ -1,0 +1,9 @@
+#:kivy 1.9
+#:import LinearRecycleLayoutManager kivy.garden.recycleview.LinearRecycleLayoutManager
+
+<WallImage@Image>:
+
+RecycleView:
+    layout_manager: LinearRecycleLayoutManager(orientation="horizontal", default_size=self.width)
+    data: app.data
+    viewclass: "WallImage"
