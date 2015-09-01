@@ -4,7 +4,7 @@
 
 # This file is part of noGo.
 
-# noGo is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+# noGo is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either wversion 3 of the License, or (at your option) any later version.
 
 # noGo is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
@@ -16,8 +16,10 @@
 # print os.listdir('.')
 
 import sys
-from os.path import realpath
-sys.path = [realpath('./ext')] + sys.path
+from os.path import realpath, join, dirname
+noGo_path = dirname(realpath(__file__))
+sys.path = [join(noGo_path, 'ext')] + sys.path
+print sys.path
 
 from kivy.app import App
 from kivy.core.window import Window
@@ -55,14 +57,24 @@ from time import asctime, time, sleep
 
 from gomill import sgf, boards
 from abstractboard import *
-from boardview import GuiBoard, BoardContainer, PhoneBoardView, TabletBoardView, GuessPopup, SaveQuery, MySpinnerOption, ReversibleSpinner
-from boardwidgets import Stone, TextMarker, TriangleMarker, SquareMarker, CircleMarker, CrossMarker, VarStone
-from miscwidgets import VDividerLine, DividerLine, WhiteStoneImage, BlackStoneImage, CarouselRightArrow, CarouselLeftArrow, AndroidTextInput
+from boardview import (GuiBoard, BoardContainer, PhoneBoardView,
+                       TabletBoardView, GuessPopup, SaveQuery, MySpinnerOption,
+                       ReversibleSpinner)
+from boardwidgets import (Stone, TextMarker, TriangleMarker,
+                          SquareMarker, CircleMarker, CrossMarker, VarStone)
+from miscwidgets import (VDividerLine, DividerLine, WhiteStoneImage,
+                         BlackStoneImage, CarouselRightArrow, CarouselLeftArrow,
+                         AndroidTextInput)
 from info import InfoPage
-from homepage import TabletHomeScreen, HomeScreen, OpenSgfDialog
-from sgfcollections import DeleteCollectionQuestion, CollectionNameChooser, StandaloneGameChooser, GameChooserInfo, get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex, CollectionChooserButton, GameChooserButton, DeleteSgfQuestion
+from homepage import (TabletHomeScreen, HomeScreen, OpenSgfDialog)
+from sgfcollections import (DeleteCollectionQuestion,
+                            CollectionNameChooser, StandaloneGameChooser, GameChooserInfo,
+                            get_collectioninfo_from_dir, OpenChooserButton, CollectionsIndex,
+                            CollectionChooserButton, GameChooserButton, DeleteSgfQuestion)
 from widgetcache import WidgetCache
-from sgfmodels import Sgf, get_collections, collections_args_converter, Collection, games_args_converter, get_games_in, get_default_collection, CollectionSgf
+from sgfmodels import (Sgf, get_collections,
+                       collections_args_converter, Collection, games_args_converter,
+                       get_games_in, get_default_collection, CollectionSgf)
 
 from kivy.utils import platform
 
@@ -1250,6 +1262,9 @@ def testconverter(j, *args):
     print 'info is', info
     return info
 
-if __name__ == '__main__':
+def run():
     app = GobanApp()
     app.run()
+
+if __name__ == '__main__':
+    run()

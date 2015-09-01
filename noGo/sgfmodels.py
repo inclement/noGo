@@ -8,7 +8,9 @@ import random
 
 from helpers import embolden
 
-db = SqliteDatabase('./games/sgfs.db')
+from os.path import join, realpath, dirname
+noGo_path = dirname(realpath(__file__))
+db = SqliteDatabase(join(noGo_path, 'games', 'sgfs.db'))
 db.connect()
 
 class BaseModel(Model):
