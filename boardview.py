@@ -1439,7 +1439,6 @@ class GuiBoard(Widget):
                 self.wname = embolden(self.wname)
 
     def advance_one_move(self,*args,**kwargs):
-        App.get_running_app().manager.save_image('fullimage.png')
         print '%% Advancing one move!', time()
         if self.navmode == 'Score':
             self.clear_ld_markers()

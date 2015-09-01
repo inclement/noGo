@@ -15,6 +15,10 @@
 # print 'THIS DIR'
 # print os.listdir('.')
 
+import sys
+from os.path import realpath
+sys.path = [realpath('./ext')] + sys.path
+
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle, Ellipse
@@ -771,7 +775,7 @@ class NogoManager(ScreenManager):
     def propagate_view_mode(self, val):
         print 'PROPAGATING VIEW MODE', val
         self.view_mode = val
-        if platform() == 'android':
+        if platform == 'android':
             try:
                 if val == 'tablet (normal)':
                     App.get_running_app().try_android_rotate('landscape')
