@@ -705,16 +705,12 @@ class GuiBoard(Widget):
         gi = self.abstractboard.get_gameinfo()
         self.gameinfo = gi
         self.get_player_details()
-        try:
-            self.collectionsgf.set_gameinfo(gi)
-            self.collectionsgf.save()
-        except AttributeError:
-            print 'Tried to set collectionsgf info when it doesn\'t exist yet.'
+        self.populate_sgf_model_gameinfo()
         try:
             print 'Trying to remind'
             print App.get_running_app().manager
             print App.get_running_app().manager.collections_to_refresh
-            App.get_running_app().manager.add_collection_refresh_reminder(self.collectionsgf.collection)
+            App.get_running_app().manager.add_collection_refresh_reminder(self.sgf_model.name)
             print 'Added collection refresh reminder'
             App.get_running_app().manager.homescreen_to_refresh = True
             print 'Set homescreen refresh reminder'
@@ -767,17 +763,22 @@ class GuiBoard(Widget):
 
     def save_sgf(self,mode='quiet'):
                 #saveas=False,autosave=False,refresh=True):
+        print ' SAVING SGF'
         filen = self.sgf_model.filename
         if filen == '':
             filen = self.sgf_model.auto_filename()
+        print 'filen is', filen
         print 'filen from collectionsgf is',filen
         if mode == 'quiet':
             self.abstractboard.save_sgf(filen)
         elif mode == 'saveas':
             self.ask_where_to_save()
-        self.sgf_model.populate_from_gameinfo(self.gameinfo)
-        self.sgf_model.save()
+        self.populate_sgf_model_gameinfo()
         #App.get_running_app().collections.save()
+
+    def populate_sgf_model_gameinfo(self):
+        if self.sgf_model is not None:
+            self.sgf_model.populate_from_gameinfo(self.gameinfo)
 
     def ask_where_to_save(self,force=True):
         sq = SaveQuery(board=self,sgf_model=self.sgf_model)
@@ -951,13 +952,21 @@ class GuiBoard(Widget):
         popup.open()
 
     def load_sgf_from_file(self,path,filen):
+        filen = filen[0]
+        print 'filen is'
+        with open(filen) as fileh:
+            print 'READING FILE'
+            print str(fileh.read())
         #print 'asked to load from',path,filen
-        self.abstractboard.load_sgf_from_file(filen[0])
+        self.abstractboard.load_sgf_from_file(filen)
         #print 'loaded abstractboard from file'
         self.permanent_filepath = self.abstractboard.filepath
         #print 'set permanent filepath'
         self.reset_abstractboard()
         #print 'reset abstractboard'
+        with open(filen) as fileh:
+            print 'READING FILE 2'
+            print str(fileh.read())
 
     def get_new_comment(self,*args,**kwargs):
         print 'get new comment called'
@@ -1430,6 +1439,7 @@ class GuiBoard(Widget):
                 self.wname = embolden(self.wname)
 
     def advance_one_move(self,*args,**kwargs):
+        App.get_running_app().manager.save_image('fullimage.png')
         print '%% Advancing one move!', time()
         if self.navmode == 'Score':
             self.clear_ld_markers()

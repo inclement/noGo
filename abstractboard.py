@@ -567,6 +567,7 @@ class AbstractBoard(object):
         print 'opened'
         sgfdata = fileh.read()
         print 'read from file'
+        print 'sgf is', sgfdata
         fileh.close()
         print 'file closed'
         try:
@@ -592,7 +593,9 @@ class AbstractBoard(object):
         set_gameinfo_in_sgf(info,self.game)
 
     def save_sgf(self,filen):
+        print ' ABSTRACT SAVING'
         data = self.game.serialise()
+        print 'data is', data
         fileh = open(filen,'w')
         fileh.write(data)
         fileh.close()

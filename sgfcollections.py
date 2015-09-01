@@ -92,6 +92,7 @@ class GameChooserButton(ListItemButton):
     date = StringProperty('')
     collection = ObjectProperty(None,allownone=True)
     sgf = ObjectProperty(None, allownone=True)
+    boardname = StringProperty('')  # Used by the open games list
     def construct_from_sgfinfo(self,info):
         self.info.construct_from_sgfinfo(info)
 

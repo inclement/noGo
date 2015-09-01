@@ -103,12 +103,12 @@ class CollectionProgress(Popup):
     length = NumericProperty(1)
     progress = NumericProperty(0)
     
-    def set_length(self,thing,value):
-        print 'thing is',thing
-        print 'val is',value
+    def set_length(self, thing, value):
+        print 'thing is', thing
+        print 'val is', value
         self.length = value
     def set_progress(self, thing, value):
-        print 'prog thing is',thing
+        print 'prog thing is', thing
         print 'prog val is', value
         self.progress = value
 
@@ -145,16 +145,16 @@ def set_board_height(boardcontainer):
     # Should be redundant now.
     width = Window.width
     height = Window.height
-    print 'window height,width',height,width
+    print 'window height, width', height, width
     if height > width:
         boardheight = width
         boardcontainer.height = boardheight
         boardcontainer.size_hint_y = None
-        print 'boardcontainer size',boardcontainer.size,boardcontainer.size_hint
+        print 'boardcontainer size', boardcontainer.size, boardcontainer.size_hint
     
         
 
-def get_game_chooser_info_from_boardname(sm,boardname):
+def get_game_chooser_info_from_boardname(sm, boardname):
     board = sm.get_screen(boardname).children[0].board
     gameinfo = board.collectionsgf.info_for_button()
     if 'wname' in gameinfo:
@@ -190,8 +190,8 @@ class BoardSizeButton(ToggleButton):
         return 19
 
 class NewBoardQuery(BoxLayout):
-    collections_list = ObjectProperty(None,allownone=True)
-    manager = ObjectProperty(None,allownone=True)
+    collections_list = ObjectProperty(None, allownone=True)
+    manager = ObjectProperty(None, allownone=True)
  
 
 
@@ -205,38 +205,38 @@ class BoardSizeButton(ToggleButton):
         return 19
 
 class NewBoardQuery(BoxLayout):
-    collections_list = ObjectProperty(None,allownone=True)
-    manager = ObjectProperty(None,allownone=True)
+    collections_list = ObjectProperty(None, allownone=True)
+    manager = ObjectProperty(None, allownone=True)
 
     
 class GameOptions(DropDown):
-    board = ObjectProperty(None,allownone=True)
+    board = ObjectProperty(None, allownone=True)
 
 class GameOptionsButton(Button):
-    ddn = ObjectProperty(None,allownone=True)
-    board = ObjectProperty(None,allownone=True)
-    def __init__(self,*args,**kwargs):
-        super(GameOptionsButton,self).__init__()
+    ddn = ObjectProperty(None, allownone=True)
+    board = ObjectProperty(None, allownone=True)
+    def __init__(self, *args, **kwargs):
+        super(GameOptionsButton, self).__init__()
         self.ddn = GameOptions(board=self.board)
-    def on_touch_up(self,touch):
+    def on_touch_up(self, touch):
         self.ddn.board = self.board
         if touch.grab_current == self:
             self.ddn.open(self)
-        return super(GameOptionsButton,self).on_touch_up(touch)
+        return super(GameOptionsButton, self).on_touch_up(touch)
         
 
 class NextButton(Button):
-    board = ObjectProperty(None,allownone=True)
+    board = ObjectProperty(None, allownone=True)
     def on_touch_down(self, touch):
-        super(NextButton,self).on_touch_down(touch)
+        super(NextButton, self).on_touch_down(touch)
         if self.collide_point(*touch.pos):
             if self.board is not None:
                 self.board.stop_autoplay()
                 callback = self.board.start_autoplay
-                Clock.schedule_once(callback,1.1)
+                Clock.schedule_once(callback, 1.1)
                 touch.ud['event'] = callback
-    def on_touch_up(self,touch):
-        super(NextButton,self).on_touch_up(touch)
+    def on_touch_up(self, touch):
+        super(NextButton, self).on_touch_up(touch)
         try: 
             Clock.unschedule(touch.ud['event'])
         except KeyError:
@@ -252,19 +252,19 @@ class PrevButton(Button):
 
 
 
-starposs = {19:[(3,3),(3,9),(3,15),(9,3),(9,9),(9,15),(15,3),(15,9),(15,15)],
-            13:[(3,3),(3,9),(9,3),(9,9),(6,6)],
-            9:[(2,2),(6,2),(2,6),(6,6),(4,4)]}
+starposs = {19:[(3, 3),(3, 9),(3, 15),(9, 3),(9, 9),(9, 15),(15, 3),(15, 9),(15, 15)],
+            13:[(3, 3),(3, 9),(9, 3),(9, 9),(6, 6)],
+            9:[(2, 2),(6, 2),(2, 6),(6, 6),(4, 4)]}
             
 
 
 class NogoManager(ScreenManager):
-    app = ObjectProperty(None,allownone=True)
+    app = ObjectProperty(None, allownone=True)
     boards = ListProperty([])
     back_screen_name = StringProperty('')
 
     # Settings properties to keep an eye on
-    touchoffset = ListProperty([0,0])
+    touchoffset = ListProperty([0, 0])
     coordinates = BooleanProperty(False)
     display_markers = BooleanProperty(True)
     boardtype = StringProperty('./media/boards/none.png')
@@ -274,25 +274,25 @@ class NogoManager(ScreenManager):
     homescreen_to_refresh = BooleanProperty(False)
     collections_to_refresh = ListProperty([])
 
-    def open_from_intentpath(self,path):
-        print 'asked to open_from_intentpath',path
+    def open_from_intentpath(self, path):
+        print 'asked to open_from_intentpath', path
         names = self.screen_names
         for name in names:
             if name[:5] == 'Board':
                 board = self.get_screen(name)
                 try:
                     if board.children[0].board.sgf_model.filename == path:
-                        print 'filen is correct, name is',name
+                        print 'filen is correct, name is', name
                         self.switch_and_set_back(name)
                         return
                 except IndexError:
                     print 'Tried to go to board that doesn\'t exist, maybe didn\'t load properly'
         print 'path not already open, opening'
         print 'doing new board'
-        self.new_board(from_file=path,mode='Navigate')
+        self.new_board(from_file=path, mode='Navigate')
 
-    def on_current(self,*args,**kwargs):
-        super(NogoManager,self).on_current(*args,**kwargs)
+    def on_current(self, *args, **kwargs):
+        super(NogoManager, self).on_current(*args, **kwargs)
         if self.current == 'Home' and self.homescreen_to_refresh:
             self.refresh_open_games()
             self.homescreen_to_refresh = False
@@ -301,12 +301,12 @@ class NogoManager(ScreenManager):
             self.collectionindex_to_refresh = False
     
     def add_collection_refresh_reminder(self, collection):
-        print 'Asked to remind collection refresh',collection
+        print 'Asked to remind collection refresh', collection
         if collection not in self.collections_to_refresh:
             self.collections_to_refresh.append(collection)
     
-    def switch_and_set_back(self,newcurrent):
-        print 'Asked to switch and set back',self.transition.is_active
+    def switch_and_set_back(self, newcurrent):
+        print 'Asked to switch and set back', self.transition.is_active
         print newcurrent, self.has_screen(newcurrent)
         if newcurrent[:5] == 'Board' and self.has_screen(newcurrent):
             print 'got to make_match bit'
@@ -341,15 +341,15 @@ class NogoManager(ScreenManager):
             self.transition = SlideTransition(direction='right')
             if self.current == self.back_screen_name or self.current[:5] == 'Board':
                 self.back_screen_name = 'Home'
-            print '->',self.back_screen_name
+            print '->', self.back_screen_name
             if self.back_screen_name in self.screen_names:
-                print 'going to',self.back_screen_name
+                print 'going to', self.back_screen_name
                 self.current = self.back_screen_name
             else:
                 self.current = 'Home'
             self.transition = SlideTransition(direction='left')
-    def set_current_from_opengameslist(self,l):
-        print 'open games list is',l
+    def set_current_from_opengameslist(self, l):
+        print 'open games list is', l
         if len(l)>0:
             screenname = l[0].boardname
             self.switch_and_set_back(screenname)
@@ -366,15 +366,15 @@ class NogoManager(ScreenManager):
             infoscreen.add_widget(InfoPage(infotext=readme))
             self.add_widget(infoscreen)
             self.switch_and_set_back('Info Page')
-    def view_or_open_collection(self,selection,goto=True):
-        print 'asked to view_or_open',selection
+    def view_or_open_collection(self, selection, goto=True):
+        print 'asked to view_or_open', selection
         if len(selection) == 0:
             return False
         collection_name = selection[0].colname
         if self.has_screen('Collection ' + collection_name):
-            print 'screen already exists',collection_name
-            print 'supposed to refresh',self.collections_to_refresh
-            matching_refresh = filter(lambda j: j.name == collection_name,self.collections_to_refresh)
+            print 'screen already exists', collection_name
+            print 'supposed to refresh', self.collections_to_refresh
+            matching_refresh = filter(lambda j: j == collection_name, self.collections_to_refresh)
             if len(matching_refresh) > 0:
                 self.refresh_collection(matching_refresh[0])
                 self.collections_to_refresh.remove(matching_refresh[0])
@@ -392,11 +392,11 @@ class NogoManager(ScreenManager):
                                        allow_empty_selection=True,
                                        cls=GameChooserButton,
                                        )
-            gc = StandaloneGameChooser(managedby=self,collection=collection)
+            gc = StandaloneGameChooser(managedby=self, collection=collection)
             gc.gameslist.adapter = list_adapter
             print 'made gc and set adapter'
-            #print 'games are',games
-            #print 'gameinfos are', map(lambda j: j.gameinfo,games)
+            #print 'games are', games
+            #print 'gameinfos are', map(lambda j: j.gameinfo, games)
             s = Screen(name=screenname)
             s.add_widget(gc)
             self.add_widget(s)
@@ -406,8 +406,11 @@ class NogoManager(ScreenManager):
         print ' Refreshing open games'
         homepage = self.get_screen('Home')
         args_converter = games_args_converter
-        print 'boards are', self.boards
-        sgfs = [self.get_screen(board).children[0].board.sgf_model for board in self.boards]
+        boards = self.boards
+        sgfs = [self.get_screen(board).children[0].board.sgf_model for board in boards]
+        for i in range(len(boards)):
+            sgfs[i].boardname = boards[i]
+
         list_adapter = ListAdapter(data=sgfs,
                                    args_converter=args_converter,
                                    selection_mode='single',
@@ -416,13 +419,14 @@ class NogoManager(ScreenManager):
                                    )
         homepage.children[0].opengames.adapter = list_adapter
 
-    def refresh_collection(self,collection):
-        print 'Asked to refresh collection',collection,collection.name
-        matching_screens = filter(lambda j: j == ('Collection ' + collection.name),self.screen_names)
+    def refresh_collection(self, collection):
+        print 'Asked to refresh collection', collection
+        matching_screens = filter(lambda j: j == ('Collection ' + collection), self.screen_names)
         if len(matching_screens) > 0:
             scr = self.get_screen(matching_screens[0])
+            collection_model = list(Collection.select().where(Collection.name == collection))[0]
             gc = scr.children[0]
-            games = get_games_in(collection)
+            games = get_games_in(collection_model)
             args_converter = games_args_converter
             list_adapter = ListAdapter(data=games,
                                        args_converter = args_converter,
@@ -433,20 +437,20 @@ class NogoManager(ScreenManager):
             gc.gameslist.adapter = list_adapter
         self.refresh_collections_index()
     def open_sgf_dialog(self):
-        popup = Popup(content=OpenSgfDialog(manager=self),title='Open SGF',size_hint=(0.85,0.85))
+        popup = Popup(content=OpenSgfDialog(manager=self), title='Open SGF', size_hint=(0.85, 0.85))
         popup.content.popup = popup
         popup.open()
-    def board_from_gamechooser(self,selection):
+    def board_from_gamechooser(self, selection):
         if len(selection) > 0:
             button = selection[0]
             collection = button.collection
             sgf = button.sgf
-            self.new_board(sgf_model=sgf,mode='Navigate')
-    def close_board_from_selection(self,sel):
-        print 'asked to close from sel',sel
+            self.new_board(sgf_model=sgf, mode='Navigate')
+    def close_board_from_selection(self, sel):
+        print 'asked to close from sel', sel
         if len(sel) > 0:
             self.close_board(sel[0].boardname)
-    def close_board(self,name):
+    def close_board(self, name):
         if self.has_screen(name):
             pbvs = self.get_screen(name)
             try:
@@ -455,14 +459,15 @@ class NogoManager(ScreenManager):
                 pass # Board not initialised
             self.remove_widget(pbvs)
             self.boards.remove(name)
-            print 'new boards',self.screens
+            print 'new boards', self.screens
+            self.refresh_open_games()
     def collection_tool_dialog(self):
         '''Create and open a dialog popup for collection tools (import directory etc.)'''
         pass
     def new_board_dialog(self):
         print 'Opening new_board_dialog'
         dialog = NewBoardQuery(manager=self)
-        popup = Popup(content=dialog,title='Create new board...',size_hint=(0.85,0.9))
+        popup = Popup(content=dialog, title='Create new board...', size_hint=(0.85, 0.9))
         popup.content.popup = popup
         collections_list = get_collections()
         list_adapter = ListAdapter(data=collections_list,
@@ -473,13 +478,13 @@ class NogoManager(ScreenManager):
                                    )
         dialog.collections_list.adapter = list_adapter
         popup.open()
-    def new_board_from_selection(self,sel,gridsize=19,handicap=0):
+    def new_board_from_selection(self, sel, gridsize=19, handicap=0):
         if len(sel)>0:
             collection = sel[0].collection
         else:
             collection = get_default_collection()
-        self.new_board(collection_model=collection,gridsize=gridsize,handicap=handicap)
-    def new_board(self,sgf_model=None,collection_model=None,from_file='',mode='Play',gridsize=19,handicap=0,goto=True):
+        self.new_board(collection_model=collection, gridsize=gridsize, handicap=handicap)
+    def new_board(self, sgf_model=None, collection_model=None, from_file='', mode='Play', gridsize=19, handicap=0, goto=True):
         toast('Loading sgf', False)
         load_from_file = False
 
@@ -522,7 +527,7 @@ class NogoManager(ScreenManager):
 
         t2 = time()
 
-        print 't2 - t1 is...',t2-t1
+        print 't2 - t1 is...', t2-t1
 
         if filen == '':
             sgf.auto_filename()
@@ -562,8 +567,10 @@ class NogoManager(ScreenManager):
 
         t5 = time()
         
+        print ' LOAD FROM FILE!?'
         if load_from_file:
-            print 'Trying to load from',filen
+            print 'YES'
+            print 'Trying to load from', filen
             try:
                 pbv.board.load_sgf_from_file('',[filen])
             except:
@@ -572,15 +579,15 @@ class NogoManager(ScreenManager):
                                             ('Unable to open SGF. Please check'
                                              'the file exists and is a valid SGF.'),
                                             title='Error opening file'),
-                              size_hint=(0.85,0.4),
+                              size_hint=(0.85, 0.4),
                               title='Error')
                 print 'popup made'
                 popup.open()
                 #self.close_board(name)
                 return False
-        else:
-            pbv.board.reset_gridsize(gridsize)
-            pbv.board.add_handicap_stones(handicap)
+
+        pbv.board.reset_gridsize(gridsize)
+        pbv.board.add_handicap_stones(handicap)
 
         pbv.board.time_start()
         s.add_widget(pbv)
@@ -593,7 +600,6 @@ class NogoManager(ScreenManager):
         pbv.board.display_markers = self.display_markers
         pbv.board.cache = App.get_running_app().cache
         pbv.board.get_game_info()
-        pbv.board.save_sgf()
         self.boards.append(name)
 
         if self.view_mode[:6] == 'tablet':
@@ -604,6 +610,11 @@ class NogoManager(ScreenManager):
         print t6-t1, t6-t5, t5-t4, t4-t3, t3-t2, t2-t1
 
         self.refresh_open_games()
+        self.collectionindex_to_refresh = True
+        if collection_model is not None:
+            if collection_model.name not in self.collections_to_refresh:
+                self.collections_to_refresh.append(collection_model.name)
+        pbv.board.save_sgf()
 
         return pbv
     def refresh_collections_index(self):
@@ -629,7 +640,7 @@ class NogoManager(ScreenManager):
         else:
             return
     
-    def rebuild_homescreen(self,mode=None,goto=True):
+    def rebuild_homescreen(self, mode=None, goto=True):
         print 'rebuilding homescreen'
         t1 = time()
         if mode is None:
@@ -671,7 +682,7 @@ class NogoManager(ScreenManager):
                 board.board.save_sgf()
                 filen = board.board.collectionsgf.filen
                 reconstruction_path = board.board.get_reconstruction()
-                new_pbv = self.new_board(from_file=filen,mode='Navigate')
+                new_pbv = self.new_board(from_file=filen, mode='Navigate')
                 new_pbv.board.reconstruct_from(reconstruction_path)
                 new_pbv.board.comment_pre_text = 'This [b]tablet mode[/b] is currently experimental. It should work fine, but is still being tested and will be subject to change (more efficient layout etc.) and speed optimisation before being finalised.\n-----\n'
                 App.get_running_app().manager.refresh_open_games()
@@ -684,7 +695,7 @@ class NogoManager(ScreenManager):
                 board.board.save_sgf()
                 filen = board.board.collectionsgf.filen
                 reconstruction_path = board.board.get_reconstruction()
-                new_pbv = self.new_board(from_file=filen,mode='Navigate')
+                new_pbv = self.new_board(from_file=filen, mode='Navigate')
                 new_pbv.board.reconstruct_from(reconstruction_path)
                 App.get_running_app().manager.refresh_open_games()
 
@@ -703,24 +714,24 @@ class NogoManager(ScreenManager):
         collections_screen = Screen(name='Collections Index')
         collections_screen.add_widget(collections_index)
         self.add_widget(collections_screen)
-    def propagate_input_mode(self,val):
+    def propagate_input_mode(self, val):
         if val == 'phone':
-            newtouchoffset = [0,3]
+            newtouchoffset = [0, 3]
         elif val == 'tablet/stylus':
-            newtouchoffset = [0,0]
+            newtouchoffset = [0, 0]
         else:
-            newtouchoffset = [0,3]
-            print 'An unrecognised input mode was chosen. Defaulting to [0,3] offset.'
+            newtouchoffset = [0, 3]
+            print 'An unrecognised input mode was chosen. Defaulting to [0, 3] offset.'
         self.touchoffset = newtouchoffset
         for name in self.screen_names:
             if name[:5] == 'Board':
                 curboard = self.get_screen(name)
                 curboard.children[0].board.touchoffset = newtouchoffset
-    def propagate_boardtype_mode(self,name):
+    def propagate_boardtype_mode(self, name):
         self.boardtype = name
         board_file = boardname_to_filepath(name)
-        print 'board file is',board_file
-        print 'propagating boardtype',name,board_file
+        print 'board file is', board_file
+        print 'propagating boardtype', name, board_file
         for name in self.screen_names:
             if name[:5] == 'Board':
                 curboard = self.get_screen(name)
@@ -731,7 +742,7 @@ class NogoManager(ScreenManager):
             if name[:5] == 'Board':
                 curboard = self.get_screen(name)
                 curboard.children[0].board.replace_stones()
-    def propagate_markerdisplay_mode(self,val):
+    def propagate_markerdisplay_mode(self, val):
         if val == 'False':
             val = False
         elif val == 'True':
@@ -739,12 +750,12 @@ class NogoManager(ScreenManager):
         else:
             val = int(val)
         self.display_markers = bool(val)
-        print 'propagating markerdisplay_mode',self.display_markers
+        print 'propagating markerdisplay_mode', self.display_markers
         for name in self.screen_names:
             if name[:5] == 'Board':
                 curboard = self.get_screen(name)
                 curboard.children[0].board.display_markers = bool(val)
-    def propagate_coordinates_mode(self,val):
+    def propagate_coordinates_mode(self, val):
         if val == 'False':
             val = False
         elif val == 'True':
@@ -757,8 +768,8 @@ class NogoManager(ScreenManager):
                 curboard = self.get_screen(name)
                 curboard.children[0].board.coordinates = bool(val)
             
-    def propagate_view_mode(self,val):
-        print 'PROPAGATING VIEW MODE',val
+    def propagate_view_mode(self, val):
+        print 'PROPAGATING VIEW MODE', val
         self.view_mode = val
         if platform() == 'android':
             try:
@@ -779,18 +790,18 @@ class NogoManager(ScreenManager):
         #         Window.rotation = 0
         self.rebuild_homescreen()
 
-    def query_delete_sgf(self,sel):
+    def query_delete_sgf(self, sel):
         if len(sel)>0:
-            popup = Popup(content=DeleteSgfQuestion(manager=self,selection=sel),height=(140,'sp'),size_hint=(0.85,None),title='Are you sure?')
+            popup = Popup(content=DeleteSgfQuestion(manager=self, selection=sel), height=(140,'sp'), size_hint=(0.85, None), title='Are you sure?')
             popup.content.popup = popup
             popup.open()
-    def delete_sgf_from_selection(self,selection):
-        print 'Asked to delete from selection',selection
+    def delete_sgf_from_selection(self, selection):
+        print 'Asked to delete from selection', selection
         if len(selection)>0:
             button = selection[0]
             selection[0].sgf.delete_instance()
             self.delete_sgf(selection[0].collectionsgf)
-    def delete_sgf(self,collectionsgf):
+    def delete_sgf(self, collectionsgf):
         collectionsgf.delete()
         App.get_running_app().collections.save()
         self.refresh_collection(collectionsgf.collection)
@@ -807,7 +818,7 @@ class DataItem(object):
         self.text = text
         self.is_selected = is_selected
 
-def printargs(*args,**kwargs):
+def printargs(*args, **kwargs):
     '###### printargs'
     print args
     print kwargs
@@ -847,7 +858,7 @@ class GobanApp(App):
         # Load config
         #print 'user data dir is', self.user_data_dir
         config = self.config
-        #print 'my config is',config
+        #print 'my config is', config
 
         def load_sound(*args):
             sound = SoundLoader.load('./media/sounds/stone_sound5.mp3')
@@ -924,7 +935,7 @@ class GobanApp(App):
 
         t3 = time()
         print 'did android stuff', t3-t3_3
-        print 'total init time',t3-t1
+        print 'total init time', t3-t1
 
         #drawer = NogoDrawer()
         #drawer.add_widget(NavigationButtons())
@@ -939,7 +950,7 @@ class GobanApp(App):
         
         return sm
 
-    def try_android_rotate(self,dir='portrait'):
+    def try_android_rotate(self, dir='portrait'):
         print 'Trying android rotate'
         if dir == 'landscape':
             self.PythonActivity.mActivity.setRequestedOrientation(self.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
@@ -951,7 +962,7 @@ class GobanApp(App):
             self.PythonActivity.mActivity.setRequestedOrientation(self.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
         
 
-    def on_intent(self,intent):
+    def on_intent(self, intent):
         print 'INTENT'
         print 'INTENT'
         print 'INTENT'
@@ -960,17 +971,17 @@ class GobanApp(App):
         print '!!!!!'
         print 'on_intent called'
         action = intent.getAction()
-        print 'action is',action
+        print 'action is', action
         if action == 'android.intent.action.VIEW':
             print 'Trying to act on intent'
             #sleep(5)
             print 'Slept briefly'
             path = intent.getData().getPath()
-            print 'going for path',path
+            print 'going for path', path
             #self.manager.go_home()
-            Clock.schedule_once(lambda j: self.manager.open_from_intentpath(path),1.1)
+            Clock.schedule_once(lambda j: self.manager.open_from_intentpath(path), 1.1)
             #self.manager.open_from_intentpath(path)
-    # def on_resume(self,*args):
+    # def on_resume(self, *args):
     #     print 'RESUMED'
     #     print 'RESUMED'
     #     print 'RESUMED'
@@ -978,43 +989,39 @@ class GobanApp(App):
     #     print 'RESUMED'
         
 
-    def on_start(self,*args,**kwargs):
-        print '\nON_START',args,kwargs,'\n'
-        print 'environment',environ.get('PYTHON_OPENFILE')
+    def on_start(self, *args, **kwargs):
+        print '\nON_START', args, kwargs,'\n'
+        print 'environment', environ.get('PYTHON_OPENFILE')
         open_file = getenv('PYTHON_OPENFILE','').replace('%20',' ')
-        print 'open_file is',open_file
+        print 'open_file is', open_file
         if open_file != '':
             putenv('PYTHON_OPENFILE','')
-            Clock.schedule_once(lambda j: self.manager.open_from_intentpath(open_file),1.1)
-        super(GobanApp,self).on_start(*args,**kwargs)
+            Clock.schedule_once(lambda j: self.manager.open_from_intentpath(open_file), 1.1)
+        super(GobanApp, self).on_start(*args, **kwargs)
 
-    # def on_resume(self,*args,**kwargs):
-    #     # print 'ON_RESUME',args,kwargs
-    #     # print 'environment',environ.get('PYTHON_OPENFILE')
+    # def on_resume(self, *args, **kwargs):
+    #     # print 'ON_RESUME', args, kwargs
+    #     # print 'environment', environ.get('PYTHON_OPENFILE')
     #     # open_file = getenv('PYTHON_OPENFILE','').replace('%20',' ')
-    #     # print 'open_file is',open_file
+    #     # print 'open_file is', open_file
     #     # if open_file != '' and open_file != self.prev_opened_file:
     #     #     self.prev_opened_file = open_file
-    #     #     self.manager.new_board(from_file=open_file,mode='Navigate')
-    #     super(GobanApp,self).on_resume(*args,**kwargs)
+    #     #     self.manager.new_board(from_file=open_file, mode='Navigate')
+    #     super(GobanApp, self).on_resume(*args, **kwargs)
 
     def get_application_config(self):
         if platform() == 'android':
             dirn = self.user_data_dir + '/nogo.ini'
             return dirn
-        return super(GobanApp,self).get_application_config()
+        return super(GobanApp, self).get_application_config()
 
-    def post_build_init(self,ev):
-        if platform() == 'android':
-            import android
-            android.map_key(android.KEYCODE_BACK,1001)
-
+    def post_build_init(self, ev):
         win = Window
         win.bind(on_keyboard=self.my_key_handler)
 
-        Clock.schedule_interval(self.save_all_boards,150)
+        Clock.schedule_interval(self.save_all_boards, 150)
 
-    def my_key_handler(self,window,keycode1,keycode2,text,modifiers):
+    def my_key_handler(self, window, keycode1, keycode2, text, modifiers):
         if keycode1 == 27 or keycode1 == 1001:
             self.manager.handle_android_back()
             return True
@@ -1063,7 +1070,7 @@ class GobanApp(App):
     #     # s.menu.width = dp(300)
     #     # return s
 
-    def build_settings(self,settings):
+    def build_settings(self, settings):
         jsondata = json.dumps([
             {"type": "options",
              "title": "Input method",
@@ -1071,6 +1078,11 @@ class GobanApp(App):
              "section": "Board",
              "key": "input_mode",
              "options": ["phone","tablet/stylus"]},
+            {"type": "path",
+             "title": "A path setting",
+             "desc": "some description",
+             "section": "Board",
+             "key": "mypath",},
             {"type": "options",
              "title": "View mode",
              "desc": "Use compact phone view or expanded tablet view.",
@@ -1113,20 +1125,20 @@ class GobanApp(App):
                                 data=jsondata)
 
     def build_config(self, config):
-        config.setdefaults('Board',{'input_mode':'phone','view_mode':'phone','coordinates':False,'markers':True,'stone_graphics':'slate and shell','board_graphics':'board section photo 1','sounds':False})
+        config.setdefaults('Board',{'mypath':'.', 'input_mode':'phone','view_mode':'phone','coordinates':False,'markers':True,'stone_graphics':'slate and shell','board_graphics':'board section photo 1','sounds':False})
 
 
-    def on_pause(self,*args,**kwargs):
+    def on_pause(self, *args, **kwargs):
         print 'App asked to pause'
         self.save_all_boards()
         return True
 
-    def on_stop(self,*args,**kwargs):
+    def on_stop(self, *args, **kwargs):
         print 'App asked to stop'
         self.save_all_boards()
-        return super(GobanApp,self).on_stop()
+        return super(GobanApp, self).on_stop()
 
-    def save_all_boards(self,*args):
+    def save_all_boards(self, *args):
         names = self.manager.screen_names
         for name in names:
             if name[:5] == 'Board':
@@ -1137,15 +1149,15 @@ class GobanApp(App):
                     print 'Tried to save board that doesn\'t exist, maybe didn\'t load properly'
 
     def on_config_change(self, config, section, key, value):
-        super(GobanApp,self).on_config_change(config,section,key,value)
-        print '%%% config change',config,section,key,value
+        super(GobanApp, self).on_config_change(config, section, key, value)
+        print '%%% config change', config, section, key, value
         if key == 'input_mode':
             self.manager.propagate_input_mode(value)
         elif key == 'view_mode':
             self.manager.propagate_view_mode(value)
             self.manager.go_home()
         elif key == 'coordinates':
-            print 'coordinates key pressed',config,section,key,value
+            print 'coordinates key pressed', config, section, key, value
             self.manager.propagate_coordinates_mode(int(value))
         elif key == 'markers':
             self.manager.propagate_markerdisplay_mode(int(value))
@@ -1156,16 +1168,16 @@ class GobanApp(App):
             self.board_type = value
             self.manager.propagate_boardtype_mode(value)
         elif key == 'sounds':
-            print 'sounds key changed',value
+            print 'sounds key changed', value
             self.set_sounds(value)
         else:
-            super(GobanApp,self).on_config_change(config,section,key,value)
+            super(GobanApp, self).on_config_change(config, section, key, value)
 
     def new_collection_query(self):
-        popup = Popup(content=CollectionNameChooser(manager=self),title='Pick a collection name...',size_hint_x=0.95,size_hint_y=None,height=(130,'sp'),pos_hint={'top':0.85})
+        popup = Popup(content=CollectionNameChooser(manager=self), title='Pick a collection name...', size_hint_x=0.95, size_hint_y=None, height=(130,'sp'), pos_hint={'top':0.85})
         popup.content.popup = popup
         popup.open()
-    def new_collection(self,newname):
+    def new_collection(self, newname):
         collection = Collection(name=newname)
         if platform() == 'android':
             collection.directory = '/sdcard/noGo/collections'
@@ -1173,20 +1185,20 @@ class GobanApp(App):
             collection.directory = './games'
         collection.save()
         self.manager.refresh_collections_index()
-    def query_delete_collection(self,sel):
+    def query_delete_collection(self, sel):
         if len(sel)>0:
-            popup = Popup(content=DeleteCollectionQuestion(manager=self,selection=sel),height=(140,'sp'),size_hint=(0.85,None),title='Are you sure?')
+            popup = Popup(content=DeleteCollectionQuestion(manager=self, selection=sel), height=(140,'sp'), size_hint=(0.85, None), title='Are you sure?')
             popup.content.popup = popup
             popup.open()
-    def delete_collection(self,selection):
-        print 'asked to delete collection using',selection,type(selection)
+    def delete_collection(self, selection):
+        print 'asked to delete collection using', selection, type(selection)
         self.collections.delete_collection(selection[0].colname)
         self.manager.refresh_collections_index()
     def get_default_collection(self):
         collections = self.collections.collections
-        print 'current collections are',collections
-        unsaved = filter(lambda j: j.name == 'unsaved',collections)
-        print 'found name unsaved',unsaved
+        print 'current collections are', collections
+        unsaved = filter(lambda j: j.name == 'unsaved', collections)
+        print 'found name unsaved', unsaved
         if len(unsaved) > 0:
             unsaved = unsaved[0]
         else:
@@ -1195,7 +1207,7 @@ class GobanApp(App):
         if platform() == 'android':
             unsaved.defaultdir = '/sdcard/noGo/collections/unsaved'
         return unsaved
-    def move_collectionsgf(self,collectionsgf,selection,board=None):
+    def move_collectionsgf(self, collectionsgf, selection, board=None):
         if len(selection) > 0:
             collection = selection[0].get_collections()[0]
         else:
@@ -1213,7 +1225,7 @@ class GobanApp(App):
             board.get_game_info()
             board.save_sgf()
             collectionsgf.save()
-    def set_sounds(self,val):
+    def set_sounds(self, val):
         if val == 'False':
             val = False
         elif val == 'True':
@@ -1221,17 +1233,17 @@ class GobanApp(App):
         else:
             val = int(val)
         self.sounds = bool(val)
-    def play_stone_sound(self,*args):
+    def play_stone_sound(self, *args):
         #print 'asked to play sound', self.sounds
         if self.sounds:
             self.stone_sound.seek(0)
             self.stone_sound.play()
         
         
-def testconverter(j,*args):
-    print 'converter got j',j,args
+def testconverter(j, *args):
+    print 'converter got j', j, args
     info = j.gameinfo
-    print 'info is',info
+    print 'info is', info
     return info
 
 if __name__ == '__main__':

@@ -75,7 +75,8 @@ class Sgf(BaseModel):
     brank = CharField(null=True)
     bteam = CharField(null=True)
     copyright = CharField(null=True)
-    date = CharField(null=True)
+    date = CharField(default=lambda : str(datetime.date.today()),
+                     null=True)
     event = CharField(null=True)
 
     gname = CharField(null=True)
@@ -124,9 +125,16 @@ class Sgf(BaseModel):
         return self.filename
 
     def populate_from_gameinfo(self, info):
+        print 'populating sgf from gameinfo'
         for key, value in info.iteritems():
+            print key, value, hasattr(self, key)
             if hasattr(self, key):
-                self.key = value
+                setattr(self, key, value)
+
+        self.save()
+        print 'populated self from gameinfo'
+        print 'size is', self.gridsize
+        print 'wname is', self.wname
 
 class CollectionSgf(BaseModel):
     collection = ForeignKeyField(Collection)
@@ -170,12 +178,18 @@ def games_args_converter(ri, game):
         info['wname'] = game.wname
         if winner == 'w':
             info['wname'] = embolden(info['wname'])
+    else:
+        info['wname'] = 'unknown'
     if game.bname:
         info['bname'] = game.bname
         if winner == 'b':
             info['bname'] = embolden(info['bname'])
+    else:
+        info['bname'] = 'unknown'
     if game.date:
         info['date'] = game.date
+    if hasattr(game, 'boardname'):
+        info['boardname'] = game.boardname
 
     return info
 
